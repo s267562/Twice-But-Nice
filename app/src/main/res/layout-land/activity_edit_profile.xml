@@ -28,42 +28,42 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:orientation="vertical"
         android:layout_marginLeft="16dp"
-        android:gravity="center_vertical" >
+        android:layout_weight="2"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
         <EditText
             android:id="@+id/full_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:inputType="text"
             android:text="Full Name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:inputType="text" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
         <EditText
             android:id="@+id/nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:inputType="text"
             android:text="Nickname"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:inputType="text" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <EditText
             android:id="@+id/email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:inputType="text"
             android:text="Email"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:inputType="text" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <EditText
             android:id="@+id/location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:inputType="text"
             android:text="Location"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:inputType="text" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     </LinearLayout>
 
