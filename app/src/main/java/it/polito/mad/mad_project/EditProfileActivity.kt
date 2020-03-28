@@ -5,15 +5,14 @@ import android.os.Bundle
 import android.view.*
 import android.widget.ImageButton
 import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_edit_profile.*
 
 class EditProfileActivity : AppCompatActivity() {
-
-    val cameraicon: ImageButton = findViewById(R.id.camera_icon)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
-        registerForContextMenu(cameraicon)
+        registerForContextMenu(camera_icon)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
