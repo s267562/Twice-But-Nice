@@ -19,12 +19,12 @@ class ShowProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_profile)
-
         userViewModel.user.observe(this, Observer{
-            full_name.text = "${it.name} ${it.surname}"
-            nickname.text = "${it.nickname}"
-            email.text = "${it.email}"
-            location.text = "${it.location}"
+            Log.d("MAD_LOG", "OBSERVED-USER: $it")
+            full_name.text = it.name
+            nickname.text = it.nickname
+            email.text = it.email
+            location.text = it.location
         })
     }
 
@@ -49,13 +49,17 @@ class ShowProfileActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == IntentRequest.UserData.CODE) {
-            val user = (data!!.getByteArrayExtra(IntentRequest.UserData.NAME) as? User)
-            Log.d ("MAD_LOG", "USER: $user")
+            val user = data!!.getSerializableExtra(IntentRequest.UserData.NAME) as User
+            Log.d ("MAD_LOG", "RESULT-USER: $user")
+            userViewModel.user.value = user
         }
     }
 
     private fun editProfile() {
         val intent = Intent(this, EditProfileActivity::class.java)
+        Log.d ("MAD_LOG", "SEND-USER: ${userViewModel.user.value}")
+
+        intent.putExtra(IntentRequest.UserData.NAME, userViewModel.user.value)
         startActivityForResult(intent, IntentRequest.UserData.CODE)
     }
 

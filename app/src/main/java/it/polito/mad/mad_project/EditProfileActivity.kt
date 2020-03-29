@@ -3,6 +3,7 @@ package it.polito.mad.mad_project
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +17,9 @@ class EditProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_edit_profile)
         registerForContextMenu(camera_icon)
         // Load user information
-        val user: User? = savedInstanceState?.getByteArray(IntentRequest.UserData.NAME) as? User
+        val user: User? = intent.getSerializableExtra(IntentRequest.UserData.NAME) as? User?
+        Log.d ("MAD_LOG", "RECEIVED-USER: $user")
+
         if (user != null) {
             full_name.setText("${user.name} ${user.surname}")
             nickname.setText(user.nickname)
@@ -58,11 +61,13 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun saveProfile() {
-        val user = User("")
-        user.name = full_name.text.toString()
-        user.nickname = nickname.text.toString()
-        user.email = email.text.toString()
-        user.location = location.text.toString()
+        val name = full_name.text.toString()
+        val nickname = nickname.text.toString()
+        val email = email.text.toString()
+        val location = location.text.toString()
+        val user = User(name, "", nickname, email, location)
+
+        Log.d ("MAD_LOG", "SEND-USER: $user")
 
         val intent = Intent()
         intent.putExtra(IntentRequest.UserData.NAME, user)
