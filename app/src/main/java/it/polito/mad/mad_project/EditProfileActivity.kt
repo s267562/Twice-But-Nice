@@ -5,17 +5,21 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.AdapterView
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 
 class EditProfileActivity : AppCompatActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
-        registerForContextMenu(camera_icon)
+        val camera = findViewById<View>(R.id.camera_icon)
+        registerForContextMenu(camera)
+        camera.setOnClickListener { onCreateContextMenu(camera) }
+
         // Load user information
         val user: User? = intent.getSerializableExtra(IntentRequest.UserData.NAME) as? User?
         Log.d ("MAD_LOG", "RECEIVED-USER: $user")
@@ -34,30 +38,41 @@ class EditProfileActivity : AppCompatActivity() {
         return true
     }
 
+    // Punto 4
+
+    override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+        val menuInflater: MenuInflater = menuInflater
+        menuInflater.inflate(R.menu.context_menu, menu)
+        menu.setHeaderTitle("Context Menu")
+        
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.select_image -> {
+                //do something
+                true
+            }
+            R.id.take_pic -> {
+                // do something
+                true
+            }
+            else -> super.onContextItemSelected(item)
+        }
+    }
+
+    // Punto 5
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         return when (item.itemId) {
             R.id.save_option -> {
-                Toast.makeText(this, "save clicked", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Save button clicked", Toast.LENGTH_SHORT).show()
                 saveProfile()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
-        super.onCreateContextMenu(menu, v, menuInfo)
-        menu.setHeaderTitle("Context Menu")
-        menu.add(0, v.getId(), 0, "Upload")
-        menu.add(0, v.getId(), 0, "Search")
-        menu.add(0, v.getId(), 0, "Share")
-        menu.add(0, v.getId(), 0, "Bookmark")
-    }
-
-    override fun onContextItemSelected(item: MenuItem): Boolean {
-        Toast.makeText(this, "Selected Item: " + item.title, Toast.LENGTH_SHORT)
-        return true
     }
 
     private fun saveProfile() {
@@ -75,5 +90,5 @@ class EditProfileActivity : AppCompatActivity() {
         finish()
     }
 
-
+    fun onCreateContextMenu(view: View) {}
 }

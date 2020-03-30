@@ -18,6 +18,7 @@
         android:layout_gravity="end"
         />
 
+
     <ImageView
         android:id="@+id/user_photo"
         android:layout_width="match_parent"
@@ -38,7 +39,7 @@
             android:id="@+id/full_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Full Name ciaone"
+            android:text="Full Name"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:inputType="text" />
 
