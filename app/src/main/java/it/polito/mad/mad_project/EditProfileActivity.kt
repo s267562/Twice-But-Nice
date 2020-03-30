@@ -16,9 +16,9 @@ class EditProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
-        val camera = findViewById<View>(R.id.camera_icon)
-        registerForContextMenu(camera)
-        camera.setOnClickListener { onCreateContextMenu(camera) }
+        registerForContextMenu(camera_icon)
+        camera_icon.setOnClickListener { openContextMenu(it) }
+        //camera_icon.setOnLongClickListener { true }
 
         // Load user information
         val user: User? = intent.getSerializableExtra(IntentRequest.UserData.NAME) as? User?
@@ -51,11 +51,11 @@ class EditProfileActivity : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.select_image -> {
-                //do something
+                Toast.makeText(this, "select image...", Toast.LENGTH_SHORT).show()
                 true
             }
             R.id.take_pic -> {
-                // do something
+                Toast.makeText(this, "take picture...", Toast.LENGTH_SHORT).show()
                 true
             }
             else -> super.onContextItemSelected(item)
@@ -90,5 +90,4 @@ class EditProfileActivity : AppCompatActivity() {
         finish()
     }
 
-    fun onCreateContextMenu(view: View) {}
 }
