@@ -2,23 +2,31 @@ package it.polito.mad.mad_project
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.AdapterView
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 
 class EditProfileActivity : AppCompatActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
         registerForContextMenu(camera_icon)
-        camera_icon.setOnClickListener { openContextMenu(it) }
-        //camera_icon.setOnLongClickListener { true }
+        camera_icon.isLongClickable = false
+        camera_icon.setOnTouchListener { v, event ->
+            if (v is ImageButton && event.action == MotionEvent.ACTION_DOWN) {
+                v.showContextMenu(event.x, event.y)
+            }
+
+            true
+        }
 
         // Load user information
         val user: User? = intent.getSerializableExtra(IntentRequest.UserData.NAME) as? User?
