@@ -37,7 +37,7 @@
             android:id="@+id/full_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="text"
+            android:inputType="textCapWords"
             android:text="Full Name"
             android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
@@ -45,7 +45,7 @@
             android:id="@+id/nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="text"
+            android:inputType="textWebEditText"
             android:text="Nickname"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
@@ -53,7 +53,7 @@
             android:id="@+id/email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="text"
+            android:inputType="textEmailAddress"
             android:text="Email"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
@@ -61,7 +61,7 @@
             android:id="@+id/location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="text"
+            android:inputType="textAutoCorrect"
             android:text="Location"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 

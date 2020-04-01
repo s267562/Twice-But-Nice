@@ -39,7 +39,7 @@
             android:id="@+id/full_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Full Name"
+            android:hint="Full Name"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:inputType="textCapWords" />
 
@@ -48,22 +48,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="textWebEditText"
-            android:text="Nickname"
+            android:hint="Nickname"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <EditText
             android:id="@+id/email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Email"
+            android:hint="Email"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:inputType="textWebEmailAddress" />
+            android:inputType="textEmailAddress" />
 
         <EditText
             android:id="@+id/location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Location"
+            android:hint="Location"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:inputType="textAutoCorrect" />
 
