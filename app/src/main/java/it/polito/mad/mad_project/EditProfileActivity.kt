@@ -2,10 +2,14 @@ package it.polito.mad.mad_project
 
 import android.app.Activity
 import android.content.Intent
+import android.inputmethodservice.Keyboard
+import android.inputmethodservice.KeyboardView
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -19,6 +23,7 @@ class EditProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
         registerForContextMenu(camera_icon)
+
         camera_icon.isLongClickable = false
         camera_icon.setOnTouchListener { v, event ->
             if (v is ImageButton && event.action == MotionEvent.ACTION_DOWN) {
@@ -53,7 +58,6 @@ class EditProfileActivity : AppCompatActivity() {
         val menuInflater: MenuInflater = menuInflater
         menuInflater.inflate(R.menu.context_menu, menu)
         menu.setHeaderTitle("Context Menu")
-        
     }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
