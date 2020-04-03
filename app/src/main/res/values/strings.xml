@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MAD-Project</string>
+    <string name="app_store_file">it.polito.mad.mad_project.StoreFile</string>
 </resources>

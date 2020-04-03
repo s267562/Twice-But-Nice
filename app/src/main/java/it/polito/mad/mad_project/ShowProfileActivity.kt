@@ -1,24 +1,31 @@
 package it.polito.mad.mad_project
 
+import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_show_profile.*
 
 class ShowProfileActivity : AppCompatActivity() {
     private val userViewModel: UserViewModel = UserViewModel()
+    private val gsonMapper: Gson = Gson()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_profile)
+        val sharedPref = this?.getSharedPreferences(getString(R.string.app_store_file), Context.MODE_PRIVATE)
+
+        val json: String? = sharedPref?.getString("UserObject", "")
+        val obj: User = gsonMapper.fromJson<User>(json, User::class.java)
+
         userViewModel.user.observe(this, Observer{
             Log.d("MAD_LOG", "OBSERVED-USER: $it")
             full_name.text = it.name
@@ -26,6 +33,7 @@ class ShowProfileActivity : AppCompatActivity() {
             email.text = it.email
             location.text = it.location
         })
+        userViewModel.user.value = obj
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -52,6 +60,11 @@ class ShowProfileActivity : AppCompatActivity() {
             val user = data!!.getSerializableExtra(IntentRequest.UserData.NAME) as User
             Log.d ("MAD_LOG", "RESULT-USER: $user")
             userViewModel.user.value = user
+
+            val sharedPref = this?.getSharedPreferences(getString(R.string.app_store_file), Context.MODE_PRIVATE)
+            val prefsEditor = sharedPref?.edit()
+            prefsEditor?.putString("UserObject", gsonMapper.toJson(user));
+            prefsEditor?.commit();
         }
     }
 
