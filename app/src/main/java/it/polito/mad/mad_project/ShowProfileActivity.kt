@@ -2,9 +2,7 @@ package it.polito.mad.mad_project
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -21,19 +19,25 @@ class ShowProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_profile)
-        val sharedPref = this?.getSharedPreferences(getString(R.string.app_store_file), Context.MODE_PRIVATE)
 
-        val json: String? = sharedPref?.getString("UserObject", "")
-        val obj: User = gsonMapper.fromJson<User>(json, User::class.java)
+        // Load store file of our app from shared preferences
+        val sharedPreferences = this?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
 
+        // Load from the store file the user object. For the first time we load empty string.
+        val userJson: String? = sharedPreferences?.getString(StoreFileKey.USER, "")
+
+        if (userJson != null && userJson.isNotEmpty()) {
+            // Assign the stored user to our view model if it is not empty
+            userViewModel.user.value = gsonMapper.fromJson(userJson, User::class.java)
+        }
+
+        // Observe the user changes
         userViewModel.user.observe(this, Observer{
-            Log.d("MAD_LOG", "OBSERVED-USER: $it")
             full_name.text = it.name
             nickname.text = it.nickname
             email.text = it.email
             location.text = it.location
         })
-        userViewModel.user.value = obj
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -56,22 +60,20 @@ class ShowProfileActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == IntentRequest.UserData.CODE) {
             val user = data!!.getSerializableExtra(IntentRequest.UserData.NAME) as User
-            Log.d ("MAD_LOG", "RESULT-USER: $user")
             userViewModel.user.value = user
 
-            val sharedPref = this?.getSharedPreferences(getString(R.string.app_store_file), Context.MODE_PRIVATE)
+            val sharedPref = this?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
             val prefsEditor = sharedPref?.edit()
-            prefsEditor?.putString("UserObject", gsonMapper.toJson(user));
+            prefsEditor?.putString(StoreFileKey.USER, gsonMapper.toJson(user));
             prefsEditor?.commit();
         }
     }
 
     private fun editProfile() {
         val intent = Intent(this, EditProfileActivity::class.java)
-        Log.d ("MAD_LOG", "SEND-USER: ${userViewModel.user.value}")
-
         intent.putExtra(IntentRequest.UserData.NAME, userViewModel.user.value)
         startActivityForResult(intent, IntentRequest.UserData.CODE)
     }

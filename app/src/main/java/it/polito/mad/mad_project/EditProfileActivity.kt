@@ -38,7 +38,7 @@ class EditProfileActivity : AppCompatActivity() {
         Log.d ("MAD_LOG", "RECEIVED-USER: $user")
 
         if (user != null) {
-            full_name.setText("${user.name} ${user.surname}")
+            full_name.setText(user.name)
             nickname.setText(user.nickname)
             email.setText(user.email)
             location.setText(user.location)
