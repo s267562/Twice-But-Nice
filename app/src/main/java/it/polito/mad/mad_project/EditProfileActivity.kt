@@ -3,11 +3,8 @@ package it.polito.mad.mad_project
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.icu.text.SimpleDateFormat
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
@@ -15,18 +12,25 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_edit_profile.*
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.os.Environment
+import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import java.io.File
 import java.io.IOException
-import java.net.Authenticator
+import java.text.SimpleDateFormat
 import java.util.*
 
 class EditProfileActivity : AppCompatActivity() {
 
-    val REQUEST_IMAGE_CAPTURE = 1
-    val REQUEST_TAKE_PHOTO = 1
-    lateinit var currentPhotoPath: String
+    private val CAPTURE_IMAGE_REQUEST = 1
+    private var photoFile: File? = null
+    private lateinit var mCurrentPhotoPath: String
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,12 +82,91 @@ class EditProfileActivity : AppCompatActivity() {
                 true
             }
             R.id.take_pic -> {
-                Toast.makeText(this, "take picture...", Toast.LENGTH_SHORT).show()
-                dispatchTakePictureIntent()
+
+                openCamera()
                 true
             }
             else -> super.onContextItemSelected(item)
         }
+    }
+
+    private fun openCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+        } else {
+            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            if (cameraIntent.resolveActivity(packageManager) != null) {
+                // Create the File where the photo should go
+                try {
+                    photoFile = createImageFile()
+                    displayMessage(baseContext, photoFile!!.getAbsolutePath())
+                    Log.i("TeamSVIK", photoFile!!.getAbsolutePath())
+
+                    // Continue only if the File was successfully created
+                    if (photoFile != null) {
+                        var photoURI = FileProvider.getUriForFile(this,
+                            "it.polito.mad.mad_project",
+                            photoFile!!
+                        )
+
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                        startActivityForResult(cameraIntent, CAPTURE_IMAGE_REQUEST)
+
+                    }
+                } catch (ex: Exception) {
+                    // Error occurred while creating the File
+                    displayMessage(baseContext,"Capture Image Bug: "  + ex.message.toString())
+                }
+            } else {
+                displayMessage(baseContext, "Nullll")
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        //val extras = data?.extras
+        //val imgBitmap = extras?.get("data") as Bitmap
+        //user_photo.setImageBitmap(imgBitmap)
+
+        if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            val imgBitmap = BitmapFactory.decodeFile(photoFile!!.getAbsolutePath())
+            user_photo.setImageBitmap(imgBitmap)
+        } else {
+            displayMessage(baseContext, "Request cancelled or something went wrong.")
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == 0){
+            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                openCamera()
+            } else {
+                displayMessage(baseContext, "Camera Permission has been denied")
+            }
+        }
+    }
+
+    private fun displayMessage(context: Context, message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFileName = "JPEG_" + timeStamp + "_"
+        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val image = File.createTempFile(
+            imageFileName, /* prefix */
+            ".jpg", /* suffix */
+            storageDir      /* directory */
+        )
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.absolutePath
+        return image
     }
 
     // Punto 5
@@ -113,47 +196,5 @@ class EditProfileActivity : AppCompatActivity() {
         intent.putExtra(IntentRequest.UserData.NAME, user)
         setResult(Activity.RESULT_OK, intent)
         finish()
-    }
-
-    // Punto 6
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun dispatchTakePictureIntent() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { cameraIntent ->
-            cameraIntent.resolveActivity(packageManager)?.also {
-                val photoFile: File? = try {
-                    createImageFile()
-                } catch (ex: IOException){
-                    // Error
-                    null
-                }
-                photoFile?.also {
-                    val photoUri: Uri = FileProvider.getUriForFile(this, "com.example.android.fileprovider", it)
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                    startActivityForResult(cameraIntent, REQUEST_TAKE_PHOTO)
-                }
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK){
-            val imgBitmap = data?.extras?.get("data") as Bitmap
-            user_photo.setImageBitmap(imgBitmap)
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    @Throws(IOException::class)
-    private fun createImageFile(): File {
-        // Create an image file name
-        val timestamp: String = SimpleDateFormat("yyyyMMDD_HHmmss").format(Date())
-        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-
-        return File.createTempFile("JPEG_${timestamp}", ".jpg", storageDir).apply {
-            // Save a file
-            currentPhotoPath = absolutePath
-        }
     }
 }
