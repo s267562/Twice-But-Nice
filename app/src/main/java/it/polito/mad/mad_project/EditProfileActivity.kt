@@ -156,4 +156,5 @@ class EditProfileActivity : AppCompatActivity() {
             currentPhotoPath = absolutePath
         }
     }
+
 }
