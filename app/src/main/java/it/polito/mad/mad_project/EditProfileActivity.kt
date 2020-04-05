@@ -1,8 +1,14 @@
 package it.polito.mad.mad_project
 
+import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.Bitmap
+import android.graphics.Matrix
+import android.media.ExifInterface
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,8 +20,8 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_edit_profile.*
-import android.Manifest
-import android.content.Context
+import java.io.ByteArrayOutputStream
+
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Environment
@@ -123,20 +129,6 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        //val extras = data?.extras
-        //val imgBitmap = extras?.get("data") as Bitmap
-        //user_photo.setImageBitmap(imgBitmap)
-
-        if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
-            val imgBitmap = BitmapFactory.decodeFile(photoFile!!.getAbsolutePath())
-            user_photo.setImageBitmap(imgBitmap)
-        } else {
-            displayMessage(baseContext, "Request cancelled or something went wrong.")
-        }
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if(requestCode == 0){
@@ -196,6 +188,72 @@ class EditProfileActivity : AppCompatActivity() {
         intent.putExtra(IntentRequest.UserData.NAME, user)
         setResult(Activity.RESULT_OK, intent)
         finish()
+    }
+
+    //punto 6b
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK){
+            val imgBitmap = BitmapFactory.decodeFile(photoFile!!.getAbsolutePath())
+            val tempUri: Uri = getImageUri(applicationContext, imgBitmap)
+            val path = getRealPathFromURI(tempUri)
+
+            val ei = ExifInterface(path)
+            val orientation: Int = ei.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED
+            )
+
+            var rotatedBitmap: Bitmap? = null
+            when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> rotatedBitmap = rotateImage(imgBitmap, 90)
+                ExifInterface.ORIENTATION_ROTATE_180 -> rotatedBitmap =
+                    rotateImage(imgBitmap, 180)
+                ExifInterface.ORIENTATION_ROTATE_270 -> rotatedBitmap =
+                    rotateImage(imgBitmap, 270)
+                ExifInterface.ORIENTATION_NORMAL -> rotatedBitmap = imgBitmap
+                else -> rotatedBitmap = imgBitmap
+            }
+
+            user_photo.setImageBitmap(rotatedBitmap)
+        } else {
+            displayMessage(baseContext, "Request cancelled or something went wrong.")
+        }
+    }
+
+    fun rotateImage(source: Bitmap, angle: Int): Bitmap? {
+        val matrix = Matrix()
+        matrix.postRotate(angle.toFloat())
+        return Bitmap.createBitmap(
+            source, 0, 0, source.width, source.height,
+            matrix, true
+        )
+    }
+
+    private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
+        val bytes = ByteArrayOutputStream()
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        val path = MediaStore.Images.Media.insertImage(
+            inContext.getContentResolver(),
+            inImage,
+            "Title",
+            null
+        )
+        return Uri.parse(path)
+    }
+
+    fun getRealPathFromURI(uri: Uri?): String? {
+        var path = ""
+        if (contentResolver != null) {
+            val cursor: Cursor? = contentResolver.query(uri!!, null, null, null, null)
+            if (cursor != null) {
+                cursor.moveToFirst()
+                val idx: Int = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+                path = cursor.getString(idx)
+                cursor.close()
+            }
+        }
+        return path
     }
 
 }
