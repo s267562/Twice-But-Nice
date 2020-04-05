@@ -2,7 +2,9 @@ package it.polito.mad.mad_project
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Environment
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -11,10 +13,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_show_profile.*
+import java.io.File
 
 class ShowProfileActivity : AppCompatActivity() {
     private val userViewModel: UserViewModel = UserViewModel()
     private val gsonMapper: Gson = Gson()
+    private var openedPhotoProfile: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,10 +37,16 @@ class ShowProfileActivity : AppCompatActivity() {
 
         // Observe the user changes
         userViewModel.user.observe(this, Observer{
-            full_name.text = it.name
-            nickname.text = it.nickname
-            email.text = it.email
-            location.text = it.location
+            if (it.name.isNotEmpty())
+                full_name.text = it.name
+            if (it.nickname.isNotEmpty())
+                nickname.text = it.nickname
+            if (it.email.isNotEmpty())
+                email.text = it.email
+            if (it.location.isNotEmpty())
+                location.text = it.location
+            if (it.photoFilename != null && it.photoFilename.isNotEmpty())
+                user_photo.setImageBitmap(BitmapFactory.decodeFile(it.photoFilename))
         })
     }
 

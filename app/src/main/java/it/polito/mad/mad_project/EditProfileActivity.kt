@@ -35,8 +35,7 @@ import java.util.*
 class EditProfileActivity : AppCompatActivity() {
 
     private val CAPTURE_IMAGE_REQUEST = 1
-    private var photoFile: File? = null
-    private lateinit var mCurrentPhotoPath: String
+    private var imageFile: File? = null
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +48,6 @@ class EditProfileActivity : AppCompatActivity() {
             if (v is ImageButton && event.action == MotionEvent.ACTION_DOWN) {
                 v.showContextMenu(event.x, event.y)
             }
-
             true
         }
 
@@ -72,12 +70,24 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     // Punto 4
-
     override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
         super.onCreateContextMenu(menu, v, menuInfo)
         val menuInflater: MenuInflater = menuInflater
         menuInflater.inflate(R.menu.context_menu, menu)
         menu.setHeaderTitle("Context Menu")
+    }
+
+    // Punto 5
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        return when (item.itemId) {
+            R.id.save_option -> {
+                Toast.makeText(this, "Save button clicked", Toast.LENGTH_SHORT).show()
+                saveProfile()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -88,44 +98,10 @@ class EditProfileActivity : AppCompatActivity() {
                 true
             }
             R.id.take_pic -> {
-
                 openCamera()
                 true
             }
             else -> super.onContextItemSelected(item)
-        }
-    }
-
-    private fun openCamera() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
-        } else {
-            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            if (cameraIntent.resolveActivity(packageManager) != null) {
-                // Create the File where the photo should go
-                try {
-                    photoFile = createImageFile()
-                    displayMessage(baseContext, photoFile!!.getAbsolutePath())
-                    Log.i("TeamSVIK", photoFile!!.getAbsolutePath())
-
-                    // Continue only if the File was successfully created
-                    if (photoFile != null) {
-                        var photoURI = FileProvider.getUriForFile(this,
-                            "it.polito.mad.mad_project",
-                            photoFile!!
-                        )
-
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                        startActivityForResult(cameraIntent, CAPTURE_IMAGE_REQUEST)
-
-                    }
-                } catch (ex: Exception) {
-                    // Error occurred while creating the File
-                    displayMessage(baseContext,"Capture Image Bug: "  + ex.message.toString())
-                }
-            } else {
-                displayMessage(baseContext, "Nullll")
-            }
         }
     }
 
@@ -141,60 +117,10 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun displayMessage(context: Context, message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-    }
-
-    @Throws(IOException::class)
-    private fun createImageFile(): File {
-        // Create an image file name
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val imageFileName = "JPEG_" + timeStamp + "_"
-        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val image = File.createTempFile(
-            imageFileName, /* prefix */
-            ".jpg", /* suffix */
-            storageDir      /* directory */
-        )
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.absolutePath
-        return image
-    }
-
-    // Punto 5
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle item selection
-        return when (item.itemId) {
-            R.id.save_option -> {
-                Toast.makeText(this, "Save button clicked", Toast.LENGTH_SHORT).show()
-                saveProfile()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun saveProfile() {
-        val name = full_name.text.toString()
-        val nickname = nickname.text.toString()
-        val email = email.text.toString()
-        val location = location.text.toString()
-        val user = User(name, "", nickname, email, location)
-
-        Log.d ("MAD_LOG", "SEND-USER: $user")
-
-        val intent = Intent()
-        intent.putExtra(IntentRequest.UserData.NAME, user)
-        setResult(Activity.RESULT_OK, intent)
-        finish()
-    }
-
-    //punto 6b
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK){
-            val imgBitmap = BitmapFactory.decodeFile(photoFile!!.getAbsolutePath())
+            val imgBitmap = BitmapFactory.decodeFile(imageFile?.absolutePath)
             val tempUri: Uri = getImageUri(applicationContext, imgBitmap)
             val path = getRealPathFromURI(tempUri)
 
@@ -221,7 +147,59 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
-    fun rotateImage(source: Bitmap, angle: Int): Bitmap? {
+    // point 6
+    private fun openCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+        } else {
+            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            if (cameraIntent.resolveActivity(packageManager) != null) {
+                // Create the File where the photo should go
+                try {
+                    imageFile = createImageFile()
+                    displayMessage(baseContext, imageFile!!.getAbsolutePath())
+                    Log.i("TeamSVIK", imageFile!!.getAbsolutePath())
+
+                    // Continue only if the File was successfully created
+                    if (imageFile != null) {
+                        var photoURI = FileProvider.getUriForFile(this,
+                            "it.polito.mad.mad_project",
+                            imageFile!!
+                        )
+
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                        startActivityForResult(cameraIntent, CAPTURE_IMAGE_REQUEST)
+
+                    }
+                } catch (ex: Exception) {
+                    // Error occurred while creating the File
+                    displayMessage(baseContext,"Capture Image Bug: "  + ex.message.toString())
+                }
+            } else {
+                displayMessage(baseContext, "Nullll")
+            }
+        }
+    }
+
+    private fun displayMessage(context: Context, message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFileName = "JPEG_" + timeStamp + "_"
+        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val image = File.createTempFile(
+            imageFileName, /* prefix */
+            ".jpg", /* suffix */
+            storageDir      /* directory */
+        )
+        return image
+    }
+
+    private fun rotateImage(source: Bitmap, angle: Int): Bitmap? {
         val matrix = Matrix()
         matrix.postRotate(angle.toFloat())
         return Bitmap.createBitmap(
@@ -231,10 +209,9 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
-        val bytes = ByteArrayOutputStream()
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, ByteArrayOutputStream())
         val path = MediaStore.Images.Media.insertImage(
-            inContext.getContentResolver(),
+            inContext.contentResolver,
             inImage,
             "Title",
             null
@@ -242,7 +219,7 @@ class EditProfileActivity : AppCompatActivity() {
         return Uri.parse(path)
     }
 
-    fun getRealPathFromURI(uri: Uri?): String? {
+    private fun getRealPathFromURI(uri: Uri?): String? {
         var path = ""
         if (contentResolver != null) {
             val cursor: Cursor? = contentResolver.query(uri!!, null, null, null, null)
@@ -254,6 +231,22 @@ class EditProfileActivity : AppCompatActivity() {
             }
         }
         return path
+    }
+
+    // punto 7
+    private fun saveProfile() {
+        val name = full_name.text.toString()
+        val nickname = nickname.text.toString()
+        val email = email.text.toString()
+        val location = location.text.toString()
+        val user = User(name, "", nickname, email, location, imageFile?.absolutePath)
+
+        Log.d ("MAD_LOG", "SEND-USER: $user")
+
+        val intent = Intent()
+        intent.putExtra(IntentRequest.UserData.NAME, user)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 
 }
