@@ -1,22 +1,29 @@
 package it.polito.mad.mad_project
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
-import android.inputmethodservice.Keyboard
-import android.inputmethodservice.KeyboardView
+import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.Matrix
+import android.media.ExifInterface
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_edit_profile.*
+import java.io.ByteArrayOutputStream
+
 
 class EditProfileActivity : AppCompatActivity() {
+
+    val REQUEST_IMAGE_CAPTURE = 1
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,6 +107,72 @@ class EditProfileActivity : AppCompatActivity() {
         intent.putExtra(IntentRequest.UserData.NAME, user)
         setResult(Activity.RESULT_OK, intent)
         finish()
+    }
+
+    //punto 6b
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK){
+            val imgBitmap = data?.extras?.get("data") as Bitmap
+            val tempUri: Uri = getImageUri(applicationContext, imgBitmap)
+            val path = getRealPathFromURI(tempUri)
+
+            val ei = ExifInterface(path)
+            val orientation: Int = ei.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED
+            )
+
+            var rotatedBitmap: Bitmap? = null
+            when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> rotatedBitmap = rotateImage(imgBitmap, 90)
+                ExifInterface.ORIENTATION_ROTATE_180 -> rotatedBitmap =
+                    rotateImage(imgBitmap, 180)
+                ExifInterface.ORIENTATION_ROTATE_270 -> rotatedBitmap =
+                    rotateImage(imgBitmap, 270)
+                ExifInterface.ORIENTATION_NORMAL -> rotatedBitmap = imgBitmap
+                else -> rotatedBitmap = imgBitmap
+            }
+
+            user_photo.setImageBitmap(rotatedBitmap)
+
+
+        }
+    }
+
+    fun rotateImage(source: Bitmap, angle: Int): Bitmap? {
+        val matrix = Matrix()
+        matrix.postRotate(angle.toFloat())
+        return Bitmap.createBitmap(
+            source, 0, 0, source.width, source.height,
+            matrix, true
+        )
+    }
+
+    private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
+        val bytes = ByteArrayOutputStream()
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        val path = MediaStore.Images.Media.insertImage(
+            inContext.getContentResolver(),
+            inImage,
+            "Title",
+            null
+        )
+        return Uri.parse(path)
+    }
+
+    fun getRealPathFromURI(uri: Uri?): String? {
+        var path = ""
+        if (contentResolver != null) {
+            val cursor: Cursor? = contentResolver.query(uri!!, null, null, null, null)
+            if (cursor != null) {
+                cursor.moveToFirst()
+                val idx: Int = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+                path = cursor.getString(idx)
+                cursor.close()
+            }
+        }
+        return path
     }
 
 }
