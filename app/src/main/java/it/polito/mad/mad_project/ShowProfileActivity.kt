@@ -1,24 +1,30 @@
 package it.polito.mad.mad_project
 
+import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.os.Environment
+import android.os.storage.StorageManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.getSystemService
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.File
+import java.util.*
 
 class ShowProfileActivity : AppCompatActivity() {
     private val userViewModel: UserViewModel = UserViewModel()
     private val gsonMapper: Gson = Gson()
-    private var openedPhotoProfile: File? = null
+
+    // App needs 10 MB within internal storage.
+    val NUM_BYTES_NEEDED_FOR_MY_APP = 1024 * 1024 * 10L;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +51,10 @@ class ShowProfileActivity : AppCompatActivity() {
                 email.text = it.email
             if (it.location.isNotEmpty())
                 location.text = it.location
-            if (it.photoFilename != null && it.photoFilename.isNotEmpty())
-                user_photo.setImageBitmap(BitmapFactory.decodeFile(it.photoFilename))
+            if (it.photoProfilePath != null && it.photoProfilePath.isNotEmpty()) {
+                val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
+                if (image != null) user_photo.setImageBitmap(image)
+            }
         })
     }
 
@@ -72,13 +80,14 @@ class ShowProfileActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == IntentRequest.UserData.CODE) {
-            val user = data!!.getSerializableExtra(IntentRequest.UserData.NAME) as User
-            userViewModel.user.value = user
-
-            val sharedPref = this?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
-            val prefsEditor = sharedPref?.edit()
-            prefsEditor?.putString(StoreFileKey.USER, gsonMapper.toJson(user));
-            prefsEditor?.commit();
+            val user = data?.getSerializableExtra(IntentRequest.UserData.NAME) as User?
+            if (user != null) {
+                val sharedPref = this?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
+                val prefsEditor = sharedPref?.edit()
+                prefsEditor?.putString(StoreFileKey.USER, gsonMapper.toJson(user));
+                prefsEditor?.commit();
+                userViewModel.user.value = user
+            }
         }
     }
 

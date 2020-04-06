@@ -27,6 +27,12 @@ import android.graphics.BitmapFactory
 import android.os.Environment
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import kotlinx.android.synthetic.main.activity_edit_profile.email
+import kotlinx.android.synthetic.main.activity_edit_profile.full_name
+import kotlinx.android.synthetic.main.activity_edit_profile.location
+import kotlinx.android.synthetic.main.activity_edit_profile.nickname
+import kotlinx.android.synthetic.main.activity_edit_profile.user_photo
+import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -60,6 +66,10 @@ class EditProfileActivity : AppCompatActivity() {
             nickname.setText(user.nickname)
             email.setText(user.email)
             location.setText(user.location)
+            if (user.photoProfilePath != null && user.photoProfilePath.isNotEmpty()) {
+                val image: Bitmap = BitmapFactory.decodeFile(user.photoProfilePath)
+                if (image != null) user_photo.setImageBitmap(image)
+            }
         }
     }
 
@@ -147,6 +157,12 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        Log.i("TeamSVIK",  "${imageFile?.delete()}")
+
+    }
+
     // point 6
     private fun openCamera() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -157,8 +173,8 @@ class EditProfileActivity : AppCompatActivity() {
                 // Create the File where the photo should go
                 try {
                     imageFile = createImageFile()
-                    displayMessage(baseContext, imageFile!!.getAbsolutePath())
-                    Log.i("TeamSVIK", imageFile!!.getAbsolutePath())
+                    displayMessage(baseContext, imageFile!!.absolutePath)
+                    Log.i("TeamSVIK", imageFile!!.absolutePath)
 
                     // Continue only if the File was successfully created
                     if (imageFile != null) {
@@ -166,17 +182,15 @@ class EditProfileActivity : AppCompatActivity() {
                             "it.polito.mad.mad_project",
                             imageFile!!
                         )
-
                         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                         startActivityForResult(cameraIntent, CAPTURE_IMAGE_REQUEST)
-
                     }
                 } catch (ex: Exception) {
                     // Error occurred while creating the File
                     displayMessage(baseContext,"Capture Image Bug: "  + ex.message.toString())
                 }
             } else {
-                displayMessage(baseContext, "Nullll")
+                displayMessage(baseContext, "Camera Intent Resolve Activity is null.")
             }
         }
     }
