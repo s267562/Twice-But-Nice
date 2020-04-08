@@ -25,6 +25,7 @@ import java.io.ByteArrayOutputStream
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Environment
+import android.os.PersistableBundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import kotlinx.android.synthetic.main.activity_edit_profile.email
@@ -40,6 +41,7 @@ import java.util.*
 
 class EditProfileActivity : AppCompatActivity() {
 
+    private var photo: Bitmap?= null
     private val CAPTURE_IMAGE_REQUEST = 1
     private var imageFile: File? = null
 
@@ -61,6 +63,10 @@ class EditProfileActivity : AppCompatActivity() {
         val user: User? = intent.getSerializableExtra(IntentRequest.UserData.NAME) as? User?
         Log.d ("MAD_LOG", "RECEIVED-USER: $user")
 
+        if (savedInstanceState != null) {
+            photo = savedInstanceState.getParcelable("Photo")
+        }
+
         if (user != null) {
             full_name.setText(user.name)
             nickname.setText(user.nickname)
@@ -70,6 +76,8 @@ class EditProfileActivity : AppCompatActivity() {
                 val image: Bitmap = BitmapFactory.decodeFile(user.photoProfilePath)
                 if (image != null) user_photo.setImageBitmap(image)
             }
+        }else if (this.photo != null){
+            user_photo.setImageBitmap(photo)
         }
     }
 
@@ -140,7 +148,7 @@ class EditProfileActivity : AppCompatActivity() {
                 ExifInterface.ORIENTATION_UNDEFINED
             )
 
-            var rotatedBitmap: Bitmap? = null
+            var rotatedBitmap: Bitmap?
             when (orientation) {
                 ExifInterface.ORIENTATION_ROTATE_90 -> rotatedBitmap = rotateImage(imgBitmap, 90)
                 ExifInterface.ORIENTATION_ROTATE_180 -> rotatedBitmap =
@@ -152,10 +160,25 @@ class EditProfileActivity : AppCompatActivity() {
             }
 
             user_photo.setImageBitmap(rotatedBitmap)
+            this.photo = rotatedBitmap
+
         } else {
             displayMessage(baseContext, "Request cancelled or something went wrong.")
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if(this.photo != null){
+            outState.putParcelable("Photo", this.photo)
+        }
+    }
+
+    /*override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        this.photo= savedInstanceState.getParcelable("Photo")
+        user_photo.setImageBitmap(this.photo)
+    }*/
 
     override fun onBackPressed() {
         super.onBackPressed()
