@@ -13,6 +13,8 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -124,19 +126,15 @@ class EditProfileActivity : AppCompatActivity() {
             )
 
             var rotatedBitmap: Bitmap? = null
-            when (orientation) {
-                ExifInterface.ORIENTATION_ROTATE_90 -> rotatedBitmap = rotateImage(imgBitmap, 90)
-                ExifInterface.ORIENTATION_ROTATE_180 -> rotatedBitmap =
-                    rotateImage(imgBitmap, 180)
-                ExifInterface.ORIENTATION_ROTATE_270 -> rotatedBitmap =
-                    rotateImage(imgBitmap, 270)
-                ExifInterface.ORIENTATION_NORMAL -> rotatedBitmap = imgBitmap
-                else -> rotatedBitmap = imgBitmap
+            rotatedBitmap = when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(imgBitmap, 90)
+                ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(imgBitmap, 180)
+                ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(imgBitmap, 270)
+                ExifInterface.ORIENTATION_NORMAL -> imgBitmap
+                else -> imgBitmap
             }
 
             user_photo.setImageBitmap(rotatedBitmap)
-
-
         }
     }
 
@@ -153,7 +151,7 @@ class EditProfileActivity : AppCompatActivity() {
         val bytes = ByteArrayOutputStream()
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
         val path = MediaStore.Images.Media.insertImage(
-            inContext.getContentResolver(),
+            inContext.contentResolver,
             inImage,
             "Title",
             null
@@ -161,7 +159,7 @@ class EditProfileActivity : AppCompatActivity() {
         return Uri.parse(path)
     }
 
-    fun getRealPathFromURI(uri: Uri?): String? {
+    private fun getRealPathFromURI(uri: Uri?): String? {
         var path = ""
         if (contentResolver != null) {
             val cursor: Cursor? = contentResolver.query(uri!!, null, null, null, null)
