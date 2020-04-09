@@ -42,6 +42,7 @@ class EditProfileActivity : AppCompatActivity() {
     val SELECT_IMAGE = 2
     private var imageFile: File? = null
     private var imagePath: String? = null
+    private var savedImagePath: String? =null
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +73,7 @@ class EditProfileActivity : AppCompatActivity() {
             email.setText(user.email)
             location.setText(user.location)
             if (user.photoProfilePath != null && user.photoProfilePath.isNotEmpty()) {
+                savedImagePath = user.photoProfilePath
                 image = BitmapFactory.decodeFile(user.photoProfilePath)
                 if (image != null) user_photo.setImageBitmap(image)
             }
@@ -203,6 +205,13 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if (imagePath!=null && imagePath!=savedImagePath){
+            File(imagePath).delete()
+        }
+    }
+
     override fun onBackPressed() {
         super.onBackPressed()
         Log.i("TeamSVIK",  "${imageFile?.delete()}")
@@ -248,6 +257,10 @@ class EditProfileActivity : AppCompatActivity() {
 
     @Throws(IOException::class)
     private fun createImageFile(): File {
+        if(imagePath !=null && imagePath != savedImagePath){
+            File(imagePath).delete()
+            displayMessage(baseContext, "file deleted")
+        }
         // Create an image file name
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val imageFileName = "JPEG_" + timeStamp + "_"
@@ -276,11 +289,18 @@ class EditProfileActivity : AppCompatActivity() {
 
     // punto 7
     private fun saveProfile() {
+        if(savedImagePath ==null && imagePath != null){
+            savedImagePath = imagePath
+        }else if (savedImagePath != null && imagePath != savedImagePath && imagePath != null){
+            File(savedImagePath).delete()
+            savedImagePath=imagePath
+        }
+
         val name = full_name.text.toString()
         val nickname = nickname.text.toString()
         val email = email.text.toString()
         val location = location.text.toString()
-        var path = imagePath
+        var path = savedImagePath
         val user = User(name, "", nickname, email, location, path)
 
         Log.d ("MAD_LOG", "SEND-USER: $user")
