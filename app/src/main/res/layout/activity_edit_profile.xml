@@ -20,7 +20,7 @@
         app:layout_constraintBottom_toTopOf="@+id/user_info_container">
 
         <ImageButton
-            android:id="@+id/camera_icon"
+            android:id="@+id/camera_button"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@drawable/round_bg"
@@ -29,6 +29,17 @@
             android:src="@drawable/ic_photo_camera_white_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageButton
+            android:id="@+id/rotation_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/round_bg"
+            android:backgroundTint="@color/colorPrimary"
+            android:elevation="3dp"
+            android:src="@drawable/ic_rotate_right_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView"
@@ -119,12 +130,6 @@
                 android:inputType="textAutoCorrect"
                 android:imeOptions="actionDone" />
         </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/rotation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button" />
 
     </LinearLayout>
 

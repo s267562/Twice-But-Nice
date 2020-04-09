@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.media.ExifInterface
@@ -14,34 +13,26 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_edit_profile.*
-import java.io.ByteArrayOutputStream
 
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.os.Environment
-import android.os.PersistableBundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
-import androidx.core.view.isVisible
 import kotlinx.android.synthetic.main.activity_edit_profile.email
 import kotlinx.android.synthetic.main.activity_edit_profile.full_name
 import kotlinx.android.synthetic.main.activity_edit_profile.location
 import kotlinx.android.synthetic.main.activity_edit_profile.nickname
 import kotlinx.android.synthetic.main.activity_edit_profile.user_photo
-import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -58,10 +49,10 @@ class EditProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
-        registerForContextMenu(camera_icon)
+        registerForContextMenu(camera_button)
 
-        camera_icon.isLongClickable = false
-        camera_icon.setOnTouchListener { v, event ->
+        camera_button.isLongClickable = false
+        camera_button.setOnTouchListener { v, event ->
             if (v is ImageButton && event.action == MotionEvent.ACTION_DOWN) {
                 v.showContextMenu(event.x, event.y)
             }
@@ -97,10 +88,10 @@ class EditProfileActivity : AppCompatActivity() {
             }
         }
         if (image == null){
-            //rotation.visibility=View.GONE
+            rotation_button.visibility=View.GONE
         }else{
-            //rotation.visibility=View.VISIBLE
-            rotation.setOnClickListener{
+            rotation_button.visibility=View.VISIBLE
+            rotation_button.setOnClickListener{
                 var rotateBitmap = rotateImage(image!!, 90)
                 image = rotateBitmap
                 user_photo.setImageBitmap(image)
@@ -176,7 +167,6 @@ class EditProfileActivity : AppCompatActivity() {
         // Open Camera
         if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK){
             try {
-
                 val file = File(this.currentPath)
                 val uri:Uri = Uri.fromFile(file)
                 var rotatedBitmap: Bitmap?
