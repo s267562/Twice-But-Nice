@@ -205,8 +205,10 @@ class EditProfileActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (imagePath!=null && imagePath!=savedImagePath){
-            File(imagePath).delete()
+        if (isFinishing && imagePath!=null && imagePath!=savedImagePath){
+           File(imagePath).delete()
+        }else{
+            //it's an orientation change
         }
     }
 

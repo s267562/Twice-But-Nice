@@ -55,8 +55,10 @@ class ShowProfileActivity : AppCompatActivity() {
             if (it.location.isNotEmpty())
                 location.text = it.location
             if (it.photoProfilePath != null && it.photoProfilePath.isNotEmpty()) {
-                val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
-                if (image != null) user_photo.setImageBitmap(image)
+                if (File(it.photoProfilePath).isFile){
+                    val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
+                    if (image != null) user_photo.setImageBitmap(image)
+                }
             }
         })
     }
