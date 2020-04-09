@@ -23,6 +23,7 @@ import kotlinx.android.synthetic.main.activity_edit_profile.*
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Environment
+import android.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import it.polito.mad.mad_project.Util.Companion.displayMessage
@@ -50,6 +51,8 @@ class EditProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
         registerForContextMenu(camera_button)
+
+        supportActionBar!!.elevation = 0f
 
         camera_button.isLongClickable = false
         camera_button.setOnTouchListener { v, event ->
@@ -185,7 +188,7 @@ class EditProfileActivity : AppCompatActivity() {
                 imageFile = file
                 imagePath = file.absolutePath
                 var mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriPic)
-                mBitmap.compress(Bitmap.CompressFormat.JPEG,85,fOut)
+                mBitmap.compress(Bitmap.CompressFormat.JPEG,100,fOut)
             }
 
         } else {

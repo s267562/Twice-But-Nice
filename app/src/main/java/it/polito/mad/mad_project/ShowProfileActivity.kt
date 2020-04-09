@@ -31,6 +31,8 @@ class ShowProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_profile)
 
+        supportActionBar!!.elevation = 0f
+
         // Load store file of our app from shared preferences
         val sharedPreferences = this?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
 
