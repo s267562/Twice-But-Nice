@@ -38,11 +38,13 @@ import kotlinx.android.synthetic.main.activity_edit_profile.user_photo
 import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.File
 import java.io.IOException
+import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.*
 
 class EditProfileActivity : AppCompatActivity() {
 
+    private var currentPath: String? = null
     private var photo: Bitmap?= null
     private val CAPTURE_IMAGE_REQUEST = 1
     private var imageFile: File? = null
@@ -140,34 +142,122 @@ class EditProfileActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK){
-            val imgBitmap = BitmapFactory.decodeFile(imageFile?.absolutePath)
-            val tempUri: Uri = getImageUri(applicationContext, imgBitmap)
-            val path = getRealPathFromURI(tempUri)
-
-            val ei = ExifInterface(path)
-            val orientation: Int = ei.getAttributeInt(
-                ExifInterface.TAG_ORIENTATION,
-                ExifInterface.ORIENTATION_UNDEFINED
-            )
-
-            var rotatedBitmap: Bitmap?
-            when (orientation) {
-                ExifInterface.ORIENTATION_ROTATE_90 -> rotatedBitmap = rotateImage(imgBitmap, 90)
-                ExifInterface.ORIENTATION_ROTATE_180 -> rotatedBitmap =
-                    rotateImage(imgBitmap, 180)
-                ExifInterface.ORIENTATION_ROTATE_270 -> rotatedBitmap =
-                    rotateImage(imgBitmap, 270)
-                ExifInterface.ORIENTATION_NORMAL -> rotatedBitmap = imgBitmap
-                else -> rotatedBitmap = imgBitmap
+            try {
+                val file = File(this.currentPath)
+                val uri:Uri = Uri.fromFile(file)
+                var rotatedBitmap: Bitmap?
+                rotatedBitmap = handleSamplingAndRotationBitmap(applicationContext, selectedImage = uri)
+                user_photo.setImageBitmap(rotatedBitmap)
+                this.photo = rotatedBitmap
+            }catch (e: IOException){
+                e.printStackTrace()
             }
-
-            user_photo.setImageBitmap(rotatedBitmap)
-            this.photo = rotatedBitmap
 
         } else {
             displayMessage(baseContext, "Request cancelled or something went wrong.")
         }
     }
+    /**
+     * This method is responsible for solving the rotation issue if exist. Also scale the images to
+     * 1024x1024 resolution
+     *
+     * @param context The current context
+     * @param selectedImage The Image URI
+     * @return Bitmap image results
+     * @throws IOException
+     */
+    @Throws(IOException::class)
+    fun handleSamplingAndRotationBitmap(context:Context, selectedImage:Uri): Bitmap? {
+        val MAX_HEIGHT = 1024
+        val MAX_WIDTH = 1024
+        // First decode with inJustDecodeBounds=true to check dimensions
+        val options = BitmapFactory.Options()
+        options.inJustDecodeBounds = true
+        var imageStream = context.getContentResolver().openInputStream(selectedImage)
+        BitmapFactory.decodeStream(imageStream, null, options)
+        if (imageStream != null) {
+            imageStream.close()
+        }
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, MAX_WIDTH, MAX_HEIGHT)
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false
+        imageStream = context.getContentResolver().openInputStream(selectedImage)
+        var img = BitmapFactory.decodeStream(imageStream, null, options)
+        img = img?.let { rotateImageIfRequired(context, it, selectedImage) }
+        return img
+    }
+
+    /**
+     * Calculate an inSampleSize for use in a {@link BitmapFactory.Options} object when decoding
+     * bitmaps using the decode* methods from {@link BitmapFactory}. This implementation calculates
+     * the closest inSampleSize that will result in the final decoded bitmap having a width and
+     * height equal to or larger than the requested width and height. This implementation does not
+     * ensure a power of 2 is returned for inSampleSize which can be faster when decoding but
+     * results in a larger bitmap which isn't as useful for caching purposes.
+     *
+     * @param options An options object with out* params already populated (run through a decode*
+     * method with inJustDecodeBounds==true
+     * @param reqWidth The requested width of the resulting bitmap
+     * @param reqHeight The requested height of the resulting bitmap
+     * @return The value to be used for inSampleSize
+     */
+    private fun calculateInSampleSize(options:BitmapFactory.Options,
+                                      reqWidth:Int, reqHeight:Int):Int {
+        // Raw height and width of image
+        val height = options.outHeight
+        val width = options.outWidth
+        var inSampleSize = 1
+        if (height > reqHeight || width > reqWidth)
+        {
+            // Calculate ratios of height and width to requested height and width
+            val heightRatio = Math.round(height.toFloat() / reqHeight.toFloat())
+            val widthRatio = Math.round(width.toFloat() / reqWidth.toFloat())
+            // Choose the smallest ratio as inSampleSize value, this will guarantee a final image
+            // with both dimensions larger than or equal to the requested height and width.
+            inSampleSize = if (heightRatio < widthRatio) heightRatio else widthRatio
+            // This offers some additional logic in case the image has a strange
+            // aspect ratio. For example, a panorama may have a much larger
+            // width than height. In these cases the total pixels might still
+            // end up being too large to fit comfortably in memory, so we should
+            // be more aggressive with sample down the image (=larger inSampleSize).
+            val totalPixels = (width * height).toFloat()
+            // Anything more than 2x the requested pixels we'll sample down further
+            val totalReqPixelsCap = (reqWidth * reqHeight * 2).toFloat()
+            while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap)
+            {
+                inSampleSize++
+            }
+        }
+        return inSampleSize
+    }
+
+    /**
+     * Rotate an image if required.
+     *
+     * @param img The image bitmap
+     * @param selectedImage Image URI
+     * @return The resulted Bitmap after manipulation
+     */
+    @Throws(IOException::class)
+    private fun rotateImageIfRequired(context:Context, img:Bitmap, selectedImage:Uri): Bitmap? {
+        val input = context.getContentResolver().openInputStream(selectedImage)
+        val ei:ExifInterface
+        if (Build.VERSION.SDK_INT > 23)
+            ei = ExifInterface(input)
+        else
+            ei = ExifInterface(selectedImage.getPath())
+        val orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+        when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> return rotateImage(img, 90)
+            ExifInterface.ORIENTATION_ROTATE_180 -> return rotateImage(img, 180)
+            ExifInterface.ORIENTATION_ROTATE_270 -> return rotateImage(img, 270)
+            else -> return img
+        }
+    }
+
+
+
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -175,12 +265,6 @@ class EditProfileActivity : AppCompatActivity() {
             outState.putParcelable("Photo", this.photo)
         }
     }
-
-    /*override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        this.photo= savedInstanceState.getParcelable("Photo")
-        user_photo.setImageBitmap(this.photo)
-    }*/
 
     override fun onBackPressed() {
         super.onBackPressed()
@@ -235,41 +319,16 @@ class EditProfileActivity : AppCompatActivity() {
             ".jpg", /* suffix */
             storageDir      /* directory */
         )
+        currentPath = image.absolutePath
         return image
     }
 
-    private fun rotateImage(source: Bitmap, angle: Int): Bitmap? {
+    private fun rotateImage(img:Bitmap, degree:Int):Bitmap {
         val matrix = Matrix()
-        matrix.postRotate(angle.toFloat())
-        return Bitmap.createBitmap(
-            source, 0, 0, source.width, source.height,
-            matrix, true
-        )
-    }
-
-    private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, ByteArrayOutputStream())
-        val path = MediaStore.Images.Media.insertImage(
-            inContext.contentResolver,
-            inImage,
-            "Title",
-            null
-        )
-        return Uri.parse(path)
-    }
-
-    private fun getRealPathFromURI(uri: Uri?): String? {
-        var path = ""
-        if (contentResolver != null) {
-            val cursor: Cursor? = contentResolver.query(uri!!, null, null, null, null)
-            if (cursor != null) {
-                cursor.moveToFirst()
-                val idx: Int = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
-                path = cursor.getString(idx)
-                cursor.close()
-            }
-        }
-        return path
+        matrix.postRotate(degree.toFloat())
+        val rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true)
+        img.recycle()
+        return rotatedImg
     }
 
     // punto 7
