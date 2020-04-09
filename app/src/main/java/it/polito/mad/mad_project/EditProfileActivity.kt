@@ -47,6 +47,7 @@ class EditProfileActivity : AppCompatActivity() {
     private var currentPath: String? = null
     private var photo: Bitmap?= null
     private val CAPTURE_IMAGE_REQUEST = 1
+    val SELECT_IMAGE = 2
     private var imageFile: File? = null
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -116,7 +117,7 @@ class EditProfileActivity : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.select_image -> {
-                Toast.makeText(this, "select image...", Toast.LENGTH_SHORT).show()
+                openGallery()
                 true
             }
             R.id.take_pic -> {
@@ -125,6 +126,13 @@ class EditProfileActivity : AppCompatActivity() {
             }
             else -> super.onContextItemSelected(item)
         }
+    }
+
+    private fun openGallery(){
+        val galleryIntent = Intent()
+        galleryIntent.type = "image/*"
+        galleryIntent.action = Intent.ACTION_GET_CONTENT
+        startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), SELECT_IMAGE)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -141,6 +149,7 @@ class EditProfileActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        // Open Camera
         if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK){
             try {
                 val file = File(this.currentPath)
@@ -152,9 +161,17 @@ class EditProfileActivity : AppCompatActivity() {
             }catch (e: IOException){
                 e.printStackTrace()
             }
-
+        }
+        // Open Gallery
+        if (requestCode == SELECT_IMAGE && resultCode == Activity.RESULT_OK){
+            try {
+                val uriPic = data?.data
+                user_photo.setImageURI(uriPic)
+            }catch (e: IOException){
+                e.printStackTrace()
+            }
         } else {
-            displayMessage(baseContext, "Request cancelled or something went wrong.")
+            displayMessage(baseContext, "Select image wrong")
         }
     }
     /**
@@ -255,9 +272,6 @@ class EditProfileActivity : AppCompatActivity() {
             else -> return img
         }
     }
-
-
-
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
