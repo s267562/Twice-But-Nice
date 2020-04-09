@@ -86,21 +86,21 @@ class EditProfileActivity : AppCompatActivity() {
                 imagePath = user.photoProfilePath
             }
         }
-        if (image == null){
-            rotation_button.visibility=View.GONE
-        }else{
-            rotation_button.visibility=View.VISIBLE
-            rotation_button.setOnClickListener{
-                user_photo.setDrawingCacheEnabled(true)
-                image = user_photo.getDrawingCache(true).copy(Bitmap.Config.ARGB_8888, false)
-                user_photo.destroyDrawingCache()
-                var rotateBitmap = rotateImage(image!!, 90)
-                image = rotateBitmap
-                user_photo.setImageBitmap(image)
-            }
+
+        rotation_button.setOnClickListener{
+            user_photo.setDrawingCacheEnabled(true)
+            image = user_photo.getDrawingCache(true).copy(Bitmap.Config.ARGB_8888, false)
+            user_photo.destroyDrawingCache()
+            var rotateBitmap = rotateImage(image!!, 90)
+            image = rotateBitmap
+            user_photo.setImageBitmap(image)
         }
 
-
+        if (image == null){
+            rotation_button.visibility=View.GONE
+        } else {
+            rotation_button.visibility=View.VISIBLE
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -166,6 +166,8 @@ class EditProfileActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        rotation_button.visibility=View.VISIBLE
+
         // Open Camera
         if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK){
             try {
