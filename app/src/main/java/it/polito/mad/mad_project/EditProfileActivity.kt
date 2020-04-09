@@ -69,14 +69,12 @@ class EditProfileActivity : AppCompatActivity() {
 
         // Load user information
         val user: User? = intent.getSerializableExtra(IntentRequest.UserData.NAME) as? User?
+
         Log.d ("MAD_LOG", "RECEIVED-USER: $user")
 
         if (savedInstanceState != null) {
-            photo = savedInstanceState.getParcelable("Photo")
+            currentPath = savedInstanceState.getString("PathFile")
             imagePath =savedInstanceState.getString("ImagePath")
-            if (this.photo != null){
-                user_photo.setImageBitmap(photo)
-            }
         }
 
         if (user != null) {
@@ -90,9 +88,14 @@ class EditProfileActivity : AppCompatActivity() {
             }
         }
         if (this.imagePath != null){
-            val image: Bitmap = BitmapFactory.decodeFile(user?.photoProfilePath)
+            val image: Bitmap = BitmapFactory.decodeFile(imagePath)
             this.user_photo.setImageBitmap(image)
+        }else{
+            if (user != null) {
+                imagePath = user.photoProfilePath
+            }
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -161,6 +164,7 @@ class EditProfileActivity : AppCompatActivity() {
         // Open Camera
         if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK){
             try {
+
                 val file = File(this.currentPath)
                 val uri:Uri = Uri.fromFile(file)
                 var rotatedBitmap: Bitmap?
@@ -302,6 +306,7 @@ class EditProfileActivity : AppCompatActivity() {
         if (this.imagePath != null) {
             outState.putString("ImagePath", this.imagePath)
         }
+        outState.putString("PathFile",this.currentPath)
     }
 
     override fun onBackPressed() {
