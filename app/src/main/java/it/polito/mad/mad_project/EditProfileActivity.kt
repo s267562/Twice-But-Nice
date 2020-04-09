@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream
 
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.os.Environment
 import android.os.PersistableBundle
 import androidx.core.app.ActivityCompat
@@ -37,6 +38,7 @@ import kotlinx.android.synthetic.main.activity_edit_profile.nickname
 import kotlinx.android.synthetic.main.activity_edit_profile.user_photo
 import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URI
 import java.text.SimpleDateFormat
@@ -49,6 +51,7 @@ class EditProfileActivity : AppCompatActivity() {
     private val CAPTURE_IMAGE_REQUEST = 1
     val SELECT_IMAGE = 2
     private var imageFile: File? = null
+    private var imagePath: String? = null
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +73,10 @@ class EditProfileActivity : AppCompatActivity() {
 
         if (savedInstanceState != null) {
             photo = savedInstanceState.getParcelable("Photo")
+            imagePath =savedInstanceState.getString("ImagePath")
+            if (this.photo != null){
+                user_photo.setImageBitmap(photo)
+            }
         }
 
         if (user != null) {
@@ -81,8 +88,10 @@ class EditProfileActivity : AppCompatActivity() {
                 val image: Bitmap = BitmapFactory.decodeFile(user.photoProfilePath)
                 if (image != null) user_photo.setImageBitmap(image)
             }
-        }else if (this.photo != null){
-            user_photo.setImageBitmap(photo)
+        }
+        if (this.imagePath != null){
+            val image: Bitmap = BitmapFactory.decodeFile(user?.photoProfilePath)
+            this.user_photo.setImageBitmap(image)
         }
     }
 
@@ -167,6 +176,18 @@ class EditProfileActivity : AppCompatActivity() {
             try {
                 val uriPic = data?.data
                 user_photo.setImageURI(uriPic)
+                if (uriPic != null) {
+                    //imageFile = File(uriPic.getPath())
+                    //imagePath = uriPic.path
+                    val file: File = createImageFile()
+                    val fOut: FileOutputStream = FileOutputStream(file)
+                    imageFile = file
+                    imagePath = file.absolutePath
+                    var mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriPic)
+                    this.photo = mBitmap
+                    mBitmap.compress(Bitmap.CompressFormat.JPEG,85,fOut)
+                }
+
             }catch (e: IOException){
                 e.printStackTrace()
             }
@@ -275,8 +296,11 @@ class EditProfileActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if(this.photo != null){
+        /*if(this.photo != null){
             outState.putParcelable("Photo", this.photo)
+        }*/
+        if (this.imagePath != null) {
+            outState.putString("ImagePath", this.imagePath)
         }
     }
 
@@ -301,6 +325,7 @@ class EditProfileActivity : AppCompatActivity() {
 
                     // Continue only if the File was successfully created
                     if (imageFile != null) {
+                        imagePath = imageFile!!.absolutePath
                         var photoURI = FileProvider.getUriForFile(this,
                             "it.polito.mad.mad_project",
                             imageFile!!
@@ -351,7 +376,8 @@ class EditProfileActivity : AppCompatActivity() {
         val nickname = nickname.text.toString()
         val email = email.text.toString()
         val location = location.text.toString()
-        val user = User(name, "", nickname, email, location, imageFile?.absolutePath)
+        var path = imagePath//imageFile?.absolutePath
+        val user = User(name, "", nickname, email, location, path)
 
         Log.d ("MAD_LOG", "SEND-USER: $user")
 
