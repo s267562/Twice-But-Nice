@@ -25,6 +25,7 @@ import android.graphics.BitmapFactory
 import android.os.Environment
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import it.polito.mad.mad_project.Util.Companion.displayMessage
 import kotlinx.android.synthetic.main.activity_edit_profile.email
 import kotlinx.android.synthetic.main.activity_edit_profile.full_name
 import kotlinx.android.synthetic.main.activity_edit_profile.location
@@ -122,7 +123,7 @@ class EditProfileActivity : AppCompatActivity() {
         // Handle item selection
         return when (item.itemId) {
             R.id.save_option -> {
-                Toast.makeText(this, "Save button clicked", Toast.LENGTH_SHORT).show()
+                //displayMessage(baseContext, "Save button clicked")
                 saveProfile()
                 true
             }
@@ -159,7 +160,7 @@ class EditProfileActivity : AppCompatActivity() {
                 && grantResults[1] == PackageManager.PERMISSION_GRANTED){
                 openCamera()
             } else {
-                displayMessage(baseContext, "Camera Permission has been denied")
+                //displayMessage(baseContext, "Camera Permission has been denied")
             }
         }
     }
@@ -170,33 +171,25 @@ class EditProfileActivity : AppCompatActivity() {
 
         // Open Camera
         if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK){
-            try {
-                val file = File(this.imagePath)
-                val uri:Uri = Uri.fromFile(file)
-                user_photo.setImageURI(uri)
-            }catch (e: IOException){
-                e.printStackTrace()
-            }
+            val file = File(this.imagePath)
+            val uri:Uri = Uri.fromFile(file)
+            user_photo.setImageURI(uri)
         }
         // Open Gallery
         else if (requestCode == SELECT_IMAGE && resultCode == Activity.RESULT_OK){
-            try {
-                val uriPic = data?.data
-                user_photo.setImageURI(uriPic)
-                if (uriPic != null) {
-                    val file: File = createImageFile()
-                    val fOut: FileOutputStream = FileOutputStream(file)
-                    imageFile = file
-                    imagePath = file.absolutePath
-                    var mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriPic)
-                    mBitmap.compress(Bitmap.CompressFormat.JPEG,85,fOut)
-                }
-
-            }catch (e: IOException){
-                e.printStackTrace()
+            val uriPic = data?.data
+            user_photo.setImageURI(uriPic)
+            if (uriPic != null) {
+                val file: File = createImageFile()
+                val fOut: FileOutputStream = FileOutputStream(file)
+                imageFile = file
+                imagePath = file.absolutePath
+                var mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriPic)
+                mBitmap.compress(Bitmap.CompressFormat.JPEG,85,fOut)
             }
+
         } else {
-            displayMessage(baseContext, "Select image wrong")
+            //displayMessage(baseContext, "Select image wrong")
         }
     }
 
@@ -228,40 +221,31 @@ class EditProfileActivity : AppCompatActivity() {
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             if (cameraIntent.resolveActivity(packageManager) != null) {
                 // Create the File where the photo should go
-                try {
-                    imageFile = createImageFile()
-                    displayMessage(baseContext, imageFile!!.absolutePath)
-                    Log.i("TeamSVIK", imageFile!!.absolutePath)
+                imageFile = createImageFile()
+                //displayMessage(baseContext, imageFile!!.absolutePath)
+                Log.i("TeamSVIK", imageFile!!.absolutePath)
 
-                    // Continue only if the File was successfully created
-                    if (imageFile != null) {
-                        imagePath = imageFile!!.absolutePath
-                        var photoURI = FileProvider.getUriForFile(this,
-                            "it.polito.mad.mad_project",
-                            imageFile!!
-                        )
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                        startActivityForResult(cameraIntent, CAPTURE_IMAGE_REQUEST)
-                    }
-                } catch (ex: Exception) {
-                    // Error occurred while creating the File
-                    displayMessage(baseContext,"Capture Image Bug: "  + ex.message.toString())
+                // Continue only if the File was successfully created
+                if (imageFile != null) {
+                    imagePath = imageFile!!.absolutePath
+                    var photoURI = FileProvider.getUriForFile(this,
+                        "it.polito.mad.mad_project",
+                        imageFile!!
+                    )
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(cameraIntent, CAPTURE_IMAGE_REQUEST)
                 }
             } else {
-                displayMessage(baseContext, "Camera Intent Resolve Activity is null.")
+                //displayMessage(baseContext, "Camera Intent Resolve Activity is null.")
             }
         }
-    }
-
-    private fun displayMessage(context: Context, message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
     @Throws(IOException::class)
     private fun createImageFile(): File {
         if(imagePath !=null && imagePath != savedImagePath){
             File(imagePath).delete()
-            displayMessage(baseContext, "file deleted")
+            //displayMessage(baseContext, "file deleted")
         }
         // Create an image file name
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())

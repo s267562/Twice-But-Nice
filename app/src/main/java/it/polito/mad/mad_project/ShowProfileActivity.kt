@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
+import it.polito.mad.mad_project.Util.Companion.displayMessage
 import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.File
 import java.util.*
@@ -68,7 +69,7 @@ class ShowProfileActivity : AppCompatActivity() {
         // Handle item selection
         return when (item.itemId) {
             R.id.pencil_option -> {
-                Toast.makeText(this, "pencil clicked", Toast.LENGTH_SHORT).show()
+                //displayMessage(baseContext, "pencil clicked")
                 editProfile()
                 true
             }
