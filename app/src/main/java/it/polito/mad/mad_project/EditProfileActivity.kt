@@ -31,6 +31,7 @@ import android.os.Environment
 import android.os.PersistableBundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import kotlinx.android.synthetic.main.activity_edit_profile.email
 import kotlinx.android.synthetic.main.activity_edit_profile.full_name
 import kotlinx.android.synthetic.main.activity_edit_profile.location
@@ -76,25 +77,36 @@ class EditProfileActivity : AppCompatActivity() {
             currentPath = savedInstanceState.getString("PathFile")
             imagePath =savedInstanceState.getString("ImagePath")
         }
-
+        var image: Bitmap?=null
         if (user != null) {
             full_name.setText(user.name)
             nickname.setText(user.nickname)
             email.setText(user.email)
             location.setText(user.location)
             if (user.photoProfilePath != null && user.photoProfilePath.isNotEmpty()) {
-                val image: Bitmap = BitmapFactory.decodeFile(user.photoProfilePath)
+                image = BitmapFactory.decodeFile(user.photoProfilePath)
                 if (image != null) user_photo.setImageBitmap(image)
             }
         }
         if (this.imagePath != null){
-            val image: Bitmap = BitmapFactory.decodeFile(imagePath)
+            image = BitmapFactory.decodeFile(imagePath)
             this.user_photo.setImageBitmap(image)
         }else{
             if (user != null) {
                 imagePath = user.photoProfilePath
             }
         }
+        if (image == null){
+            //rotation.visibility=View.GONE
+        }else{
+            //rotation.visibility=View.VISIBLE
+            rotation.setOnClickListener{
+                var rotateBitmap = rotateImage(image!!, 90)
+                image = rotateBitmap
+                user_photo.setImageBitmap(image)
+            }
+        }
+
 
     }
 
@@ -176,7 +188,7 @@ class EditProfileActivity : AppCompatActivity() {
             }
         }
         // Open Gallery
-        if (requestCode == SELECT_IMAGE && resultCode == Activity.RESULT_OK){
+        else if (requestCode == SELECT_IMAGE && resultCode == Activity.RESULT_OK){
             try {
                 val uriPic = data?.data
                 user_photo.setImageURI(uriPic)
@@ -366,12 +378,24 @@ class EditProfileActivity : AppCompatActivity() {
         currentPath = image.absolutePath
         return image
     }
-
+    /*
     private fun rotateImage(img:Bitmap, degree:Int):Bitmap {
         val matrix = Matrix()
         matrix.postRotate(degree.toFloat())
         val rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true)
         img.recycle()
+        return rotatedImg
+    }*/
+    private fun rotateImage(img:Bitmap, degree:Int):Bitmap {
+        //val img = BitmapFactory.decodeFile(path)
+        val matrix = Matrix()
+        matrix.postRotate(degree.toFloat())
+        val rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true)
+        img.recycle()
+        val file: File = createImageFile()
+        val fOut = FileOutputStream(file)
+        rotatedImg.compress(Bitmap.CompressFormat.JPEG,100,fOut)
+        this.imagePath=file.absolutePath
         return rotatedImg
     }
 

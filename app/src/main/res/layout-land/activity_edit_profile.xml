@@ -120,6 +120,12 @@
                 android:imeOptions="actionDone" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <Button
+            android:id="@+id/rotation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Button" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
