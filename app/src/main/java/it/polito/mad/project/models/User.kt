@@ -1,4 +1,4 @@
-package it.polito.mad.project
+package it.polito.mad.project.models
 
 import java.io.Serializable
 

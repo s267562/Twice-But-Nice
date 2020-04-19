@@ -1,4 +1,4 @@
-package it.polito.mad.project
+package it.polito.mad.project.utils
 
 import android.content.Context
 import android.widget.Toast

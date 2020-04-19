@@ -1,4 +1,4 @@
-package it.polito.mad.project
+package it.polito.mad.project.activities.profile
 
 import android.Manifest
 import android.app.Activity
@@ -22,6 +22,9 @@ import android.graphics.BitmapFactory
 import android.os.Environment
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import it.polito.mad.project.enums.IntentRequest
+import it.polito.mad.project.R
+import it.polito.mad.project.models.User
 import kotlinx.android.synthetic.main.activity_edit_profile.email
 import kotlinx.android.synthetic.main.activity_edit_profile.full_name
 import kotlinx.android.synthetic.main.activity_edit_profile.location
@@ -35,7 +38,6 @@ import java.util.*
 
 class EditProfileActivity : AppCompatActivity() {
 
-    private val CAPTURE_IMAGE_REQUEST = 1
     val SELECT_IMAGE = 2
     private var imageFile: File? = null
     private var imagePath: String? = null
@@ -58,7 +60,9 @@ class EditProfileActivity : AppCompatActivity() {
         }
 
         // Load user information
-        val user: User? = intent.getSerializableExtra(IntentRequest.UserData.NAME) as? User?
+        val user: User? = intent.getSerializableExtra(
+            IntentRequest.UserData.NAME
+        ) as? User?
 
         Log.d ("MAD_LOG", "RECEIVED-USER: $user")
 
@@ -168,7 +172,7 @@ class EditProfileActivity : AppCompatActivity() {
         rotation_button.visibility=View.VISIBLE
 
         // Open Camera
-        if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK){
+        if (requestCode == IntentRequest.UserImage.CODE && resultCode == Activity.RESULT_OK){
             val file = File(this.imagePath)
             val uri:Uri = Uri.fromFile(file)
             user_photo.setImageURI(uri)
@@ -233,7 +237,7 @@ class EditProfileActivity : AppCompatActivity() {
                         imageFile!!
                     )
                     cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(cameraIntent, CAPTURE_IMAGE_REQUEST)
+                    startActivityForResult(cameraIntent, IntentRequest.UserImage.CODE)
                 }
             } else {
                 //displayMessage(baseContext, "Camera Intent Resolve Activity is null.")
@@ -287,7 +291,15 @@ class EditProfileActivity : AppCompatActivity() {
         val email = email.text.toString()
         val location = location.text.toString()
         var path = savedImagePath
-        val user = User(name, "", nickname, email, location, path)
+        val user =
+            User(
+                name,
+                "",
+                nickname,
+                email,
+                location,
+                path
+            )
 
         Log.d ("MAD_LOG", "SEND-USER: $user")
 

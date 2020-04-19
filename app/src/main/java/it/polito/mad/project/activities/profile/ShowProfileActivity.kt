@@ -1,4 +1,4 @@
-package it.polito.mad.project
+package it.polito.mad.project.activities.profile
 
 import android.content.Context
 import android.content.Intent
@@ -11,15 +11,18 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
+import it.polito.mad.project.*
+import it.polito.mad.project.enums.IntentRequest
+import it.polito.mad.project.enums.StoreFileKey
+import it.polito.mad.project.models.User
+import it.polito.mad.project.activities.profile.ui.UserViewModel
 import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.File
 
 class ShowProfileActivity : AppCompatActivity() {
-    private val userViewModel: UserViewModel = UserViewModel()
+    private val userViewModel: UserViewModel =
+        UserViewModel()
     private val gsonMapper: Gson = Gson()
-
-    // App needs 10 MB within internal storage.
-    val NUM_BYTES_NEEDED_FOR_MY_APP = 1024 * 1024 * 10L;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,7 +96,9 @@ class ShowProfileActivity : AppCompatActivity() {
     private fun editProfile() {
         val intent = Intent(this, EditProfileActivity::class.java)
         intent.putExtra(IntentRequest.UserData.NAME, userViewModel.user.value)
-        startActivityForResult(intent, IntentRequest.UserData.CODE)
+        startActivityForResult(intent,
+            IntentRequest.UserData.CODE
+        )
     }
 
 }
