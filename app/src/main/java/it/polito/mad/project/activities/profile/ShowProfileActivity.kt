@@ -20,8 +20,7 @@ import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.File
 
 class ShowProfileActivity : AppCompatActivity() {
-    private val userViewModel: UserViewModel =
-        UserViewModel()
+    private val userViewModel: UserViewModel = UserViewModel()
     private val gsonMapper: Gson = Gson()
 
     override fun onCreate(savedInstanceState: Bundle?) {

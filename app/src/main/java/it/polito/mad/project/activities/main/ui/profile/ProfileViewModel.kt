@@ -1,13 +1,13 @@
-package it.polito.mad.project.activities.main.ui.slideshow
+package it.polito.mad.project.activities.main.ui.profile
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class SlideshowViewModel : ViewModel() {
+class ProfileViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is slideshow Fragment"
+        value = "This is profile Fragment"
     }
     val text: LiveData<String> = _text
 }
