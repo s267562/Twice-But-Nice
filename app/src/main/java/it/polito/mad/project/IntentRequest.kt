@@ -1,7 +1,7 @@
-package it.polito.mad.mad_project
+package it.polito.mad.project
 
 object IntentRequest {
-    const val BASE = "it.polito.mad.mad_project"
+    const val BASE = "it.polito.mad.project"
 
     object UserData {
         const val CODE = 10

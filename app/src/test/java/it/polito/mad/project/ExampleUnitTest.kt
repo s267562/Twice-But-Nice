@@ -1,4 +1,4 @@
-package it.polito.mad.mad_project
+package it.polito.mad.project
 
 import org.junit.Test
 

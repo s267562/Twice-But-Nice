@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="it.polito.mad.mad_project">
+    package="it.polito.mad.project">
 
     <uses-feature android:name="android.hardware.camera"
         android:required="true" />
@@ -19,7 +19,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="it.polito.mad.mad_project"
+            android:authorities="it.polito.mad.project"
             android:exported="false"
             android:grantUriPermissions="true">
 
@@ -31,13 +31,13 @@
         </provider>
 
 
-        <activity android:name=".ShowProfileActivity">
+        <activity android:name="it.polito.mad.project.ShowProfileActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".EditProfileActivity"/>
+        <activity android:name="it.polito.mad.project.EditProfileActivity"/>
     </application>
 
 </manifest>

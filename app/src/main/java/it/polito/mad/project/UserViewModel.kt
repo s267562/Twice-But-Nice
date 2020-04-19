@@ -1,6 +1,5 @@
-package it.polito.mad.mad_project
+package it.polito.mad.project
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 

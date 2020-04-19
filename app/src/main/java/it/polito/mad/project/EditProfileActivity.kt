@@ -1,12 +1,10 @@
-package it.polito.mad.mad_project
+package it.polito.mad.project
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -14,7 +12,6 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.widget.ImageButton
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -23,10 +20,8 @@ import kotlinx.android.synthetic.main.activity_edit_profile.*
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Environment
-import android.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
-import it.polito.mad.mad_project.Util.Companion.displayMessage
 import kotlinx.android.synthetic.main.activity_edit_profile.email
 import kotlinx.android.synthetic.main.activity_edit_profile.full_name
 import kotlinx.android.synthetic.main.activity_edit_profile.location
@@ -234,7 +229,7 @@ class EditProfileActivity : AppCompatActivity() {
                 if (imageFile != null) {
                     imagePath = imageFile!!.absolutePath
                     var photoURI = FileProvider.getUriForFile(this,
-                        "it.polito.mad.mad_project",
+                        "it.polito.mad.project",
                         imageFile!!
                     )
                     cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)

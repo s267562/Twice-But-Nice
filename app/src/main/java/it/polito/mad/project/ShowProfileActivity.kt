@@ -1,24 +1,18 @@
-package it.polito.mad.mad_project
+package it.polito.mad.project
 
-import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.os.storage.StorageManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.getSystemService
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
-import it.polito.mad.mad_project.Util.Companion.displayMessage
 import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.File
-import java.util.*
 
 class ShowProfileActivity : AppCompatActivity() {
     private val userViewModel: UserViewModel = UserViewModel()
