@@ -12,6 +12,6 @@
     <string name="menu_home">Home</string>
     <string name="menu_profile">Profile</string>
     <string name="menu_advertisements">Advertisements</string>
-
+    <string name="menu_show_advertisement">Details</string>
     <string name="home_second">Home Second</string>
 </resources>

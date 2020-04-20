@@ -33,5 +33,22 @@
         android:id="@+id/navAdvertisements"
         android:name="it.polito.mad.project.activities.main.ui.advertisements.ListAdvertisementFragment"
         android:label="@string/menu_advertisements"
-        tools:layout="@layout/fragment_list_advertisement" />
+        tools:layout="@layout/fragment_list_advertisement" >
+        <action
+            android:id="@+id/action_navAdvertisements_to_editItemFragment"
+            app:destination="@id/editItemFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit" />
+    </fragment>
+    <fragment
+        android:id="@+id/editItemFragment"
+        android:name="it.polito.mad.project.activities.main.ui.advertisements.ShowItemFragment"
+        android:label="@string/menu_show_advertisement"
+        tools:layout="@layout/fragment_show_advertisement">
+        <action
+            android:id="@+id/action_editItemFragment_to_navAdvertisements"
+            app:destination="@id/navAdvertisements"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
+    </fragment>
 </navigation>

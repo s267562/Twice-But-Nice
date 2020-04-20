@@ -27,6 +27,12 @@ class ShowProfileFragment : Fragment() {
         profileViewModel =
             ViewModelProvider(this).get(ProfileViewModel::class.java)
 
+        loadUserFromStoreFile()
+        return inflater.inflate(R.layout.activity_show_profile, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         profileViewModel.user.observe(this.viewLifecycleOwner, Observer{
             if (it.name != null && it.name.isNotEmpty())
@@ -44,8 +50,6 @@ class ShowProfileFragment : Fragment() {
                 }
             }
         })
-        loadUserFromStoreFile()
-        return inflater.inflate(R.layout.activity_show_profile, container, false)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
