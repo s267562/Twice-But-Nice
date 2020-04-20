@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.main.ui.sale.SaleFragment">
+    tools:context=".activities.main.ui.advertisements.ListAdvertisementFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/itemRecyclerView"
@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:clickable="true"
-        android:src="@drawable/ic_edit"
+        android:src="@drawable/ic_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
