@@ -29,13 +29,13 @@ class ShowProfileFragment : Fragment() {
 
 
         profileViewModel.user.observe(this.viewLifecycleOwner, Observer{
-            if (it.name.isNotEmpty())
+            if (it.name != null && it.name.isNotEmpty())
                 full_name.text = it.name
-            if (it.nickname.isNotEmpty())
+            if (it.nickname != null && it.nickname.isNotEmpty())
                 nickname.text = it.nickname
-            if (it.email.isNotEmpty())
+            if (it.email != null && it.email.isNotEmpty())
                 email.text = it.email
-            if (it.location.isNotEmpty())
+            if (it.location != null && it.location.isNotEmpty())
                 location.text = it.location
             if (it.photoProfilePath != null && it.photoProfilePath.isNotEmpty()) {
                 if (File(it.photoProfilePath).isFile){
