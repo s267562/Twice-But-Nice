@@ -2,10 +2,8 @@ package it.polito.mad.project.activities.main.ui.advertisements
 
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 
@@ -24,17 +22,13 @@ class ShowItemFragment : Fragment() {
         // TODO: Use the ViewModel
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_show_advertisement, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         item = Gson().fromJson(arguments?.getString("item"), Item::class.java)
-        itemTitleLabel.text = item.title
+        item_title.text = item.title
     }
 }

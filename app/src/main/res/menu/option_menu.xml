@@ -7,6 +7,4 @@
         android:icon="@drawable/ic_pencil_white_24dp"
         android:title="pencil"
         app:showAsAction="always" />
-
-
 </menu>

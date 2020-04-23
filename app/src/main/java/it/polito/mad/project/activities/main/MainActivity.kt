@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         setNavView()
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
