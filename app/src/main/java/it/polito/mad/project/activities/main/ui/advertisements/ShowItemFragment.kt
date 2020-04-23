@@ -23,6 +23,7 @@ class ShowItemFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_show_advertisement, container, false)
     }
 
@@ -30,5 +31,10 @@ class ShowItemFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         item = Gson().fromJson(arguments?.getString("item"), Item::class.java)
         item_title.text = item.title
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.edit, menu)
     }
 }
