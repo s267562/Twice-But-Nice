@@ -12,13 +12,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import it.polito.mad.project.R
-import it.polito.mad.project.activities.main.ui.advertisements.ListAdvertisementFragment
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.User
 import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.File
 
-class ShowProfileFragment : Fragment() {
+class EditProfileFragment : Fragment() {
 
     private lateinit var profileViewModel: ProfileViewModel
 
@@ -27,7 +26,7 @@ class ShowProfileFragment : Fragment() {
             ViewModelProvider(this).get(ProfileViewModel::class.java)
         loadUserFromStoreFile()
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.activity_show_profile, container, false)
+        return inflater.inflate(R.layout.activity_edit_profile, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,19 +53,6 @@ class ShowProfileFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.option_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle item selection
-        return when (item.itemId) {
-            R.id.pencil_option -> {
-                val fr: FragmentTransaction? = fragmentManager?.beginTransaction()
-                fr?.replace(R.id.navMainHostFragment, EditProfileFragment())
-                fr?.commit()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onDetach() {

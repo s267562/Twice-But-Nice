@@ -112,7 +112,6 @@ class EditProfileActivity : AppCompatActivity() {
         return true
     }
 
-    // Punto 4
     override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
         super.onCreateContextMenu(menu, v, menuInfo)
         val menuInflater: MenuInflater = menuInflater
@@ -120,7 +119,6 @@ class EditProfileActivity : AppCompatActivity() {
         menu.setHeaderTitle("Context Menu")
     }
 
-    // Punto 5
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         return when (item.itemId) {
