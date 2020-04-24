@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import it.polito.mad.project.R
 import it.polito.mad.project.activities.main.ui.advertisements.ListAdvertisementFragment
@@ -60,9 +61,8 @@ class ShowProfileFragment : Fragment() {
         // Handle item selection
         return when (item.itemId) {
             R.id.pencil_option -> {
-                val fr: FragmentTransaction? = fragmentManager?.beginTransaction()
-                fr?.replace(R.id.navMainHostFragment, EditProfileFragment())
-                fr?.commit()
+                Toast.makeText(activity?.baseContext,"Editing in opening...", Toast.LENGTH_SHORT).show()
+                this.findNavController().navigate(R.id.action_navProfile_to_nav_home_second)
                 true
             }
             else -> super.onOptionsItemSelected(item)

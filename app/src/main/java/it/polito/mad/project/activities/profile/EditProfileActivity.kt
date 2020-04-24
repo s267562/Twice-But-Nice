@@ -108,14 +108,14 @@ class EditProfileActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.edit_profile_menu, menu)
+        inflater.inflate(R.menu.save_profile, menu)
         return true
     }
 
     override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
         super.onCreateContextMenu(menu, v, menuInfo)
         val menuInflater: MenuInflater = menuInflater
-        menuInflater.inflate(R.menu.context_menu, menu)
+        menuInflater.inflate(R.menu.camera_menu, menu)
         menu.setHeaderTitle("Context Menu")
     }
 

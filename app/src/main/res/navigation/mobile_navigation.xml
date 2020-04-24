@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/nav_home_second"
-        android:name="it.polito.mad.project.activities.main.ui.home.HomeSecondFragment"
-        android:label="@string/home_second"
-        tools:layout="@layout/fragment_home_second">
+        android:name="it.polito.mad.project.activities.main.ui.profile.EditProfileFragment"
+        android:label="@string/menu_edit_profile"
+        tools:layout="@layout/activity_edit_profile">
         <action
             android:id="@+id/action_HomeSecondFragment_to_ProfileFragment"
             app:destination="@id/navProfile" />
@@ -23,7 +23,7 @@
         android:id="@+id/navProfile"
         android:name="it.polito.mad.project.activities.main.ui.profile.ShowProfileFragment"
         android:label="@string/menu_profile"
-        tools:layout="@layout/fragment_profile" >
+        tools:layout="@layout/activity_show_profile" >
         <action
             android:id="@+id/action_navProfile_to_nav_home_second"
             app:destination="@id/nav_home_second" />
