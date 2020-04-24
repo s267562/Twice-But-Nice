@@ -11,12 +11,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import it.polito.mad.project.R
+import it.polito.mad.project.activities.main.ui.common.StoreFileFragment
 import it.polito.mad.project.adapters.ItemAdapter
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_list_advertisement.*
 
-class ListAdvertisementFragment : Fragment() {
+class ListAdvertisementFragment : StoreFileFragment() {
 
     private lateinit var adsViewModel: ListAdvertisementViewModel
 
@@ -32,7 +33,9 @@ class ListAdvertisementFragment : Fragment() {
             emptyMessage.text = if (it == 0) "Non ci sono elementi in vendita" else ""
         })
 
-        loadItemsFromStoreFile()
+        adsViewModel.items = loadFromStoreFile(StoreFileKey.ITEMS, Array<Item>::class.java)?.toMutableList()?: mutableListOf()
+        adsViewModel.index.value = adsViewModel.items.size
+        adsViewModel.adapter = ItemAdapter(adsViewModel.items)
         return inflater.inflate(R.layout.fragment_list_advertisement, container, false)
     }
 
@@ -45,7 +48,7 @@ class ListAdvertisementFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        saveItemsToStoreFile()
+        saveToStoreFile(StoreFileKey.ITEMS, adsViewModel.items.toTypedArray())
     }
 
     private fun setFabButton() {
@@ -55,28 +58,5 @@ class ListAdvertisementFragment : Fragment() {
             adsViewModel.adapter.notifyItemInserted(adsViewModel.index.value?:0)
             adsViewModel.index.value = (adsViewModel.index.value?:0) + 1
         }
-    }
-
-    private fun loadItemsFromStoreFile() {
-        // Load store file of our app from shared preferences
-        val sharedPreferences = this.activity?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
-        // Load from the store file
-        val itemsJson: String? = sharedPreferences?.getString(StoreFileKey.ITEMS, "")
-        if (itemsJson != null && itemsJson.isNotEmpty()) {
-            // Assign the stored list of items
-            val items = Gson().fromJson(itemsJson, Array<Item>::class.java).toMutableList()
-            if (items != null) {
-                adsViewModel.items = items
-                adsViewModel.index.value = items.size
-                adsViewModel.adapter = ItemAdapter(items)
-            }
-        }
-    }
-
-    private fun saveItemsToStoreFile() {
-        val sharedPref = this.activity?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
-        val prefsEditor = sharedPref?.edit()
-        prefsEditor?.putString(StoreFileKey.ITEMS, Gson().toJson(adsViewModel.items.toTypedArray()))
-        prefsEditor?.commit()
     }
 }

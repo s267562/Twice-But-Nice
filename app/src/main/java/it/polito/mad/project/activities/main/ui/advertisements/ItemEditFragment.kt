@@ -6,22 +6,22 @@ import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import it.polito.mad.project.R
+import it.polito.mad.project.activities.main.ui.common.StoreFileFragment
 import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_edit_advertisement.*
 
-class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var item: Item
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        loadTempItemFromStoreFile()
+        item = loadFromStoreFile(StoreFileKey.TEMP_ITEM, Item::class.java)?:Item("")
         return inflater.inflate(R.layout.fragment_edit_advertisement, container, false)
     }
 
@@ -60,7 +60,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         return when (option.itemId) {
             R.id.save_option -> {
                 var bundle = bundleOf(ArgumentKey.ITEM to Gson().toJson(item))
-                this.findNavController().navigate(R.id.action_itemEditFragment_to_showItemFragment, bundle)
+                this.findNavController().popBackStack()
                 true
             }
             else -> super.onOptionsItemSelected(option)
@@ -69,7 +69,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        saveTempItemToStoreFile()
+        saveToStoreFile(StoreFileKey.TEMP_ITEM, item)
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
@@ -81,26 +81,4 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onNothingSelected(parent: AdapterView<*>?) {
         TODO("Not yet implemented")
     }
-
-    private fun loadTempItemFromStoreFile() {
-        // Load store file of our app from shared preferences
-        val sharedPreferences = this.activity?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
-        // Load from the store file
-        val itemJson: String? = sharedPreferences?.getString(StoreFileKey.TEMP_ITEM, "")
-        if (itemJson != null && itemJson.isNotEmpty()) {
-            // Assign the stored list of items
-            val item = Gson().fromJson(itemJson, Item::class.java)
-            if (item != null) {
-                this.item = item
-            }
-        }
-    }
-
-    private fun saveTempItemToStoreFile() {
-        val sharedPref = this.activity?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
-        val prefsEditor = sharedPref?.edit()
-        prefsEditor?.putString(StoreFileKey.TEMP_ITEM, Gson().toJson(item))
-        prefsEditor?.commit()
-    }
-
 }

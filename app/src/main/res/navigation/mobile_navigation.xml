@@ -10,11 +10,8 @@
             android:id="@+id/action_navHome_to_showProfileFragment"
             app:destination="@id/showProfileFragment" />
 
-        <argument
-            android:name="myArg"
-            app:argType="string" />
         <action
-            android:id="@+id/action_nav_home_second_to_navAdvertisements"
+            android:id="@+id/action_navHome_to_navAdvertisements"
             app:destination="@id/navAdvertisements" />
     </fragment>
 
@@ -22,7 +19,7 @@
         android:id="@+id/showProfileFragment"
         android:name="it.polito.mad.project.activities.main.ui.profile.ShowProfileFragment"
         android:label="@string/menu_profile"
-        tools:layout="@layout/fragment_profile" >
+        tools:layout="@layout/activity_show_profile" >
         <action
             android:id="@+id/action_showProfileFragment_to_navHome"
             app:destination="@id/navHome" />
@@ -42,7 +39,7 @@
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit" />
         <action
-            android:id="@+id/action_navAdvertisements_to_nav_home_second"
+            android:id="@+id/action_navAdvertisements_to_navHome"
             app:destination="@id/navHome" />
     </fragment>
     <fragment
@@ -54,7 +51,9 @@
             android:id="@+id/action_showItemFragment_to_navAdvertisements"
             app:destination="@id/navAdvertisements"
             app:enterAnim="@anim/fragment_fade_enter"
-            app:exitAnim="@anim/fragment_fade_exit" />
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popUpTo="@id/navAdvertisements" />
+
         <action
             android:id="@+id/action_showItemFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
@@ -62,15 +61,19 @@
     <fragment
         android:id="@+id/itemEditFragment"
         android:name="it.polito.mad.project.activities.main.ui.advertisements.ItemEditFragment"
-        android:label="@string/menu_show_advertisement">
+        android:label="@string/menu_show_advertisement"
+        tools:layout="@layout/fragment_edit_advertisement" >
+
         <action
             android:id="@+id/action_itemEditFragment_to_showItemFragment"
-            app:destination="@id/showItemFragment" />
+            app:destination="@id/showItemFragment"
+            app:popUpTo="@id/showItemFragment" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="it.polito.mad.project.activities.main.ui.profile.EditProfileFragment"
-        android:label="@string/menu_edit_profile">
+        android:label="@string/menu_edit_profile"
+        tools:layout="@layout/activity_edit_profile" >
         <action
             android:id="@+id/action_editProfileFragment_to_showProfileFragment"
             app:destination="@id/showProfileFragment" />
