@@ -5,6 +5,7 @@ import java.io.Serializable
 data class Item (val title: String) : Serializable {
     var description: String
     var category: String
+    var categoryPos: Int = -1
     var price: Double = 0.0
 
     var expiryDate: String

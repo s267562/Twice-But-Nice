@@ -55,8 +55,8 @@ class EditProfileFragment : Fragment() {
         inflater.inflate(R.menu.option_menu, menu)
     }
 
-    override fun onDetach() {
-        super.onDetach()
+    override fun onDestroyView() {
+        super.onDestroyView()
         saveUserToStoreFile()
     }
 

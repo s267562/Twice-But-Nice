@@ -1,13 +1,15 @@
 package it.polito.mad.project.activities.main.ui.advertisements
 
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 
 import it.polito.mad.project.R
+import it.polito.mad.project.enums.ArgumentKey
+import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_show_advertisement.*
 
@@ -29,12 +31,31 @@ class ShowItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        item = Gson().fromJson(arguments?.getString("item"), Item::class.java)
+        item = Gson().fromJson(arguments?.getString(ArgumentKey.ITEM), Item::class.java)
         item_title.text = item.title
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.edit, menu)
+        inflater.inflate(R.menu.option_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        return when (item.itemId) {
+            R.id.pencil_option -> {
+                saveTempItemToStoreFile()
+                this.findNavController().navigate(R.id.action_showItemFragment_to_itemEditFragment)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun saveTempItemToStoreFile() {
+        val sharedPref = this.activity?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
+        val prefsEditor = sharedPref?.edit()
+        prefsEditor?.putString(StoreFileKey.TEMP_ITEM, Gson().toJson(item))
+        prefsEditor?.commit()
     }
 }

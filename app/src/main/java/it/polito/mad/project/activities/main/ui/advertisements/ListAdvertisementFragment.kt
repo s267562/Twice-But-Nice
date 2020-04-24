@@ -43,8 +43,8 @@ class ListAdvertisementFragment : Fragment() {
         setFabButton()
     }
 
-    override fun onDetach() {
-        super.onDetach()
+    override fun onDestroyView() {
+        super.onDestroyView()
         saveItemsToStoreFile()
     }
 

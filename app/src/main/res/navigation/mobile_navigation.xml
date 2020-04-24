@@ -17,6 +17,9 @@
         <argument
             android:name="myArg"
             app:argType="string" />
+        <action
+            android:id="@+id/action_nav_home_second_to_navAdvertisements"
+            app:destination="@id/navAdvertisements" />
     </fragment>
 
     <fragment
@@ -35,19 +38,37 @@
         android:label="@string/menu_advertisements"
         tools:layout="@layout/fragment_list_advertisement" >
         <action
-            android:id="@+id/action_navAdvertisements_to_editItemFragment"
-            app:destination="@id/editItemFragment"
+            android:id="@+id/action_navAdvertisements_to_showItemFragment"
+            app:destination="@id/showItemFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit" />
+        <action
+            android:id="@+id/action_navAdvertisements_to_nav_home_second"
+            app:destination="@id/nav_home_second" />
     </fragment>
     <fragment
-        android:id="@+id/editItemFragment"
+        android:id="@+id/showItemFragment"
         android:name="it.polito.mad.project.activities.main.ui.advertisements.ShowItemFragment"
         android:label="@string/menu_show_advertisement"
         tools:layout="@layout/fragment_show_advertisement">
         <action
-            android:id="@+id/action_editItemFragment_to_navAdvertisements"
+            android:id="@+id/action_showItemFragment_to_navAdvertisements"
             app:destination="@id/navAdvertisements"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
+        <action
+            android:id="@+id/action_showItemFragment_to_itemEditFragment"
+            app:destination="@id/itemEditFragment"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
+    </fragment>
+    <fragment
+        android:id="@+id/itemEditFragment"
+        android:name="it.polito.mad.project.activities.main.ui.advertisements.ItemEditFragment"
+        android:label="@string/menu_show_advertisement">
+        <action
+            android:id="@+id/action_itemEditFragment_to_showItemFragment"
+            app:destination="@id/showItemFragment"
             app:enterAnim="@anim/fragment_fade_enter"
             app:exitAnim="@anim/fragment_fade_exit" />
     </fragment>

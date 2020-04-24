@@ -10,6 +10,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import it.polito.mad.project.R
+import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.models.Item
 
 class ItemAdapter(private val items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
@@ -24,13 +25,13 @@ class ItemAdapter(private val items: MutableList<Item>) : RecyclerView.Adapter<I
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(items[position]) {
-                var bundle = bundleOf("item" to Gson().toJson(items[position]))
-                holder.itemView.findNavController().navigate(R.id.action_navAdvertisements_to_editItemFragment, bundle)
+                var bundle = bundleOf(ArgumentKey.ITEM to Gson().toJson(items[position]))
+                holder.itemView.findNavController().navigate(R.id.action_navAdvertisements_to_showItemFragment, bundle)
         }
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        holder.unbind();
+        holder.unbind()
     }
 
 

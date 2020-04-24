@@ -5,16 +5,15 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import it.polito.mad.project.R
-import it.polito.mad.project.activities.main.ui.advertisements.ListAdvertisementFragment
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.User
+import it.polito.mad.project.utils.Util
 import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.File
 
@@ -69,8 +68,8 @@ class ShowProfileFragment : Fragment() {
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
+    override fun onDestroyView() {
+        super.onDestroyView()
         saveUserToStoreFile()
     }
 
@@ -90,7 +89,7 @@ class ShowProfileFragment : Fragment() {
     private fun saveUserToStoreFile() {
         val sharedPref = this.activity?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
         val prefsEditor = sharedPref?.edit()
-        prefsEditor?.putString(StoreFileKey.USER, Gson().toJson(profileViewModel));
+        prefsEditor?.putString(StoreFileKey.USER, Gson().toJson(profileViewModel.user.value));
         prefsEditor?.commit();
     }
 }
