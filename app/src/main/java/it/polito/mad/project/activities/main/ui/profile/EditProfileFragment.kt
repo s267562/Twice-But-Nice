@@ -101,7 +101,7 @@ class EditProfileFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.save_profile, menu)
+        inflater.inflate(R.menu.save_menu, menu)
     }
 
     override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -115,7 +115,7 @@ class EditProfileFragment : Fragment() {
         return when (item.itemId) {
             R.id.save_option -> {
                 Toast.makeText(activity?.baseContext, "Save button clicked", Toast.LENGTH_SHORT).show()
-                this.findNavController().navigate(R.id.action_HomeSecondFragment_to_ProfileFragment)
+                this.findNavController().navigate(R.id.action_editProfileFragment_to_showProfileFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)

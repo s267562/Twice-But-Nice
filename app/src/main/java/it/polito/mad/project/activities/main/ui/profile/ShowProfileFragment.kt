@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -15,7 +14,6 @@ import com.google.gson.Gson
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.User
-import it.polito.mad.project.utils.Util
 import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.File
 
@@ -54,7 +52,7 @@ class ShowProfileFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.option_menu, menu)
+        inflater.inflate(R.menu.edit_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -62,7 +60,7 @@ class ShowProfileFragment : Fragment() {
         return when (item.itemId) {
             R.id.pencil_option -> {
                 Toast.makeText(activity?.baseContext,"Editing in opening...", Toast.LENGTH_SHORT).show()
-                this.findNavController().navigate(R.id.action_navProfile_to_nav_home_second)
+                this.findNavController().navigate(R.id.action_showProfileFragment_to_editProfileFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)

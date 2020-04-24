@@ -52,7 +52,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.edit_menu, menu)
+        inflater.inflate(R.menu.save_menu, menu)
     }
 
     override fun onOptionsItemSelected(option: MenuItem): Boolean {
