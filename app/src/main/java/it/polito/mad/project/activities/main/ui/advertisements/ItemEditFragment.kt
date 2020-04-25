@@ -121,7 +121,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         // Handle item selection
         return when (option.itemId) {
             R.id.save_option -> {
-                var bundle = bundleOf(ArgumentKey.ITEM to Gson().toJson(item))
+                saveToStoreFile(StoreFileKey.ITEM, item)
                 this.findNavController().popBackStack()
                 true
             }

@@ -2,6 +2,7 @@ package it.polito.mad.project.activities.main.ui.advertisements
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -33,7 +34,15 @@ class ShowItemFragment : StoreFileFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         item = Gson().fromJson(arguments?.getString(ArgumentKey.ITEM), Item::class.java)
-        item_title.text = item.title
+        item = loadFromStoreFile(StoreFileKey.ITEM, Item::class.java)?:item
+        if (item != null) {
+            item_title.text = item.title
+            item_descr.text = item.description
+            item_location.text = item.expiryDate
+            item_category_spinner.text = item.category
+            item_price.text = item.price?.toString()
+            item_exp.text = item.expiryDate
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

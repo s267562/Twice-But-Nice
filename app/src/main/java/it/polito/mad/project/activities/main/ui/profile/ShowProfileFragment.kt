@@ -13,19 +13,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import it.polito.mad.project.R
+import it.polito.mad.project.activities.main.ui.common.StoreFileFragment
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.User
 import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.File
 
-class ShowProfileFragment : Fragment() {
+class ShowProfileFragment : StoreFileFragment() {
 
     private lateinit var profileViewModel: ProfileViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        profileViewModel =
-            ViewModelProvider(this).get(ProfileViewModel::class.java)
-        loadUserFromStoreFile()
+        profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
+        profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)?:profileViewModel.user.value
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.activity_show_profile, container, false)
     }
@@ -76,26 +76,6 @@ class ShowProfileFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        saveUserToStoreFile()
-    }
-
-    private fun loadUserFromStoreFile() {
-        // Load store file of our app from shared preferences
-        val sharedPreferences = this.activity?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
-
-        // Load from the store file the user object. For the first time we load empty string.
-        val userJson: String? = sharedPreferences?.getString(StoreFileKey.USER, "")
-
-        if (userJson != null && userJson.isNotEmpty()) {
-            // Assign the stored user to our view model if it is not empty
-            profileViewModel.user.value = Gson().fromJson(userJson, User::class.java)
-        }
-    }
-
-    private fun saveUserToStoreFile() {
-        val sharedPref = this.activity?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
-        val prefsEditor = sharedPref?.edit()
-        prefsEditor?.putString(StoreFileKey.USER, Gson().toJson(profileViewModel.user.value));
-        prefsEditor?.commit();
+        saveToStoreFile(StoreFileKey.USER, profileViewModel.user.value)
     }
 }

@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import it.polito.mad.project.R
+import it.polito.mad.project.activities.main.ui.common.StoreFileFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.User
@@ -42,11 +43,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.jar.Manifest
 
-class EditProfileFragment : Fragment() {
+class EditProfileFragment : StoreFileFragment() {
 
     private lateinit var profileViewModel: ProfileViewModel
     val TAKE_PIC = 1
-    val SELECT_IMAGE = 2
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
@@ -54,7 +54,7 @@ class EditProfileFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         profileViewModel =
             ViewModelProvider(this).get(ProfileViewModel::class.java)
-        loadUserFromStoreFile()
+        profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)?:profileViewModel.user.value
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.activity_edit_profile, container, false)
     }
@@ -150,13 +150,6 @@ class EditProfileFragment : Fragment() {
         }
     }
 
-    private fun openGallery(){
-        val galleryIntent = Intent()
-        galleryIntent.type = "image/*"
-        galleryIntent.action = Intent.ACTION_GET_CONTENT
-        startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), SELECT_IMAGE)
-    }
-
     @SuppressLint("UseRequireInsteadOfGet")
     private fun openCamera() {
         if (ContextCompat.checkSelfPermission(activity?.baseContext!!, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -235,29 +228,7 @@ class EditProfileFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        saveUserToStoreFile()
-    }
-
-    private fun loadUserFromStoreFile() {
-        // Load store file of our app from shared preferences
-        val sharedPreferences =
-            this.activity?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
-
-        // Load from the store file the user object. For the first time we load empty string.
-        val userJson: String? = sharedPreferences?.getString(StoreFileKey.USER, "")
-
-        if (userJson != null && userJson.isNotEmpty()) {
-            // Assign the stored user to our view model if it is not empty
-            profileViewModel.user.value = Gson().fromJson(userJson, User::class.java)
-        }
-    }
-
-    private fun saveUserToStoreFile() {
-        val sharedPref =
-            this.activity?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
-        val prefsEditor = sharedPref?.edit()
-        prefsEditor?.putString(StoreFileKey.USER, Gson().toJson(profileViewModel));
-        prefsEditor?.commit();
+        saveToStoreFile(StoreFileKey.USER, profileViewModel)
     }
 
     private fun rotateImage(img:Bitmap, degree:Int):Bitmap {
