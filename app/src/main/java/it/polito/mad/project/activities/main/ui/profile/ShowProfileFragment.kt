@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -32,7 +33,12 @@ class ShowProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        profileViewModel.user.observe(this.viewLifecycleOwner, Observer{
+        if (profileViewModel.user == null){
+            Log.d("errore", "errore")
+        }
+
+        // QUESTO E' IL BLOCCO CHE CREA PROBLEMI: per testare qualsiasi altra cosa, commentare..
+        /*profileViewModel.user.observe(this.viewLifecycleOwner, Observer{
             if (it.name != null && it.name.isNotEmpty())
                 full_name.text = it.name
             if (it.nickname != null && it.nickname.isNotEmpty())
@@ -47,7 +53,8 @@ class ShowProfileFragment : Fragment() {
                     if (image != null) user_photo.setImageBitmap(image)
                 }
             }
-        })
+        })*/
+        // ...fino a qua
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

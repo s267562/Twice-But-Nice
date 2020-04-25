@@ -32,7 +32,7 @@
             app:layout_constraintBottom_toTopOf="@+id/info_container">
 
             <ImageButton
-                android:id="@+id/camera_button"
+                android:id="@+id/camera_button_adv"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@drawable/round_bg"
@@ -43,7 +43,7 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <ImageButton
-                android:id="@+id/rotation_button"
+                android:id="@+id/rotation_button_adv"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@drawable/round_bg"
@@ -106,7 +106,7 @@
                 android:maxLines="1"
                 android:hint="Title"
                 android:inputType="textCapWords"
-                android:imeOptions="actionDone" />
+                android:imeOptions="actionNext" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -122,16 +122,46 @@
                 android:maxLines="1"
                 android:hint="Location"
                 android:inputType="textAutoCorrect"
-                android:imeOptions="actionDone" />
+                android:imeOptions="actionNext" />
         </com.google.android.material.textfield.TextInputLayout>
-
 
         <Spinner
             android:id="@+id/item_category_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:prompt="@string/category_def"
             android:spinnerMode="dropdown"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/item_price"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Price"
+                android:imeOptions="actionNext"
+                android:inputType="numberDecimal"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <DatePicker
+            android:id="@+id/item_exp_date"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:accessibilityPaneTitle="Expiry Date"
+            android:visibility="gone"
+            android:imeOptions="actionNext"
+            android:maxLines="1"></DatePicker>
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -142,7 +172,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="Description"
-                android:imeOptions="actionNext"
+                android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
                 android:maxLines="5" />
         </com.google.android.material.textfield.TextInputLayout>

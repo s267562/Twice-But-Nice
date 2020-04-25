@@ -16,6 +16,8 @@
     <string name="menu_advertisements">Advertisements</string>
     <string name="menu_show_advertisement">Details</string>
 
+    <string name="category_def">Category</string>
+
 
     <string-array name="item_categories">
         <item>Mercury</item>

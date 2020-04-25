@@ -4,22 +4,29 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.*
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import it.polito.mad.project.R
+import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.User
 import kotlinx.android.synthetic.main.activity_edit_profile.*
@@ -33,6 +40,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.jar.Manifest
 
 class EditProfileFragment : Fragment() {
 
@@ -57,7 +65,8 @@ class EditProfileFragment : Fragment() {
 
         var image: Bitmap?=null
 
-        profileViewModel.user.observe(this.viewLifecycleOwner, Observer{
+        // QUESTO E' IL BLOCCO CHE CREA PROBLEMI: per testare, commentare da qua...
+        /*profileViewModel.user.observe(this.viewLifecycleOwner, Observer{
             if (it.name != null && it.name.isNotEmpty())
                 full_name.text = it.name
             if (it.nickname != null && it.nickname.isNotEmpty())
@@ -72,7 +81,9 @@ class EditProfileFragment : Fragment() {
                     if (image != null) user_photo.setImageBitmap(image)
                 }
             }
-        })
+        })*/
+         // a qua
+
         registerForContextMenu(camera_button)
 
         camera_button.isLongClickable = false
@@ -148,8 +159,8 @@ class EditProfileFragment : Fragment() {
 
     @SuppressLint("UseRequireInsteadOfGet")
     private fun openCamera() {
-        /*if (ContextCompat.checkSelfPermission(activity?.baseContext!!, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+        if (ContextCompat.checkSelfPermission(activity?.baseContext!!, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity!!, arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
         } else {
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             if (cameraIntent.resolveActivity(activity?.packageManager!!) != null) {
@@ -171,9 +182,7 @@ class EditProfileFragment : Fragment() {
             } else {
                 //displayMessage(baseContext, "Camera Intent Resolve Activity is null.")
             }
-        }*/
-        val cInt = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        startActivityForResult(cInt, TAKE_PIC)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -181,15 +190,12 @@ class EditProfileFragment : Fragment() {
         rotation_button.visibility=View.VISIBLE
 
         // Open Camera
-        /*if (requestCode == IntentRequest.UserImage.CODE && resultCode == Activity.RESULT_OK){
+        if (requestCode == IntentRequest.UserImage.CODE && resultCode == Activity.RESULT_OK){
             val file = File(this.imagePath)
             val uri: Uri = Uri.fromFile(file)
             user_photo.setImageURI(uri)
-        }*/
-        if (requestCode === TAKE_PIC && resultCode === Activity.RESULT_OK) {
-            val bp = data!!.extras!!["data"] as Bitmap?
-            user_photo.setImageBitmap(bp)
         }
+
         // Open Gallery
         else if (requestCode == SELECT_IMAGE && resultCode == Activity.RESULT_OK){
             val uriPic = data?.data
@@ -204,7 +210,6 @@ class EditProfileFragment : Fragment() {
             }
 
         } else {
-            //displayMessage(baseContext, "Select image wrong")
             Toast.makeText(activity?.baseContext, "Something wrong", Toast.LENGTH_SHORT).show()
         }
     }

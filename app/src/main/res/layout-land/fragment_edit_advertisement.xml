@@ -34,7 +34,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageButton
-                android:id="@+id/camera_button"
+                android:id="@+id/camera_button_adv"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@drawable/round_bg"
@@ -45,7 +45,7 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <ImageButton
-                android:id="@+id/rotation_button"
+                android:id="@+id/rotation_button_adv"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@drawable/round_bg"
