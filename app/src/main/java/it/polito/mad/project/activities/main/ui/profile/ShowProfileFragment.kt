@@ -37,24 +37,24 @@ class ShowProfileFragment : StoreFileFragment() {
             Log.d("errore", "errore")
         }
 
-        // QUESTO E' IL BLOCCO CHE CREA PROBLEMI: per testare qualsiasi altra cosa, commentare..
-        /*profileViewModel.user.observe(this.viewLifecycleOwner, Observer{
-            if (it.name != null && it.name.isNotEmpty())
-                full_name.text = it.name
-            if (it.nickname != null && it.nickname.isNotEmpty())
-                nickname.text = it.nickname
-            if (it.email != null && it.email.isNotEmpty())
-                email.text = it.email
-            if (it.location != null && it.location.isNotEmpty())
-                location.text = it.location
-            if (it.photoProfilePath != null && it.photoProfilePath.isNotEmpty()) {
-                if (File(it.photoProfilePath).isFile){
-                    val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
-                    if (image != null) user_photo.setImageBitmap(image)
+        profileViewModel.user.observe(this.viewLifecycleOwner, Observer{
+            if (it != null) {
+                if (it.name != null && it.name.isNotEmpty())
+                    full_name.text = it.name
+                if (it.nickname != null && it.nickname.isNotEmpty())
+                    nickname.text = it.nickname
+                if (it.email != null && it.email.isNotEmpty())
+                    email.text = it.email
+                if (it.location != null && it.location.isNotEmpty())
+                    location.text = it.location
+                if (it.photoProfilePath != null && it.photoProfilePath.isNotEmpty()) {
+                    if (File(it.photoProfilePath).isFile){
+                        val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
+                        if (image != null) user_photo.setImageBitmap(image)
+                    }
                 }
             }
-        })*/
-        // ...fino a qua
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -66,7 +66,7 @@ class ShowProfileFragment : StoreFileFragment() {
         // Handle item selection
         return when (item.itemId) {
             R.id.pencil_option -> {
-                Toast.makeText(activity?.baseContext,"Editing in opening...", Toast.LENGTH_SHORT).show()
+                saveToStoreFile(StoreFileKey.USER, profileViewModel.user.value)
                 this.findNavController().navigate(R.id.action_showProfileFragment_to_editProfileFragment)
                 true
             }

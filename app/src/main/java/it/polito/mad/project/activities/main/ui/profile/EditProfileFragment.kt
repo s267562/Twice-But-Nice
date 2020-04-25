@@ -65,24 +65,25 @@ class EditProfileFragment : StoreFileFragment() {
 
         var image: Bitmap?=null
 
-        // QUESTO E' IL BLOCCO CHE CREA PROBLEMI: per testare, commentare da qua...
-        /*profileViewModel.user.observe(this.viewLifecycleOwner, Observer{
-            if (it.name != null && it.name.isNotEmpty())
-                full_name.text = it.name
-            if (it.nickname != null && it.nickname.isNotEmpty())
-                nickname.text = it.nickname
-            if (it.email != null && it.email.isNotEmpty())
-                email.text = it.email
-            if (it.location != null && it.location.isNotEmpty())
-                location.text = it.location
-            if (it.photoProfilePath != null && it.photoProfilePath.isNotEmpty()) {
-                if (File(it.photoProfilePath).isFile){
-                    val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
-                    if (image != null) user_photo.setImageBitmap(image)
+        profileViewModel.user.observe(this.viewLifecycleOwner, Observer{
+            if (it != null) {
+                if (it.name != null && it.name.isNotEmpty())
+                    full_name.text = it.name
+                if (it.nickname != null && it.nickname.isNotEmpty())
+                    nickname.text = it.nickname
+                if (it.email != null && it.email.isNotEmpty())
+                    email.text = it.email
+                if (it.location != null && it.location.isNotEmpty())
+                    location.text = it.location
+                if (it.photoProfilePath != null && it.photoProfilePath.isNotEmpty()) {
+                    if (File(it.photoProfilePath).isFile)  {
+                        savedImagePath = it.photoProfilePath
+                        val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
+                        if (image != null) user_photo.setImageBitmap(image)
+                    }
                 }
             }
-        })*/
-         // a qua
+        })
 
         registerForContextMenu(camera_button)
 
@@ -125,8 +126,8 @@ class EditProfileFragment : StoreFileFragment() {
         // Handle item selection
         return when (item.itemId) {
             R.id.save_option -> {
-                Toast.makeText(activity?.baseContext, "Save button clicked", Toast.LENGTH_SHORT).show()
-                this.findNavController().navigate(R.id.action_editProfileFragment_to_showProfileFragment)
+                saveProfile()
+                this.findNavController().popBackStack()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -228,7 +229,7 @@ class EditProfileFragment : StoreFileFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        saveToStoreFile(StoreFileKey.USER, profileViewModel)
+        saveToStoreFile(StoreFileKey.USER, profileViewModel.user.value)
     }
 
     private fun rotateImage(img:Bitmap, degree:Int):Bitmap {
@@ -242,5 +243,21 @@ class EditProfileFragment : StoreFileFragment() {
         rotatedImg.compress(Bitmap.CompressFormat.JPEG,100,fOut)
         this.imagePath=file.absolutePath
         return rotatedImg
+    }
+
+    // punto 7
+    private fun saveProfile() {
+        if(savedImagePath == null && imagePath != null){
+            savedImagePath = imagePath
+        }else if (savedImagePath != null && imagePath != savedImagePath && imagePath != null){
+            File(savedImagePath).delete()
+            savedImagePath = imagePath
+        }
+        val name = full_name.text.toString()
+        val nickname = nickname.text.toString()
+        val email = email.text.toString()
+        val location = location.text.toString()
+        var path = savedImagePath
+        saveToStoreFile(StoreFileKey.USER, User(name,"", nickname, email, location, path))
     }
 }
