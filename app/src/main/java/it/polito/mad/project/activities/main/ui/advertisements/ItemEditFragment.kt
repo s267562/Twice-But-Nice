@@ -54,6 +54,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         setCameraButtons()
         setDatePicker()
         setCategorySpinner()
+        // TODO: impostare le sub categories
 
         if (item != null) {
             item_title.setText(item.title)

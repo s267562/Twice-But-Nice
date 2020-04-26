@@ -33,9 +33,7 @@ class ShowItemFragment : StoreFileFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         item = Gson().fromJson(arguments?.getString(ArgumentKey.SHOW_ITEM), Item::class.java)
-        if (item == null) {
-            item = loadFromStoreFile(StoreFileKey.ITEM, Item::class.java)?:item
-        }
+        item = loadFromStoreFile(StoreFileKey.ITEM, Item::class.java)?:item
 
         if (item != null) {
             item_title.text = item.title

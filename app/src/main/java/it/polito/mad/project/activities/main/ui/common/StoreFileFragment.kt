@@ -46,6 +46,13 @@ open class StoreFileFragment : Fragment() {
         prefsEditor?.commit()
     }
 
+    open fun removeFromStoreFile(key: String) {
+        val sharedPref = this.activity?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
+        val prefsEditor = sharedPref?.edit()
+        prefsEditor?.remove(key)
+        prefsEditor?.commit()
+    }
+
     // Methods to manage the camera
     open fun openGallery(){
         val galleryIntent = Intent()

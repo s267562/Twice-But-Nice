@@ -1,21 +1,15 @@
 package it.polito.mad.project.activities.main.ui.advertisements
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.gson.Gson
 import it.polito.mad.project.R
 import it.polito.mad.project.activities.main.ui.common.StoreFileFragment
-import it.polito.mad.project.adapters.ItemAdapter
-import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_list_advertisement.*
@@ -38,7 +32,11 @@ class ListAdvertisementFragment : StoreFileFragment() {
 
         adsViewModel.items = loadFromStoreFile(StoreFileKey.ITEMS, Array<Item>::class.java)?.toMutableList()?: mutableListOf()
         adsViewModel.index.value = adsViewModel.items.size
-        adsViewModel.adapter = ItemAdapter(adsViewModel.items)
+        adsViewModel.adapter.setItems(adsViewModel.items)
+
+        // RESET
+        removeFromStoreFile(StoreFileKey.ITEM)
+        removeFromStoreFile(StoreFileKey.TEMP_ITEM)
         return inflater.inflate(R.layout.fragment_list_advertisement, container, false)
     }
 
@@ -57,6 +55,7 @@ class ListAdvertisementFragment : StoreFileFragment() {
     private fun setFabButton() {
         saleFab.show()
         saleFab.setOnClickListener {
+
             saveToStoreFile(StoreFileKey.TEMP_ITEM, Item(adsViewModel.index.value?:0))
             this.findNavController().navigate(R.id.action_navAdvertisements_to_itemEditFragment)
         }

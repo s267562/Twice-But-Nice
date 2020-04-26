@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import it.polito.mad.project.R
@@ -17,7 +18,7 @@ import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_edit_advertisement.*
 
-class ItemAdapter(private val items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
+class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val userItemView = LayoutInflater.from(parent.context).inflate(
@@ -38,6 +39,11 @@ class ItemAdapter(private val items: MutableList<Item>) : RecyclerView.Adapter<I
         holder.unbind()
     }
 
+    fun setItems(newItems: MutableList<Item>) {
+        val diffs = DiffUtil.calculateDiff(ItemDiffCallback(items, newItems))
+        items = newItems //update data
+        diffs.dispatchUpdatesTo(this) //animate UI
+    }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val title: TextView = view.findViewById(R.id.itemTitle)

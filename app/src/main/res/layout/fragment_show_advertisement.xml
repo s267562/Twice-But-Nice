@@ -47,21 +47,25 @@
                 android:id="@+id/item_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="(empty title)"
                 android:text="Item Title"
-                android:textColor="@android:color/white"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:layout_marginTop="16dp"/>
+                android:textColor="@android:color/white"
+                android:textColorHint="@color/design_default_color_background" />
 
             <TextView
                 android:id="@+id/item_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Location"
-                android:textColor="@android:color/white"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:drawableLeft="@drawable/ic_location_24dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                android:drawableLeft="@drawable/ic_location_24dp"
+                android:hint="(empty location)"
+                android:text="Location"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@android:color/white"
+                android:textColorHint="@color/design_default_color_background" />
         </LinearLayout>
 
         <LinearLayout
@@ -141,6 +145,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Category"
+                        android:hint="(empty category)"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:layout_marginBottom="16dp"
                         android:maxLines="1"/>
@@ -159,6 +164,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Expiry Date"
+                        android:hint="(empty expiry date)"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:layout_marginBottom="16dp"
                         android:maxLines="1" />
@@ -168,6 +174,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Description"
+                        android:hint="(empty description)"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:layout_marginBottom="16dp"
                         android:maxLines="10" />
