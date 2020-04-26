@@ -1,8 +1,11 @@
 package it.polito.mad.project.adapters
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
@@ -12,6 +15,7 @@ import com.google.gson.Gson
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.models.Item
+import kotlinx.android.synthetic.main.fragment_edit_advertisement.*
 
 class ItemAdapter(private val items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
@@ -25,7 +29,7 @@ class ItemAdapter(private val items: MutableList<Item>) : RecyclerView.Adapter<I
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(items[position]) {
-                var bundle = bundleOf(ArgumentKey.ITEM to Gson().toJson(items[position]))
+                var bundle = bundleOf(ArgumentKey.SHOW_ITEM to Gson().toJson(items[position]))
                 holder.itemView.findNavController().navigate(R.id.action_navAdvertisements_to_showItemFragment, bundle)
         }
     }

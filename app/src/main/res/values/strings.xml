@@ -15,19 +15,20 @@
     <string name="menu_edit_profile">Edit Profile</string>
     <string name="menu_advertisements">Advertisements</string>
     <string name="menu_show_advertisement">Details</string>
+    <string name="menu_edit_advertisement">Edit Item</string>
 
     <string name="category_def">Category</string>
 
 
     <string-array name="item_categories">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
+        <item>Arts &amp; Crafts</item>
+        <item>Sports &amp; Hobby</item>
+        <item>Baby</item>
+        <item>Women\'s fashion</item>
+        <item>Men\'s fashion</item>
+        <item>Electronics</item>
+        <item>Games &amp; Videogames</item>
+        <item>Automotive</item>
     </string-array>
 
 </resources>

@@ -41,6 +41,9 @@
         <action
             android:id="@+id/action_navAdvertisements_to_navHome"
             app:destination="@id/navHome" />
+        <action
+            android:id="@+id/action_navAdvertisements_to_itemEditFragment"
+            app:destination="@id/itemEditFragment" />
     </fragment>
     <fragment
         android:id="@+id/showItemFragment"
@@ -61,13 +64,16 @@
     <fragment
         android:id="@+id/itemEditFragment"
         android:name="it.polito.mad.project.activities.main.ui.advertisements.ItemEditFragment"
-        android:label="@string/menu_show_advertisement"
-        tools:layout="@layout/fragment_edit_advertisement" >
+        android:label="@string/menu_edit_advertisement"
+        tools:layout="@layout/fragment_edit_advertisement">
 
         <action
             android:id="@+id/action_itemEditFragment_to_showItemFragment"
             app:destination="@id/showItemFragment"
             app:popUpTo="@id/showItemFragment" />
+        <action
+            android:id="@+id/action_itemEditFragment_to_navAdvertisements"
+            app:destination="@id/navAdvertisements" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
