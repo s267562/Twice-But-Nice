@@ -1,23 +1,21 @@
 package it.polito.mad.project.activities.main.ui.profile
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.gson.Gson
 import it.polito.mad.project.R
 import it.polito.mad.project.activities.main.ui.common.StoreFileFragment
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.User
-import kotlinx.android.synthetic.main.activity_show_profile.*
+import kotlinx.android.synthetic.main.fragment_show_profile.*
 import java.io.File
+
+// POINT 6: Convert the ShowProfileActivity into Fragment
 
 class ShowProfileFragment : StoreFileFragment() {
 
@@ -27,7 +25,7 @@ class ShowProfileFragment : StoreFileFragment() {
         profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)?:profileViewModel.user.value
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.activity_show_profile, container, false)
+        return inflater.inflate(R.layout.fragment_show_profile, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

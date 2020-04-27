@@ -11,6 +11,8 @@ import it.polito.mad.project.R
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
+// POINT 2: Implement the MainActivity, controller of fragments and Navigation
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration

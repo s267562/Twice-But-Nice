@@ -16,7 +16,7 @@ import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.User
 import it.polito.mad.project.activities.profile.ui.UserViewModel
-import kotlinx.android.synthetic.main.activity_show_profile.*
+import kotlinx.android.synthetic.main.fragment_show_profile.*
 import java.io.File
 
 class ShowProfileActivity : AppCompatActivity() {
@@ -25,7 +25,7 @@ class ShowProfileActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_show_profile)
+        setContentView(R.layout.fragment_show_profile)
 
         supportActionBar!!.elevation = 0f
 

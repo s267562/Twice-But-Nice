@@ -15,7 +15,7 @@ import android.widget.ImageButton
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import kotlinx.android.synthetic.main.activity_edit_profile.*
+import kotlinx.android.synthetic.main.fragment_edit_profile.*
 
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -25,11 +25,11 @@ import androidx.core.content.FileProvider
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.R
 import it.polito.mad.project.models.User
-import kotlinx.android.synthetic.main.activity_edit_profile.email
-import kotlinx.android.synthetic.main.activity_edit_profile.full_name
-import kotlinx.android.synthetic.main.activity_edit_profile.location
-import kotlinx.android.synthetic.main.activity_edit_profile.nickname
-import kotlinx.android.synthetic.main.activity_edit_profile.user_photo
+import kotlinx.android.synthetic.main.fragment_edit_profile.email
+import kotlinx.android.synthetic.main.fragment_edit_profile.full_name
+import kotlinx.android.synthetic.main.fragment_edit_profile.location
+import kotlinx.android.synthetic.main.fragment_edit_profile.nickname
+import kotlinx.android.synthetic.main.fragment_edit_profile.user_photo
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -46,7 +46,7 @@ class EditProfileActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_profile)
+        setContentView(R.layout.fragment_edit_profile)
         registerForContextMenu(camera_button)
 
         supportActionBar!!.elevation = 0f

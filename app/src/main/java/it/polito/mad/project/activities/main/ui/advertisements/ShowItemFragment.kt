@@ -14,6 +14,8 @@ import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_show_advertisement.*
 
+// POINT 3: Implement the ItemDetailsFragment
+
 class ShowItemFragment : StoreFileFragment() {
 
 //    private lateinit var viewModel: ShowItemViewModel

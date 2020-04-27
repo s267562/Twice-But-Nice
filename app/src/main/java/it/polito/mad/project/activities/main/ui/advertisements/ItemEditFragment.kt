@@ -34,6 +34,8 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
+// POINT 4: Implement the ItemEditFragment
+
 class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var item: Item

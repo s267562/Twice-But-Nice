@@ -19,7 +19,7 @@
         android:id="@+id/showProfileFragment"
         android:name="it.polito.mad.project.activities.main.ui.profile.ShowProfileFragment"
         android:label="@string/menu_profile"
-        tools:layout="@layout/activity_show_profile" >
+        tools:layout="@layout/fragment_show_profile" >
         <action
             android:id="@+id/action_showProfileFragment_to_navHome"
             app:destination="@id/navHome" />
@@ -79,7 +79,7 @@
         android:id="@+id/editProfileFragment"
         android:name="it.polito.mad.project.activities.main.ui.profile.EditProfileFragment"
         android:label="@string/menu_edit_profile"
-        tools:layout="@layout/activity_edit_profile" >
+        tools:layout="@layout/fragment_edit_profile" >
         <action
             android:id="@+id/action_editProfileFragment_to_showProfileFragment"
             app:destination="@id/showProfileFragment" />
