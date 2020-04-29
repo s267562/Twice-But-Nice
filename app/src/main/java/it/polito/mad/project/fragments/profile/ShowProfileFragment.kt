@@ -31,17 +31,13 @@ class ShowProfileFragment : StoreFileFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
-        profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)?:profileViewModel.user.value
+        profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_show_profile, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        if (profileViewModel.user == null){
-            Log.d("errore", "errore")
-        }
 
         profileViewModel.user.observe(this.viewLifecycleOwner, Observer{
             if (it != null) {

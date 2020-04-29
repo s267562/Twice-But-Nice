@@ -26,7 +26,7 @@ import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.Item
-import kotlinx.android.synthetic.main.fragment_edit_advertisement.*
+import kotlinx.android.synthetic.main.fragment_item_edit.*
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -44,7 +44,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         item = loadFromStoreFile(StoreFileKey.TEMP_ITEM, Item::class.java)?:item
-        return inflater.inflate(R.layout.fragment_edit_advertisement, container, false)
+        return inflater.inflate(R.layout.fragment_item_edit, container, false)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)

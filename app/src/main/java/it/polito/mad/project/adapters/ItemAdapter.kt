@@ -16,7 +16,7 @@ import com.google.gson.Gson
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.models.Item
-import kotlinx.android.synthetic.main.fragment_edit_advertisement.*
+import kotlinx.android.synthetic.main.fragment_item_edit.*
 
 class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 

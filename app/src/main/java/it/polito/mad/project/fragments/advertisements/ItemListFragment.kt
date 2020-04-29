@@ -12,13 +12,13 @@ import it.polito.mad.project.R
 import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.Item
-import kotlinx.android.synthetic.main.fragment_list_advertisement.*
+import kotlinx.android.synthetic.main.fragment_item_list.*
 
 // POINT 5: Implement ItemListFragment
 
-class ListAdvertisementFragment : StoreFileFragment() {
+class ItemListFragment : StoreFileFragment() {
 
-    private lateinit var adsViewModel: ListAdvertisementViewModel
+    private lateinit var adsViewModel: ItemListViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,7 +26,7 @@ class ListAdvertisementFragment : StoreFileFragment() {
         savedInstanceState: Bundle?
     ): View? {
         adsViewModel =
-            ViewModelProvider(this).get(ListAdvertisementViewModel::class.java)
+            ViewModelProvider(this).get(ItemListViewModel::class.java)
 
         adsViewModel.index.observe(this.viewLifecycleOwner, Observer {
             emptyMessage.text = if (it == 0) "Non ci sono elementi in vendita" else ""
@@ -39,7 +39,7 @@ class ListAdvertisementFragment : StoreFileFragment() {
         // RESET
         removeFromStoreFile(StoreFileKey.ITEM)
         removeFromStoreFile(StoreFileKey.TEMP_ITEM)
-        return inflater.inflate(R.layout.fragment_list_advertisement, container, false)
+        return inflater.inflate(R.layout.fragment_item_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

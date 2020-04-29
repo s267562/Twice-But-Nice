@@ -12,11 +12,11 @@ import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.Item
-import kotlinx.android.synthetic.main.fragment_show_advertisement.*
+import kotlinx.android.synthetic.main.fragment_item_details.*
 
 // POINT 3: Implement the ItemDetailsFragment
 
-class ShowItemFragment : StoreFileFragment() {
+class ItemDetailsFragment : StoreFileFragment() {
 
 //    private lateinit var viewModel: ShowItemViewModel
     private lateinit var item: Item
@@ -29,7 +29,7 @@ class ShowItemFragment : StoreFileFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_show_advertisement, container, false)
+        return inflater.inflate(R.layout.fragment_item_details, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
