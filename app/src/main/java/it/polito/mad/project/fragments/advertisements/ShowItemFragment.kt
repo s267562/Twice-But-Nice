@@ -1,4 +1,4 @@
-package it.polito.mad.project.activities.main.ui.advertisements
+package it.polito.mad.project.fragments.advertisements
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -8,7 +8,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 
 import it.polito.mad.project.R
-import it.polito.mad.project.activities.main.ui.common.StoreFileFragment
+import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.Item

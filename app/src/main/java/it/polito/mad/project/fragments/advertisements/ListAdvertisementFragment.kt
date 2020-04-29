@@ -1,4 +1,4 @@
-package it.polito.mad.project.activities.main.ui.advertisements
+package it.polito.mad.project.fragments.advertisements
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.R
-import it.polito.mad.project.activities.main.ui.common.StoreFileFragment
+import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_list_advertisement.*

@@ -1,6 +1,5 @@
-package it.polito.mad.project.activities.main.ui.advertisements
+package it.polito.mad.project.fragments.advertisements
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import it.polito.mad.project.adapters.ItemAdapter

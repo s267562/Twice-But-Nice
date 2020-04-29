@@ -1,5 +1,6 @@
-package it.polito.mad.project.activities.main.ui.profile
+package it.polito.mad.project.fragments.profile
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -9,9 +10,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
-import it.polito.mad.project.activities.main.ui.common.StoreFileFragment
+import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.User
+import it.polito.mad.project.viewModels.ProfileViewModel
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 import java.io.File
 
@@ -20,6 +22,12 @@ import java.io.File
 class ShowProfileFragment : StoreFileFragment() {
 
     private lateinit var profileViewModel: ProfileViewModel
+    private lateinit var mContext: Context
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)

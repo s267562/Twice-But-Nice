@@ -1,4 +1,4 @@
-package it.polito.mad.project.activities.main
+package it.polito.mad.project
 
 import android.os.Bundle
 import androidx.navigation.findNavController

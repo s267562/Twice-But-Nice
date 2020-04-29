@@ -1,4 +1,4 @@
-package it.polito.mad.project.activities.main.ui.advertisements
+package it.polito.mad.project.fragments.advertisements
 
 import androidx.lifecycle.ViewModel
 

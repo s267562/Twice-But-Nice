@@ -1,7 +1,8 @@
-package it.polito.mad.project.activities.main.ui.profile
+package it.polito.mad.project.fragments.profile
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -16,17 +17,17 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
-import it.polito.mad.project.activities.main.ui.common.StoreFileFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
+import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.User
+import it.polito.mad.project.viewModels.ProfileViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_show_profile.email
 import kotlinx.android.synthetic.main.fragment_show_profile.full_name
@@ -47,6 +48,12 @@ class EditProfileFragment : StoreFileFragment() {
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
+    private lateinit var mContext: Context
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         profileViewModel =
@@ -59,6 +66,10 @@ class EditProfileFragment : StoreFileFragment() {
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (savedInstanceState != null) {
+            imagePath = savedInstanceState.getString("ImagePath")
+        }
 
         var image: Bitmap?=null
 
@@ -81,6 +92,11 @@ class EditProfileFragment : StoreFileFragment() {
                 }
             }
         })
+
+        if (this.imagePath != null){
+            image = BitmapFactory.decodeFile(imagePath)
+            this.user_photo.setImageBitmap(image)
+        }
 
         registerForContextMenu(camera_button)
 
@@ -136,12 +152,12 @@ class EditProfileFragment : StoreFileFragment() {
         return when (item.itemId) {
             R.id.select_image -> {
                 openGallery()
-                Toast.makeText(activity?.baseContext, "Select image button clicked", Toast.LENGTH_SHORT).show()
+                Toast.makeText(mContext, "Select image button clicked", Toast.LENGTH_SHORT).show()
                 true
             }
             R.id.take_pic -> {
                 openCamera()
-                Toast.makeText(activity?.baseContext, "Open Camera clicked", Toast.LENGTH_SHORT).show()
+                Toast.makeText(mContext, "Open Camera clicked", Toast.LENGTH_SHORT).show()
                 true
             }
             else -> super.onContextItemSelected(item)
@@ -150,20 +166,19 @@ class EditProfileFragment : StoreFileFragment() {
 
     @SuppressLint("UseRequireInsteadOfGet")
     private fun openCamera() {
-        if (ContextCompat.checkSelfPermission(activity?.baseContext!!, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity!!, arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+        if (ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE),0)
         } else {
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             if (cameraIntent.resolveActivity(activity?.packageManager!!) != null) {
                 // Create the File where the photo should go
                 imageFile = createImageFile()
-                //displayMessage(baseContext, imageFile!!.absolutePath)
                 Log.i("TeamSVIK", imageFile!!.absolutePath)
 
                 // Continue only if the File was successfully created
                 if (imageFile != null) {
                     imagePath = imageFile!!.absolutePath
-                    var photoURI = FileProvider.getUriForFile(activity?.baseContext!!,
+                    var photoURI = FileProvider.getUriForFile(mContext,
                         "it.polito.mad.project",
                         imageFile!!
                     )
@@ -171,7 +186,19 @@ class EditProfileFragment : StoreFileFragment() {
                     startActivityForResult(cameraIntent, IntentRequest.UserImage.CODE)
                 }
             } else {
-                //displayMessage(baseContext, "Camera Intent Resolve Activity is null.")
+                //displayMessage(mContext, "Camera Intent Resolve Activity is null.")
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == 0){
+            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                openCamera()
+            } else {
+                //displayMessage(baseContext, "Camera Permission has been denied")
             }
         }
     }
@@ -201,7 +228,7 @@ class EditProfileFragment : StoreFileFragment() {
             }
 
         } else {
-            Toast.makeText(activity?.baseContext, "Something wrong", Toast.LENGTH_SHORT).show()
+            Toast.makeText(mContext, "Something wrong", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -256,4 +283,21 @@ class EditProfileFragment : StoreFileFragment() {
         var path = savedImagePath
         saveToStoreFile(StoreFileKey.USER, User(name,"", nickname, email, location, path))
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (this.imagePath != null) {
+            outState.putString("ImagePath", this.imagePath)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (activity?.isFinishing!! && imagePath!=null && imagePath!=savedImagePath){
+            File(imagePath).delete()
+        }else{
+            //it's an orientation change
+        }
+    }
+
 }

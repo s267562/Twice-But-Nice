@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/showProfileFragment">
+    app:startDestination="@id/navAdvertisements">
 
     <fragment android:id="@+id/navHome">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/showProfileFragment"
-        android:name="it.polito.mad.project.activities.main.ui.profile.ShowProfileFragment"
+        android:name="it.polito.mad.project.fragments.profile.ShowProfileFragment"
         android:label="@string/menu_profile"
         tools:layout="@layout/fragment_show_profile" >
         <action
@@ -30,7 +30,7 @@
 
     <fragment
         android:id="@+id/navAdvertisements"
-        android:name="it.polito.mad.project.activities.main.ui.advertisements.ListAdvertisementFragment"
+        android:name="it.polito.mad.project.fragments.advertisements.ListAdvertisementFragment"
         android:label="@string/menu_advertisements"
         tools:layout="@layout/fragment_list_advertisement" >
         <action
@@ -47,7 +47,7 @@
     </fragment>
     <fragment
         android:id="@+id/showItemFragment"
-        android:name="it.polito.mad.project.activities.main.ui.advertisements.ShowItemFragment"
+        android:name="it.polito.mad.project.fragments.advertisements.ShowItemFragment"
         android:label="@string/menu_show_advertisement"
         tools:layout="@layout/fragment_show_advertisement">
         <action
@@ -63,7 +63,7 @@
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"
-        android:name="it.polito.mad.project.activities.main.ui.advertisements.ItemEditFragment"
+        android:name="it.polito.mad.project.fragments.advertisements.ItemEditFragment"
         android:label="@string/menu_edit_advertisement"
         tools:layout="@layout/fragment_edit_advertisement">
 
@@ -77,7 +77,7 @@
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
-        android:name="it.polito.mad.project.activities.main.ui.profile.EditProfileFragment"
+        android:name="it.polito.mad.project.fragments.profile.EditProfileFragment"
         android:label="@string/menu_edit_profile"
         tools:layout="@layout/fragment_edit_profile" >
         <action
