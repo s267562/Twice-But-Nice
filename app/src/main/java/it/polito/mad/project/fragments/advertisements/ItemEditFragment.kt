@@ -130,7 +130,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
     @SuppressLint("UseRequireInsteadOfGet")
     private fun openCamera() {
         if (ContextCompat.checkSelfPermission(activity?.baseContext!!, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity!!, arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+            requestPermissions(arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE),0)
         } else {
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             if (cameraIntent.resolveActivity(activity?.packageManager!!) != null) {
@@ -151,6 +151,18 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                 }
             } else {
                 //displayMessage(baseContext, "Camera Intent Resolve Activity is null.")
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == 0){
+            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                openCamera()
+            } else {
+                //displayMessage(baseContext, "Camera Permission has been denied")
             }
         }
     }
@@ -249,14 +261,17 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
             val day = cldr[Calendar.DAY_OF_MONTH]
             val month = cldr[Calendar.MONTH]
             val year = cldr[Calendar.YEAR]
-            // date picker dialog
-            var picker = context?.let {
+            context?.let {
                 DatePickerDialog(
                     it,
-                    DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth -> item_exp.setText(dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year) }, year, month, day
-                )
+                    DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+                        item_exp.setText(
+                            dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year
+                        )
+                    },
+                    year, month, day
+                ).show()
             }
-            picker?.show()
         }
     }
 
@@ -278,7 +293,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
 
         if(savedImagePath == null && imagePath != null){
             savedImagePath = imagePath
-        }else if (savedImagePath != null && imagePath != savedImagePath && imagePath != null){
+        } else if (savedImagePath != null && imagePath != savedImagePath && imagePath != null){
             File(savedImagePath).delete()
             savedImagePath = imagePath
         }
@@ -290,7 +305,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         item.imagePath = savedImagePath
         item.category = item.category
         item.categoryPos = item.categoryPos
-        if (items.size > item.id)  items[item.id] = item else items.add(item)
+        if (items.size > item.id) items[item.id] = item else items.add(item)
         saveToStoreFile(StoreFileKey.ITEM, item)
         saveToStoreFile(StoreFileKey.ITEMS, items.toTypedArray())
     }

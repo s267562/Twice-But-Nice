@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.cardview.widget.CardView
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -16,7 +16,7 @@ import com.google.gson.Gson
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.models.Item
-import kotlinx.android.synthetic.main.fragment_item_edit.*
+import java.io.File
 
 class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
@@ -30,8 +30,8 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(items[position]) {
-                var bundle = bundleOf(ArgumentKey.SHOW_ITEM to Gson().toJson(items[position]))
-                holder.itemView.findNavController().navigate(R.id.action_navAdvertisements_to_showItemFragment, bundle)
+            var bundle = bundleOf(ArgumentKey.SHOW_ITEM to Gson().toJson(items[position]))
+            holder.itemView.findNavController().navigate(R.id.action_navAdvertisements_to_showItemFragment, bundle)
         }
     }
 
@@ -45,14 +45,20 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
         diffs.dispatchUpdatesTo(this) //animate UI
     }
 
+
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        private val title: TextView = view.findViewById(R.id.itemTitle)
-        private val description: TextView = view.findViewById(R.id.itemDescription)
-        private val container: ConstraintLayout = view.findViewById(R.id.itemContainer)
+        private val category: TextView = view.findViewById(R.id.item_category)
+        private val title: TextView = view.findViewById(R.id.item_title)
+        private val price: TextView = view.findViewById(R.id.item_price)
+        private val container: CardView = view.findViewById(R.id.item_container)
 
         fun bind(item: Item, callback: (Int) -> Unit) {
+            val priceStr = "${item.price} €"
+
+            category.text = item.category
             title.text = item.title
-            description.text = item.description
+            price.text = priceStr
+
             container.setOnClickListener { callback(adapterPosition) }
         }
 

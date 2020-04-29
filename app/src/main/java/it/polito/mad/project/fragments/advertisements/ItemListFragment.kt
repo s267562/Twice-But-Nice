@@ -1,5 +1,6 @@
 package it.polito.mad.project.fragments.advertisements
 
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +30,13 @@ class ItemListFragment : StoreFileFragment() {
             ViewModelProvider(this).get(ItemListViewModel::class.java)
 
         adsViewModel.index.observe(this.viewLifecycleOwner, Observer {
-            emptyMessage.text = if (it == 0) "Non ci sono elementi in vendita" else ""
+            if(it == 0) {
+                emptyListLayout.visibility = View.VISIBLE
+                itemRecyclerView.visibility = View.GONE
+            } else {
+                emptyListLayout.visibility = View.GONE
+                itemRecyclerView.visibility = View.VISIBLE
+            }
         })
 
         adsViewModel.items = loadFromStoreFile(StoreFileKey.ITEMS, Array<Item>::class.java)?.toMutableList()?: mutableListOf()
