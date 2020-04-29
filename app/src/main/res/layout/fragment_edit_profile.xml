@@ -71,7 +71,7 @@
                     app:srcCompat="@drawable/ic_person_24dp"
                     android:scaleY="1.2"
                     android:scaleX="1.2"
-                    android:background="@color/lightBlueGray"
+                    android:background="@color/colorPrimaryLight"
                     android:contentDescription="user photo"
                     android:scaleType="centerCrop" />
             </androidx.cardview.widget.CardView>

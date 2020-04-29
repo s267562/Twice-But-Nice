@@ -71,7 +71,7 @@
                     android:id="@+id/item_photo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/lightBlueGray"
+                    android:background="@color/colorPrimaryLight"
                     android:contentDescription="item photo"
                     android:scaleType="centerCrop"
                     android:scaleX="1.0"
@@ -179,19 +179,17 @@
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <EditText
+                android:id="@+id/item_exp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp"
+                android:hint="Expiry Date"
+                android:maxLines="1"
+                android:imeOptions="actionDone"
+                android:inputType="datetime"
+                android:editable="false" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/item_exp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Expiry Date"
-                    android:imeOptions="actionDone"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -30,10 +30,9 @@
         android:visibility="visible">
 
         <ImageView
-            android:layout_width="128dp"
+            android:layout_width="wrap_content"
             android:layout_height="128dp"
-            android:src="@drawable/ic_format_list_bulleted_24dp"
-            android:tint="@android:color/secondary_text_light" />
+            android:src="@drawable/ic_empty_list" />
 
         <TextView
             android:id="@+id/emptyMessage"

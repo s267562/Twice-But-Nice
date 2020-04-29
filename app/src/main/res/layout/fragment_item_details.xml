@@ -38,7 +38,7 @@
                     app:srcCompat="@drawable/ic_widgets_white_24dp"
                     android:scaleY="1.0"
                     android:scaleX="1.0"
-                    android:background="@color/lightBlueGray"
+                    android:background="@color/colorPrimaryLight"
                     android:contentDescription="item photo"
                     android:scaleType="centerCrop" />
             </androidx.cardview.widget.CardView>
