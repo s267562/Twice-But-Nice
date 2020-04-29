@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -13,7 +12,6 @@ import it.polito.mad.project.R
 import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.User
-import it.polito.mad.project.viewModels.ProfileViewModel
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 import java.io.File
 

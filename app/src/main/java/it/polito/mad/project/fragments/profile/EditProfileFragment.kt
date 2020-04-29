@@ -27,7 +27,6 @@ import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.User
-import it.polito.mad.project.viewModels.ProfileViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_show_profile.email
 import kotlinx.android.synthetic.main.fragment_show_profile.full_name
