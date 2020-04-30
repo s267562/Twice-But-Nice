@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
@@ -31,16 +32,14 @@ class ShowProfileFragment : StoreFileFragment() {
         mContext = context
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        (activity as AppCompatActivity?)!!.app_bar.elevation = 0f
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)
         setHasOptionsMenu(true)
+
+        Log.d("Debug - onCreate", profileViewModel.user.value.toString())
+        (activity as AppCompatActivity?)!!.app_bar.elevation = 0f
+
         return inflater.inflate(R.layout.fragment_show_profile, container, false)
     }
 
@@ -86,6 +85,8 @@ class ShowProfileFragment : StoreFileFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        saveToStoreFile(StoreFileKey.USER, profileViewModel.user.value)
+        Log.d("ShowProf - onDestroy", profileViewModel.user.value.toString())
+        //saveToStoreFile(StoreFileKey.USER, profileViewModel.user.value)
     }
+
 }

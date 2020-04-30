@@ -54,18 +54,18 @@ class EditProfileFragment : StoreFileFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
+
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity?)!!.app_bar.elevation = 0f
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         profileViewModel =
             ViewModelProvider(this).get(ProfileViewModel::class.java)
         profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)?:profileViewModel.user.value
         setHasOptionsMenu(true)
+
+        (activity as AppCompatActivity?)!!.app_bar.elevation = 0f
+
         return inflater.inflate(R.layout.fragment_edit_profile, container, false)
     }
 
@@ -259,7 +259,8 @@ class EditProfileFragment : StoreFileFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        saveToStoreFile(StoreFileKey.USER, profileViewModel.user.value)
+        Log.d("DEBUG", profileViewModel.user.value.toString())
+        //saveToStoreFile(StoreFileKey.USER, profileViewModel.user.value)
     }
 
     private fun rotateImage(img:Bitmap, degree:Int):Bitmap {
@@ -288,6 +289,7 @@ class EditProfileFragment : StoreFileFragment() {
         val location = location.text.toString()
         var path = savedImagePath
         saveToStoreFile(StoreFileKey.USER, User(name,"", nickname, email, location, path))
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
