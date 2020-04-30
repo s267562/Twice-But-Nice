@@ -34,6 +34,9 @@ class MainActivity : AppCompatActivity() {
 
     private val userViewModel: UserViewModel = UserViewModel()
     private val gsonMapper: Gson = Gson()
+    private var full_name: TextView? = null
+    private var location: TextView? = null
+    private var user_photo: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,16 +45,15 @@ class MainActivity : AppCompatActivity() {
         setNavView()
 
         val hView = navView.getHeaderView(0)
-        val full_name = hView.findViewById<TextView>(R.id.full_name)
-        val location = hView.findViewById<TextView>(R.id.location)
-        val user_photo = hView.findViewById<ImageView>(R.id.user_photo)
+        full_name = hView.findViewById<TextView>(R.id.full_name)
+        location = hView.findViewById<TextView>(R.id.location)
+        user_photo = hView.findViewById<ImageView>(R.id.user_photo)
 
 
         // Load store file of our app from shared preferences
         val sharedPreferences = this?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
         // Load from the store file the user object. For the first time we load empty string.
         val userJson: String? = sharedPreferences?.getString(StoreFileKey.USER, "")
-
         if (userJson != null && userJson.isNotEmpty()) {
             // Assign the stored user to our view model if it is not empty
             userViewModel.user.value = gsonMapper.fromJson(userJson, User::class.java)
@@ -60,13 +62,13 @@ class MainActivity : AppCompatActivity() {
         userViewModel.user.observe(this, Observer {
            if (it!=null){
                 if (full_name != null && !it.name.isNullOrEmpty())
-                   full_name.text = it.name
+                   full_name!!.text = it.name
                if (location != null && !it.location.isNullOrEmpty())
-                   location.text = it.location
+                   location!!.text = it.location
                if (user_photo != null &&  !it.photoProfilePath.isNullOrEmpty()) {
                    if (File(it.photoProfilePath).isFile) {
                        val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
-                       if (image != null) user_photo.setImageBitmap(image)
+                       if (image != null) user_photo!!.setImageBitmap(image)
                    }
                }
            }
@@ -82,6 +84,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.navMainHostFragment)
+
+        // Load store file of our app from shared preferences
+        val sharedPreferences = this?.getSharedPreferences(getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
+        // Load from the store file the user object. For the first time we load empty string.
+        val userJson: String? = sharedPreferences?.getString(StoreFileKey.USER, "")
+        if (userJson != null && userJson.isNotEmpty()) {
+            // Assign the stored user to our view model if it is not empty
+            userViewModel.user.value = gsonMapper.fromJson(userJson, User::class.java)
+        }
+        var user = userViewModel.user.value
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
