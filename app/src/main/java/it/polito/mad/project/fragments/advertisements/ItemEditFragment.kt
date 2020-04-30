@@ -61,7 +61,10 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         setCategorySpinner()
 
         // TODO: impostare le sub categories
-
+        if (savedInstanceState != null) {
+            imagePath = savedInstanceState.getString("ImagePath")
+        }
+        var image: Bitmap?=null
         if (item != null) {
             item_title.setText(item.title)
             if (item.categoryPos >= 0)
@@ -69,11 +72,10 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
             item_descr.setText(item.description)
             item_location.setText(item.location)
             item_price.setText(item.price.toString())
-            item_exp.setText(item.expiryDate)
+            item_exp.text = item.expiryDate
             if (item.imagePath != null && item.imagePath!!.isNotEmpty()) {
                 savedImagePath = item.imagePath
-                val image: Bitmap = BitmapFactory.decodeFile(item.imagePath)
-                //if (image != null) item_photo.setImageBitmap(image)
+                image = BitmapFactory.decodeFile(item.imagePath)
                 if (image == null){
                     item_photo_rotate.visibility = View.GONE
                 } else {
@@ -81,6 +83,12 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                     item_photo.setImageBitmap(image)
                 }
             }
+        }
+
+        if (this.imagePath != null){
+            image = BitmapFactory.decodeFile(imagePath)
+            this.item_photo.setImageBitmap(image)
+            item_photo_rotate.visibility = View.VISIBLE
         }
 
     }
@@ -127,6 +135,22 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
     override fun onDestroyView() {
         super.onDestroyView()
         saveToStoreFile(StoreFileKey.TEMP_ITEM, item)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (this.imagePath != null) {
+            outState.putString("ImagePath", this.imagePath)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (activity?.isFinishing!! && imagePath!=null && imagePath!=savedImagePath){
+            File(imagePath).delete()
+        }else{
+            //it's an orientation change
+        }
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
@@ -291,7 +315,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                 DatePickerDialog(
                     it,
                     DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                        item_exp.setText(
+                        item_exp.text = (
                             dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year
                         )
                     },
