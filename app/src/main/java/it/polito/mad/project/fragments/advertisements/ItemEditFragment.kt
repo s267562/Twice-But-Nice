@@ -19,17 +19,24 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.view.get
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import it.polito.mad.project.R
-import it.polito.mad.project.R.id.item_category_spinner
 import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.Item
+import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.android.synthetic.main.fragment_item_edit.*
+import kotlinx.android.synthetic.main.fragment_item_edit.item_category_spinner
+import kotlinx.android.synthetic.main.fragment_item_edit.item_descr
+import kotlinx.android.synthetic.main.fragment_item_edit.item_exp
+import kotlinx.android.synthetic.main.fragment_item_edit.item_location
+import kotlinx.android.synthetic.main.fragment_item_edit.item_photo
+import kotlinx.android.synthetic.main.fragment_item_edit.item_price
+import kotlinx.android.synthetic.main.fragment_item_edit.item_subcategory_spinner
+import kotlinx.android.synthetic.main.fragment_item_edit.item_title
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -43,19 +50,6 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
-
-    /*val spinnerCat = activity?.findViewById<Spinner>(R.id.item_category_spinner)
-    val spinnerSubCat = activity?.findViewById<Spinner>(R.id.item_subcategory_spinner)
-
-    val categoriesArray = resources.getStringArray(R.array.item_categories).toList()
-    val artArray = resources.getStringArray(R.array.item_sub_art).toList()
-    val sportArray = resources.getStringArray(R.array.item_sub_sports).toList()
-    val babyArray = resources.getStringArray(R.array.item_sub_baby).toList()
-    val womenArray = resources.getStringArray(R.array.item_sub_women).toList()
-    val menArray = resources.getStringArray(R.array.item_sub_men).toList()
-    val electroArray = resources.getStringArray(R.array.item_sub_electo).toList()
-    val gamesArray = resources.getStringArray(R.array.item_sub_games).toList()
-    val autoArray = resources.getStringArray(R.array.item_sub_auto).toList()*/
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -427,6 +421,9 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
     private fun saveItem() {
         var items: MutableList<Item> = loadFromStoreFile(StoreFileKey.ITEMS, Array<Item>::class.java)?.toMutableList()?: mutableListOf()
 
+        val subSpinner: Spinner? = activity?.findViewById(R.id.item_subcategory_spinner)
+        val subcategoryContent : String = subSpinner?.selectedItem.toString()
+
         if(savedImagePath == null && imagePath != null){
             savedImagePath = imagePath
         } else if (savedImagePath != null && imagePath != savedImagePath && imagePath != null){
@@ -440,6 +437,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         item.price = item_price.text.toString().toDouble()
         item.imagePath = savedImagePath
         item.category = item.category
+        item.subcategory = subcategoryContent
         item.categoryPos = item.categoryPos
         if (items.size > item.id) items[item.id] = item else items.add(item)
         saveToStoreFile(StoreFileKey.ITEM, item)
