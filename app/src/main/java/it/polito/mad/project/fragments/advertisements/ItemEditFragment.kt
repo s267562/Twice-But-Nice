@@ -21,7 +21,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
 import it.polito.mad.project.R
+import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
@@ -43,7 +45,11 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        item = loadFromStoreFile(StoreFileKey.TEMP_ITEM, Item::class.java)?:item
+        item = if(arguments != null && requireArguments().containsKey(ArgumentKey.EDIT_ITEM)) {
+            Gson().fromJson(arguments?.getString(ArgumentKey.EDIT_ITEM), Item::class.java)
+        } else {
+            loadFromStoreFile(StoreFileKey.TEMP_ITEM, Item::class.java)?:item
+        }
         return inflater.inflate(R.layout.fragment_item_edit, container, false)
     }
 
