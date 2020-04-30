@@ -95,6 +95,7 @@
                             android:layout_height="wrap_content"
                             style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
                             android:text="Rotate"
+                            android:visibility="gone"
                             android:textColor="@color/colorAccent"
                             android:drawableLeft="@drawable/ic_rotate_right_24dp"
                             android:drawableTint="@color/colorAccent" />

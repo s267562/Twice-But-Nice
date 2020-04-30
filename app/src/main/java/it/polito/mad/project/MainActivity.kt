@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     private val userViewModel: UserViewModel = UserViewModel()
     private val gsonMapper: Gson = Gson()
     private var full_name: TextView? = null
-    private var location: TextView? = null
+    //private var location: TextView? = null
     private var user_photo: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         val hView = navView.getHeaderView(0)
         full_name = hView.findViewById<TextView>(R.id.full_name)
-        location = hView.findViewById<TextView>(R.id.location)
+        //location = hView.findViewById<TextView>(R.id.location)
         user_photo = hView.findViewById<ImageView>(R.id.user_photo)
 
 
@@ -63,8 +63,8 @@ class MainActivity : AppCompatActivity() {
            if (it!=null){
                 if (full_name != null && !it.name.isNullOrEmpty())
                    full_name!!.text = it.name
-               if (location != null && !it.location.isNullOrEmpty())
-                   location!!.text = it.location
+              // if (location != null && !it.location.isNullOrEmpty())
+                 //  location!!.text = it.location
                if (user_photo != null &&  !it.photoProfilePath.isNullOrEmpty()) {
                    if (File(it.photoProfilePath).isFile) {
                        val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)

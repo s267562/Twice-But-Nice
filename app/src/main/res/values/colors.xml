@@ -2,7 +2,8 @@
 <resources>
     <color name="colorPrimary">#FFC107</color>
     <color name="colorPrimaryDark">#FFA000</color>
-    <color name="colorPrimaryLight">#FAE5A6</color>
+    <color name="colorPrimaryLight">#F3EAD0</color>
     <color name="colorAccent">#26C6DA</color>
     <color name="lightBlue">#3BA3EA</color>
+    <color name="selectedItem">#F0F0F0</color>
 </resources>
