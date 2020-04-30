@@ -17,6 +17,7 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
@@ -27,6 +28,7 @@ import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.User
+import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_show_profile.email
 import kotlinx.android.synthetic.main.fragment_show_profile.full_name
@@ -52,6 +54,11 @@ class EditProfileFragment : StoreFileFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity?)!!.app_bar.elevation = 0f
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

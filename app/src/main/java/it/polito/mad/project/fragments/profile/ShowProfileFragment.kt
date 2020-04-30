@@ -5,15 +5,19 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
-import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.enums.StoreFileKey
+import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.User
+import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 import java.io.File
+
 
 // POINT 6: Convert the ShowProfileActivity into Fragment
 
@@ -25,6 +29,12 @@ class ShowProfileFragment : StoreFileFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        (activity as AppCompatActivity?)!!.app_bar.elevation = 0f
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
