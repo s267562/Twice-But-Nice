@@ -138,11 +138,27 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         saveToStoreFile(StoreFileKey.TEMP_ITEM, item)
     }
 
-    @SuppressLint("ResourceType")
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
         var category: String = parent?.getItemAtPosition(pos) as String
         item.category = category
         item.categoryPos = pos
+
+        if(pos == 0)
+            setSubcategoryArt()
+        if(pos == 1)
+            setSubcategorySports()
+        if (pos == 2)
+            setSubcategoryBaby()
+        if(pos == 3)
+            setSubcategoryWomen()
+        if(pos == 4)
+            setSubcategoryMen()
+        if(pos == 5)
+            setSubcategoryElectro()
+        if(pos== 6)
+            setSubcategoryGames()
+        if (pos == 7)
+            setSubcategoryAuto()
 
     }
 
@@ -310,7 +326,6 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                 }
         }
         item_category_spinner.onItemSelectedListener = this
-
     }
 
     private fun setSubcategoryArt(){
@@ -322,7 +337,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                     item_subcategory_spinner.adapter = adapter
                 }
         }
-        item_subcategory_spinner.onItemSelectedListener = this
+        //item_subcategory_spinner.onItemSelectedListener = this
     }
 
     private fun setSubcategorySports(){
@@ -334,7 +349,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                     item_subcategory_spinner.adapter = adapter
                 }
         }
-        item_subcategory_spinner.onItemSelectedListener = this
+        //item_subcategory_spinner.onItemSelectedListener = this
     }
 
     private fun setSubcategoryBaby(){
@@ -346,7 +361,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                     item_subcategory_spinner.adapter = adapter
                 }
         }
-        item_subcategory_spinner.onItemSelectedListener = this
+        //item_subcategory_spinner.onItemSelectedListener = this
     }
 
     private fun setSubcategoryWomen(){
@@ -358,7 +373,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                     item_subcategory_spinner.adapter = adapter
                 }
         }
-        item_subcategory_spinner.onItemSelectedListener = this
+        //item_subcategory_spinner.onItemSelectedListener = this
     }
 
     private fun setSubcategoryMen(){
@@ -370,7 +385,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                     item_subcategory_spinner.adapter = adapter
                 }
         }
-        item_subcategory_spinner.onItemSelectedListener = this
+        //item_subcategory_spinner.onItemSelectedListener = this
     }
 
     private fun setSubcategoryElectro(){
@@ -382,7 +397,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                     item_subcategory_spinner.adapter = adapter
                 }
         }
-        item_subcategory_spinner.onItemSelectedListener = this
+        //item_subcategory_spinner.onItemSelectedListener = this
     }
 
     private fun setSubcategoryGames(){
@@ -394,7 +409,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                     item_subcategory_spinner.adapter = adapter
                 }
         }
-        item_subcategory_spinner.onItemSelectedListener = this
+        //item_subcategory_spinner.onItemSelectedListener = this
     }
 
     private fun setSubcategoryAuto(){
@@ -406,7 +421,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                     item_subcategory_spinner.adapter = adapter
                 }
         }
-        item_subcategory_spinner.onItemSelectedListener = this
+        //item_subcategory_spinner.onItemSelectedListener = this
     }
 
     private fun saveItem() {
