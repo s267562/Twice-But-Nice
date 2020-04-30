@@ -92,8 +92,13 @@ class EditProfileFragment : StoreFileFragment() {
                 if (it.photoProfilePath != null && it.photoProfilePath.isNotEmpty()) {
                     if (File(it.photoProfilePath).isFile)  {
                         savedImagePath = it.photoProfilePath
-                        val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
-                        if (image != null) user_photo.setImageBitmap(image)
+                        image = BitmapFactory.decodeFile(it.photoProfilePath)
+                        if (image != null) {
+                            user_photo.setImageBitmap(image)
+                            rotation_button.visibility=View.VISIBLE
+                        }else{
+                            rotation_button.visibility=View.GONE
+                        }
                     }
                 }
             }
@@ -121,12 +126,6 @@ class EditProfileFragment : StoreFileFragment() {
             var rotateBitmap = rotateImage(image!!, 90)
             image = rotateBitmap
             user_photo.setImageBitmap(image)
-        }
-
-        if (image == null){
-            rotation_button.visibility=View.GONE
-        } else {
-            rotation_button.visibility=View.VISIBLE
         }
     }
 
