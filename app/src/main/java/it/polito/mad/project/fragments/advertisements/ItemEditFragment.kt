@@ -17,16 +17,17 @@ import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.get
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import it.polito.mad.project.R
+import it.polito.mad.project.R.id.item_category_spinner
 import it.polito.mad.project.enums.ArgumentKey
-import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
+import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_item_edit.*
 import java.io.File
@@ -42,6 +43,19 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
+
+    /*val spinnerCat = activity?.findViewById<Spinner>(R.id.item_category_spinner)
+    val spinnerSubCat = activity?.findViewById<Spinner>(R.id.item_subcategory_spinner)
+
+    val categoriesArray = resources.getStringArray(R.array.item_categories).toList()
+    val artArray = resources.getStringArray(R.array.item_sub_art).toList()
+    val sportArray = resources.getStringArray(R.array.item_sub_sports).toList()
+    val babyArray = resources.getStringArray(R.array.item_sub_baby).toList()
+    val womenArray = resources.getStringArray(R.array.item_sub_women).toList()
+    val menArray = resources.getStringArray(R.array.item_sub_men).toList()
+    val electroArray = resources.getStringArray(R.array.item_sub_electo).toList()
+    val gamesArray = resources.getStringArray(R.array.item_sub_games).toList()
+    val autoArray = resources.getStringArray(R.array.item_sub_auto).toList()*/
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -60,6 +74,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         setCameraButtons()
         setDatePicker()
         setCategorySpinner()
+
         // TODO: impostare le sub categories
 
         if (item != null) {
@@ -76,6 +91,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                 if (image != null) item_photo.setImageBitmap(image)
             }
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -122,10 +138,12 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         saveToStoreFile(StoreFileKey.TEMP_ITEM, item)
     }
 
+    @SuppressLint("ResourceType")
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
         var category: String = parent?.getItemAtPosition(pos) as String
         item.category = category
         item.categoryPos = pos
+
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -292,6 +310,103 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                 }
         }
         item_category_spinner.onItemSelectedListener = this
+
+    }
+
+    private fun setSubcategoryArt(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_art, android.R.layout.simple_spinner_item)
+                .also {
+                    adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategorySports(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_sports, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryBaby(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_baby, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryWomen(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_women, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryMen(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_men, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryElectro(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_electo, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryGames(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_games, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryAuto(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_auto, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        item_subcategory_spinner.onItemSelectedListener = this
     }
 
     private fun saveItem() {

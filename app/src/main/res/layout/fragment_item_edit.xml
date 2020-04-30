@@ -126,11 +126,11 @@
                 android:spinnerMode="dropdown" />
 
             <Spinner
-                android:id="@+id/item_sub_category_spinner"
+                android:id="@+id/item_subcategory_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:prompt="@string/category_def"
+                android:prompt="@string/subcategory_def"
                 android:spinnerMode="dropdown" />
 
             <com.google.android.material.textfield.TextInputLayout
