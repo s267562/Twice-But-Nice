@@ -82,7 +82,13 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
             if (item.imagePath != null && item.imagePath!!.isNotEmpty()) {
                 savedImagePath = item.imagePath
                 val image: Bitmap = BitmapFactory.decodeFile(item.imagePath)
-                if (image != null) item_photo.setImageBitmap(image)
+                //if (image != null) item_photo.setImageBitmap(image)
+                if (image == null){
+                    rotation_button_adv.visibility = View.GONE
+                } else {
+                    rotation_button_adv.visibility = View.VISIBLE
+                    item_photo.setImageBitmap(image)
+                }
             }
         }
 
@@ -248,12 +254,6 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
             var rotateBitmap = rotateImage(itemImage!!, 90)
             itemImage = rotateBitmap
             item_photo.setImageBitmap(itemImage)
-        }
-
-        if (itemImage == null){
-            rotation_button_adv.visibility = View.GONE
-        } else {
-            rotation_button_adv.visibility = View.VISIBLE
         }
     }
 
