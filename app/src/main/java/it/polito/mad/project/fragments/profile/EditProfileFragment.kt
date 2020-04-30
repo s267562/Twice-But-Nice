@@ -23,7 +23,9 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
 import it.polito.mad.project.R
+import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.fragments.common.StoreFileFragment
@@ -59,12 +61,9 @@ class EditProfileFragment : StoreFileFragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        profileViewModel =
-            ViewModelProvider(this).get(ProfileViewModel::class.java)
+        profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)?:profileViewModel.user.value
         setHasOptionsMenu(true)
-
-        (activity as AppCompatActivity?)!!.app_bar.elevation = 0f
 
         return inflater.inflate(R.layout.fragment_edit_profile, container, false)
     }
@@ -78,26 +77,29 @@ class EditProfileFragment : StoreFileFragment() {
         }
 
         var image: Bitmap?=null
-
-        profileViewModel.user.observe(this.viewLifecycleOwner, Observer{
-            if (it != null) {
-                if (it.name != null && it.name.isNotEmpty())
-                    full_name.text = it.name
-                if (it.nickname != null && it.nickname.isNotEmpty())
-                    nickname.text = it.nickname
-                if (it.email != null && it.email.isNotEmpty())
-                    email.text = it.email
-                if (it.location != null && it.location.isNotEmpty())
-                    location.text = it.location
-                if (it.photoProfilePath != null && it.photoProfilePath.isNotEmpty()) {
-                    if (File(it.photoProfilePath).isFile)  {
-                        savedImagePath = it.photoProfilePath
-                        val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
-                        if (image != null) user_photo.setImageBitmap(image)
+        val it = profileViewModel.user.value
+        if (it != null) {
+            if (it.name != null && it.name.isNotEmpty())
+                full_name.text = it.name
+            if (it.nickname != null && it.nickname.isNotEmpty())
+                nickname.text = it.nickname
+            if (it.email != null && it.email.isNotEmpty())
+                email.text = it.email
+            if (it.location != null && it.location.isNotEmpty())
+                location.text = it.location
+            if (it.photoProfilePath != null && it.photoProfilePath.isNotEmpty()) {
+                if (File(it.photoProfilePath).isFile)  {
+                    savedImagePath = it.photoProfilePath
+                    image = BitmapFactory.decodeFile(it.photoProfilePath)
+                    if (image != null) {
+                        user_photo.setImageBitmap(image)
+                        rotation_button.visibility=View.VISIBLE
+                    }else{
+                        rotation_button.visibility=View.GONE
                     }
                 }
             }
-        })
+        }
 
         if (this.imagePath != null){
             image = BitmapFactory.decodeFile(imagePath)
@@ -121,12 +123,6 @@ class EditProfileFragment : StoreFileFragment() {
             var rotateBitmap = rotateImage(image!!, 90)
             image = rotateBitmap
             user_photo.setImageBitmap(image)
-        }
-
-        if (image == null){
-            rotation_button.visibility=View.GONE
-        } else {
-            rotation_button.visibility=View.VISIBLE
         }
     }
 

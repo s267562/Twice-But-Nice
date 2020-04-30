@@ -3,7 +3,6 @@ package it.polito.mad.project.fragments.advertisements
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
@@ -42,8 +41,8 @@ class ItemDetailsFragment : StoreFileFragment() {
             item_title.text = item.title
             item_descr.text = item.description
             item_location.text = item.location
-            item_category_spinner.text = item.category
-            item_price.text = item.price?.toString()
+            item_category.text = "${item.category} - ${item.subcategory}"
+            item_price.text = "${item.price?.toString()} €"
             item_exp.text = item.expiryDate
             if (item.imagePath != null && item.imagePath!!.isNotEmpty()) {
                 val image: Bitmap = BitmapFactory.decodeFile(item.imagePath)

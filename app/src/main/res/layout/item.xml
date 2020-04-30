@@ -54,6 +54,7 @@
                 android:layout_height="wrap_content"
                 android:minHeight="40dp"
                 android:gravity="bottom"
+                android:layout_marginBottom="6dp"
                 android:text="Item Title"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 

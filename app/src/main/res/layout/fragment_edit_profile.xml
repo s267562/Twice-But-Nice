@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/colorPrimary"
         android:paddingLeft="16dp"
         android:paddingTop="32dp"
         android:paddingRight="16dp"
@@ -49,6 +48,7 @@
                 android:background="@drawable/round_bg"
                 android:backgroundTint="@color/colorAccent"
                 android:elevation="3dp"
+                android:visibility="gone"
                 android:src="@drawable/ic_rotate_right_24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

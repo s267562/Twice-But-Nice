@@ -17,16 +17,15 @@ import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
-import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
+import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_item_edit.*
 import java.io.File
@@ -43,6 +42,8 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
     private var imagePath: String? = null
     private var savedImagePath: String? =null
 
+    private var dateValue: String? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         item = if(arguments != null && requireArguments().containsKey(ArgumentKey.EDIT_ITEM)) {
@@ -56,26 +57,46 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        registerForContextMenu(camera_button_adv)
+        registerForContextMenu(item_photo_add)
         setCameraButtons()
         setDatePicker()
         setCategorySpinner()
-        // TODO: impostare le sub categories
 
+        // TODO: impostare le sub categories
+        if (savedInstanceState != null) {
+            imagePath = savedInstanceState.getString("ImagePath")
+            dateValue = savedInstanceState.getString("Date")
+        }
+        var image: Bitmap?=null
         if (item != null) {
             item_title.setText(item.title)
             if (item.categoryPos >= 0)
                 item_category_spinner.setSelection(item.categoryPos)
             item_descr.setText(item.description)
             item_location.setText(item.location)
-            item_price.setText(item.price.toString())
-            item_exp.setText(item.expiryDate)
+            item_price.setText(item.price)
+            item_exp.text = item.expiryDate
             if (item.imagePath != null && item.imagePath!!.isNotEmpty()) {
                 savedImagePath = item.imagePath
-                val image: Bitmap = BitmapFactory.decodeFile(item.imagePath)
-                if (image != null) item_photo.setImageBitmap(image)
+                image = BitmapFactory.decodeFile(item.imagePath)
+                if (image == null){
+                    item_photo_rotate.visibility = View.GONE
+                } else {
+                    item_photo_rotate.visibility = View.VISIBLE
+                    item_photo.setImageBitmap(image)
+                }
             }
         }
+
+        if (this.imagePath != null){
+            image = BitmapFactory.decodeFile(imagePath)
+            this.item_photo.setImageBitmap(image)
+            item_photo_rotate.visibility = View.VISIBLE
+        }
+        if (this.dateValue != null){
+            item_exp.text= this.dateValue
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -122,10 +143,47 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         saveToStoreFile(StoreFileKey.TEMP_ITEM, item)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (this.imagePath != null) {
+            outState.putString("ImagePath", this.imagePath)
+        }
+        if (this.dateValue != null){
+            outState.putString("Date", this.dateValue)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (activity?.isFinishing!! && imagePath!=null && imagePath!=savedImagePath){
+            File(imagePath).delete()
+        }else{
+            //it's an orientation change
+        }
+    }
+
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
         var category: String = parent?.getItemAtPosition(pos) as String
         item.category = category
         item.categoryPos = pos
+
+        if(pos == 0)
+            setSubcategoryArt()
+        if(pos == 1)
+            setSubcategorySports()
+        if (pos == 2)
+            setSubcategoryBaby()
+        if(pos == 3)
+            setSubcategoryWomen()
+        if(pos == 4)
+            setSubcategoryMen()
+        if(pos == 5)
+            setSubcategoryElectro()
+        if(pos== 6)
+            setSubcategoryGames()
+        if (pos == 7)
+            setSubcategoryAuto()
+
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -175,7 +233,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        rotation_button_adv.visibility=View.VISIBLE
+        item_photo_rotate.visibility=View.VISIBLE
 
         // Open Camera
         if (requestCode == IntentRequest.UserImage.CODE && resultCode == Activity.RESULT_OK){
@@ -204,28 +262,23 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun setCameraButtons() {
-        camera_button_adv.isLongClickable = false
-        camera_button_adv.setOnTouchListener { v, event ->
-            if (v is ImageButton && event.action == MotionEvent.ACTION_DOWN) {
+        item_photo_add.isLongClickable = false
+        item_photo_add.setOnTouchListener { v, event ->
+            Log.d("DEBUG", "TOUCH")
+            if (v is Button && event.action == MotionEvent.ACTION_DOWN) {
                 v.showContextMenu(event.x, event.y)
             }
             true
         }
 
         var itemImage: Bitmap?=null
-        rotation_button_adv.setOnClickListener{
+        item_photo_rotate.setOnClickListener{
             item_photo.setDrawingCacheEnabled(true)
             itemImage = item_photo.getDrawingCache(true).copy(Bitmap.Config.ARGB_8888, false)
             item_photo.destroyDrawingCache()
             var rotateBitmap = rotateImage(itemImage!!, 90)
             itemImage = rotateBitmap
             item_photo.setImageBitmap(itemImage)
-        }
-
-        if (itemImage == null){
-            rotation_button_adv.visibility = View.GONE
-        } else {
-            rotation_button_adv.visibility = View.VISIBLE
         }
     }
 
@@ -271,9 +324,10 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                 DatePickerDialog(
                     it,
                     DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                        item_exp.setText(
+                        item_exp.text = (
                             dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year
                         )
+                        this.dateValue = item_exp.text.toString()
                     },
                     year, month, day
                 ).show()
@@ -294,9 +348,107 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         item_category_spinner.onItemSelectedListener = this
     }
 
+    private fun setSubcategoryArt(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_art, android.R.layout.simple_spinner_item)
+                .also {
+                    adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategorySports(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_sports, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryBaby(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_baby, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryWomen(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_women, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryMen(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_men, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryElectro(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_electo, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryGames(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_games, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryAuto(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_auto, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
     private fun saveItem() {
         var items: MutableList<Item> = loadFromStoreFile(StoreFileKey.ITEMS, Array<Item>::class.java)?.toMutableList()?: mutableListOf()
 
+        val subSpinner: Spinner? = activity?.findViewById(R.id.item_subcategory_spinner)
+        val subcategoryContent : String = subSpinner?.selectedItem.toString()
         if(savedImagePath == null && imagePath != null){
             savedImagePath = imagePath
         } else if (savedImagePath != null && imagePath != savedImagePath && imagePath != null){
@@ -307,9 +459,10 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         item.location = item_location.text.toString()
         item.description = item_descr.text.toString()
         item.expiryDate = item_exp.text.toString()
-        item.price = item_price.text.toString().toDouble()
+        item.price = item_price.text.toString()
         item.imagePath = savedImagePath
         item.category = item.category
+        item.subcategory = subcategoryContent
         item.categoryPos = item.categoryPos
         if (items.size > item.id) items[item.id] = item else items.add(item)
         saveToStoreFile(StoreFileKey.ITEM, item)

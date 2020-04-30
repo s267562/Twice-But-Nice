@@ -18,6 +18,7 @@
     <string name="menu_edit_advertisement">Edit Item</string>
 
     <string name="category_def">Category</string>
+    <string name="subcategory_def">Subcategory</string>
 
 
     <string-array name="item_categories">
@@ -29,6 +30,57 @@
         <item>Electronics</item>
         <item>Games &amp; Videogames</item>
         <item>Automotive</item>
+    </string-array>
+
+    <string-array name="item_sub_art">
+        <item>Patchwork</item>
+        <item>Emboidery</item>
+    </string-array>
+
+    <string-array name="item_sub_sports">
+        <item>Outdoor Sports</item>
+        <item>Swimming</item>
+        <item>Tennis</item>
+        <item>American Football</item>
+        <item>Soccer</item>
+    </string-array>
+
+    <string-array name="item_sub_baby">
+        <item>Baby Wrap</item>
+        <item>Suit</item>
+    </string-array>
+
+    <string-array name="item_sub_women">
+        <item>Pants</item>
+        <item>Shirt</item>
+        <item>Blazer</item>
+        <item>High Heels</item>
+    </string-array>
+
+    <string-array name="item_sub_men">
+        <item>Pants</item>
+        <item>Casual Shirt</item>
+        <item>Jacket</item>
+    </string-array>
+
+    <string-array name="item_sub_electo">
+        <item>Computers</item>
+        <item>Television</item>
+        <item>Hi-Fi</item>
+    </string-array>
+
+    <string-array name="item_sub_games">
+        <item>Individual Games</item>
+        <item>Family Games</item>
+        <item>Computer Games</item>
+        <item>Play Station Games</item>
+        <item>XBOX Games</item>
+        <item>Nintendo Games</item>
+    </string-array>
+
+    <string-array name="item_sub_auto">
+        <item>Auto1</item>
+        <item>Auto2</item>
     </string-array>
 
 </resources>
