@@ -75,9 +75,9 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                 val image: Bitmap = BitmapFactory.decodeFile(item.imagePath)
                 //if (image != null) item_photo.setImageBitmap(image)
                 if (image == null){
-                    rotation_button_adv.visibility = View.GONE
+                    item_photo_rotate.visibility = View.GONE
                 } else {
-                    rotation_button_adv.visibility = View.VISIBLE
+                    item_photo_rotate.visibility = View.VISIBLE
                     item_photo.setImageBitmap(image)
                 }
             }

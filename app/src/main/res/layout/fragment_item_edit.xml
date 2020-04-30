@@ -302,19 +302,20 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Expiring date"
+                        android:layout_marginBottom="8dp"
                         android:gravity="bottom"
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
-                    <EditText
+                    <TextView
                         android:id="@+id/item_exp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        android:hint="Expiry Date"
+                        android:hint="DD/MM/YYYY"
                         android:maxLines="1"
-                        android:imeOptions="actionDone"
-                        android:inputType="datetime" />
+                        android:drawableRight="@drawable/ic_date_range_black_24dp"
+                        android:drawableTint="@color/colorAccent" />
 
                 </LinearLayout>
 
