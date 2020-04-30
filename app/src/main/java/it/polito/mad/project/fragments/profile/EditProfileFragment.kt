@@ -64,8 +64,6 @@ class EditProfileFragment : StoreFileFragment() {
         profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)?:profileViewModel.user.value
         setHasOptionsMenu(true)
 
-        (activity as AppCompatActivity?)!!.app_bar.elevation = 0f
-
         return inflater.inflate(R.layout.fragment_edit_profile, container, false)
     }
 

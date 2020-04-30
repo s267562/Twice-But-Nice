@@ -10,7 +10,6 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@color/colorPrimary"
         android:paddingLeft="64dp"
         android:paddingRight="64dp"
         android:gravity="center"
@@ -40,7 +39,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Full Name"
-            android:textColor="@android:color/white"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:layout_marginTop="16dp"/>
 
@@ -49,9 +47,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Location"
-            android:textColor="@android:color/white"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:drawableLeft="@drawable/ic_location_24dp"
+            android:drawableTint="@android:color/primary_text_light"
             android:layout_marginTop="16dp" />
 
     </LinearLayout>

@@ -76,7 +76,7 @@
                     android:scaleType="centerCrop"
                     android:scaleX="1.0"
                     android:scaleY="1.0"
-                    app:srcCompat="@drawable/ic_widgets_white_24dp" />
+                    app:srcCompat="@drawable/ic_add_photo" />
             </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

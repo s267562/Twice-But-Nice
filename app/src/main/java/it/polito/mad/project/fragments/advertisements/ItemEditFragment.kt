@@ -27,16 +27,7 @@ import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.Item
-import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.android.synthetic.main.fragment_item_edit.*
-import kotlinx.android.synthetic.main.fragment_item_edit.item_category_spinner
-import kotlinx.android.synthetic.main.fragment_item_edit.item_descr
-import kotlinx.android.synthetic.main.fragment_item_edit.item_exp
-import kotlinx.android.synthetic.main.fragment_item_edit.item_location
-import kotlinx.android.synthetic.main.fragment_item_edit.item_photo
-import kotlinx.android.synthetic.main.fragment_item_edit.item_price
-import kotlinx.android.synthetic.main.fragment_item_edit.item_subcategory_spinner
-import kotlinx.android.synthetic.main.fragment_item_edit.item_title
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -64,7 +55,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        registerForContextMenu(camera_button_adv)
+        registerForContextMenu(item_photo_add)
         setCameraButtons()
         setDatePicker()
         setCategorySpinner()
@@ -203,7 +194,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        rotation_button_adv.visibility=View.VISIBLE
+        item_photo_rotate.visibility=View.VISIBLE
 
         // Open Camera
         if (requestCode == IntentRequest.UserImage.CODE && resultCode == Activity.RESULT_OK){
@@ -232,16 +223,17 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun setCameraButtons() {
-        camera_button_adv.isLongClickable = false
-        camera_button_adv.setOnTouchListener { v, event ->
-            if (v is ImageButton && event.action == MotionEvent.ACTION_DOWN) {
+        item_photo_add.isLongClickable = false
+        item_photo_add.setOnTouchListener { v, event ->
+            Log.d("DEBUG", "TOUCH")
+            if (v is Button && event.action == MotionEvent.ACTION_DOWN) {
                 v.showContextMenu(event.x, event.y)
             }
             true
         }
 
         var itemImage: Bitmap?=null
-        rotation_button_adv.setOnClickListener{
+        item_photo_rotate.setOnClickListener{
             item_photo.setDrawingCacheEnabled(true)
             itemImage = item_photo.getDrawingCache(true).copy(Bitmap.Config.ARGB_8888, false)
             item_photo.destroyDrawingCache()
@@ -251,9 +243,9 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         }
 
         if (itemImage == null){
-            rotation_button_adv.visibility = View.GONE
+            item_photo_rotate.visibility = View.GONE
         } else {
-            rotation_button_adv.visibility = View.VISIBLE
+            item_photo_rotate.visibility = View.VISIBLE
         }
     }
 

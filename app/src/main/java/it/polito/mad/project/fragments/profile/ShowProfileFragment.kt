@@ -37,9 +37,6 @@ class ShowProfileFragment : StoreFileFragment() {
         profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)
         setHasOptionsMenu(true)
 
-        Log.d("Debug - onCreate", profileViewModel.user.value.toString())
-        (activity as AppCompatActivity?)!!.app_bar.elevation = 0f
-
         return inflater.inflate(R.layout.fragment_show_profile, container, false)
     }
 

@@ -35,7 +35,7 @@
                     android:id="@+id/item_photo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:srcCompat="@drawable/ic_widgets_white_24dp"
+                    app:srcCompat="@drawable/ic_add_photo"
                     android:scaleY="1.0"
                     android:scaleX="1.0"
                     android:background="@color/colorPrimaryLight"
