@@ -16,11 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
-import it.polito.mad.project.R
-import it.polito.mad.project.R.id.full_name
 import it.polito.mad.project.enums.StoreFileKey
-import it.polito.mad.project.fragments.profile.ProfileViewModel
-import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.fragments.profile.UserViewModel
 import it.polito.mad.project.models.User
 import kotlinx.android.synthetic.main.activity_main.*
@@ -35,7 +31,6 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var profileViewModel: ProfileViewModel
 
     private val userViewModel: UserViewModel = UserViewModel()
     private val gsonMapper: Gson = Gson()
@@ -62,20 +57,20 @@ class MainActivity : AppCompatActivity() {
             userViewModel.user.value = gsonMapper.fromJson(userJson, User::class.java)
         }
         // Observe the user changes
-        userViewModel.user.observe(this, Observer{
-            if (full_name != null && it.name.isNotEmpty())
-                full_name.text = it.name
-            if (location != null && it.location.isNotEmpty())
-                location.text = it.location
-            if (user_photo!=null && it.photoProfilePath != null && it.photoProfilePath.isNotEmpty()) {
-                if (File(it.photoProfilePath).isFile){
-                    val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
-                    if (image != null) user_photo.setImageBitmap(image)
-                }
-            }
+        userViewModel.user.observe(this, Observer {
+           if (it!=null){
+                if (full_name != null && !it.name.isNullOrEmpty())
+                   full_name.text = it.name
+               if (location != null && !it.location.isNullOrEmpty())
+                   location.text = it.location
+               if (user_photo != null &&  !it.photoProfilePath.isNullOrEmpty()) {
+                   if (File(it.photoProfilePath).isFile) {
+                       val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
+                       if (image != null) user_photo.setImageBitmap(image)
+                   }
+               }
+           }
         })
-
-
 
     }
 
