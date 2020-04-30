@@ -3,7 +3,6 @@ package it.polito.mad.project.fragments.advertisements
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
@@ -14,6 +13,14 @@ import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_item_details.*
+import kotlinx.android.synthetic.main.fragment_item_details.item_category_spinner
+import kotlinx.android.synthetic.main.fragment_item_details.item_subcategory_spinner
+import kotlinx.android.synthetic.main.fragment_item_details.item_descr
+import kotlinx.android.synthetic.main.fragment_item_details.item_exp
+import kotlinx.android.synthetic.main.fragment_item_details.item_location
+import kotlinx.android.synthetic.main.fragment_item_details.item_photo
+import kotlinx.android.synthetic.main.fragment_item_details.item_price
+import kotlinx.android.synthetic.main.fragment_item_details.item_title
 
 // POINT 3: Implement the ItemDetailsFragment
 
@@ -43,6 +50,7 @@ class ItemDetailsFragment : StoreFileFragment() {
             item_descr.text = item.description
             item_location.text = item.location
             item_category_spinner.text = item.category
+            item_subcategory_spinner.text = item.subcategory
             item_price.text = item.price?.toString()
             item_exp.text = item.expiryDate
             if (item.imagePath != null && item.imagePath!!.isNotEmpty()) {

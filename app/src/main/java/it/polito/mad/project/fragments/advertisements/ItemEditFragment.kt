@@ -17,18 +17,26 @@ import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
-import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.StoreFileKey
+import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.Item
+import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.android.synthetic.main.fragment_item_edit.*
+import kotlinx.android.synthetic.main.fragment_item_edit.item_category_spinner
+import kotlinx.android.synthetic.main.fragment_item_edit.item_descr
+import kotlinx.android.synthetic.main.fragment_item_edit.item_exp
+import kotlinx.android.synthetic.main.fragment_item_edit.item_location
+import kotlinx.android.synthetic.main.fragment_item_edit.item_photo
+import kotlinx.android.synthetic.main.fragment_item_edit.item_price
+import kotlinx.android.synthetic.main.fragment_item_edit.item_subcategory_spinner
+import kotlinx.android.synthetic.main.fragment_item_edit.item_title
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -60,6 +68,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         setCameraButtons()
         setDatePicker()
         setCategorySpinner()
+
         // TODO: impostare le sub categories
 
         if (item != null) {
@@ -76,6 +85,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                 if (image != null) item_photo.setImageBitmap(image)
             }
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -126,6 +136,24 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         var category: String = parent?.getItemAtPosition(pos) as String
         item.category = category
         item.categoryPos = pos
+
+        if(pos == 0)
+            setSubcategoryArt()
+        if(pos == 1)
+            setSubcategorySports()
+        if (pos == 2)
+            setSubcategoryBaby()
+        if(pos == 3)
+            setSubcategoryWomen()
+        if(pos == 4)
+            setSubcategoryMen()
+        if(pos == 5)
+            setSubcategoryElectro()
+        if(pos== 6)
+            setSubcategoryGames()
+        if (pos == 7)
+            setSubcategoryAuto()
+
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -294,8 +322,107 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         item_category_spinner.onItemSelectedListener = this
     }
 
+    private fun setSubcategoryArt(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_art, android.R.layout.simple_spinner_item)
+                .also {
+                    adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategorySports(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_sports, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryBaby(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_baby, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryWomen(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_women, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryMen(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_men, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryElectro(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_electo, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryGames(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_games, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
+    private fun setSubcategoryAuto(){
+        context?.let {
+            ArrayAdapter.createFromResource(it,R.array.item_sub_auto, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    item_subcategory_spinner.adapter = adapter
+                }
+        }
+        //item_subcategory_spinner.onItemSelectedListener = this
+    }
+
     private fun saveItem() {
         var items: MutableList<Item> = loadFromStoreFile(StoreFileKey.ITEMS, Array<Item>::class.java)?.toMutableList()?: mutableListOf()
+
+        val subSpinner: Spinner? = activity?.findViewById(R.id.item_subcategory_spinner)
+        val subcategoryContent : String = subSpinner?.selectedItem.toString()
 
         if(savedImagePath == null && imagePath != null){
             savedImagePath = imagePath
@@ -310,6 +437,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         item.price = item_price.text.toString().toDouble()
         item.imagePath = savedImagePath
         item.category = item.category
+        item.subcategory = subcategoryContent
         item.categoryPos = item.categoryPos
         if (items.size > item.id) items[item.id] = item else items.add(item)
         saveToStoreFile(StoreFileKey.ITEM, item)
