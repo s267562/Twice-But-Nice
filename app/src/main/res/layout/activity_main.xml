@@ -20,6 +20,9 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer" />
+        app:itemIconTint="@android:color/primary_text_light"
+        app:menu="@menu/activity_main_drawer"
+        app:itemTextColor="@android:color/primary_text_light"
+        app:itemBackground="@drawable/drawer_selected_item"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>
