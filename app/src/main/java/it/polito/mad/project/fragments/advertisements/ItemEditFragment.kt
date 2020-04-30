@@ -88,6 +88,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         if (this.imagePath != null){
             image = BitmapFactory.decodeFile(imagePath)
             this.item_photo.setImageBitmap(image)
+            item_photo_rotate.visibility = View.VISIBLE
         }
 
     }
