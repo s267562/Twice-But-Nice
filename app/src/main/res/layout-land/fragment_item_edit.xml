@@ -139,6 +139,7 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/item_title_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
@@ -240,7 +241,7 @@
                                 android:layout_height="wrap_content"
                                 android:hint="0.0"
                                 android:imeOptions="actionNext"
-                                android:inputType="textLongMessage"
+                                android:inputType="numberDecimal"
                                 android:maxLines="1"/>
                         </com.google.android.material.textfield.TextInputLayout>
 

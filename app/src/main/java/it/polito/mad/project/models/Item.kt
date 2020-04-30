@@ -7,7 +7,7 @@ data class Item (val id: Int) : Serializable {
     var category: String = ""
     var subcategory : String = " "
     var categoryPos: Int = -1
-    var price: Double = 0.0
+    var price: String = ""
     var description: String = ""
     var expiryDate: String = ""
     var location: String = ""

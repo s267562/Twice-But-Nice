@@ -42,6 +42,8 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
     private var imagePath: String? = null
     private var savedImagePath: String? =null
 
+    private var dateValue: String? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         item = if(arguments != null && requireArguments().containsKey(ArgumentKey.EDIT_ITEM)) {
@@ -63,6 +65,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         // TODO: impostare le sub categories
         if (savedInstanceState != null) {
             imagePath = savedInstanceState.getString("ImagePath")
+            dateValue = savedInstanceState.getString("Date")
         }
         var image: Bitmap?=null
         if (item != null) {
@@ -71,7 +74,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                 item_category_spinner.setSelection(item.categoryPos)
             item_descr.setText(item.description)
             item_location.setText(item.location)
-            item_price.setText(item.price.toString())
+            item_price.setText(item.price)
             item_exp.text = item.expiryDate
             if (item.imagePath != null && item.imagePath!!.isNotEmpty()) {
                 savedImagePath = item.imagePath
@@ -89,6 +92,9 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
             image = BitmapFactory.decodeFile(imagePath)
             this.item_photo.setImageBitmap(image)
             item_photo_rotate.visibility = View.VISIBLE
+        }
+        if (this.dateValue != null){
+            item_exp.text= this.dateValue
         }
 
     }
@@ -141,6 +147,9 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         super.onSaveInstanceState(outState)
         if (this.imagePath != null) {
             outState.putString("ImagePath", this.imagePath)
+        }
+        if (this.dateValue != null){
+            outState.putString("Date", this.dateValue)
         }
     }
 
@@ -318,6 +327,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
                         item_exp.text = (
                             dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year
                         )
+                        this.dateValue = item_exp.text.toString()
                     },
                     year, month, day
                 ).show()
@@ -439,7 +449,6 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
 
         val subSpinner: Spinner? = activity?.findViewById(R.id.item_subcategory_spinner)
         val subcategoryContent : String = subSpinner?.selectedItem.toString()
-
         if(savedImagePath == null && imagePath != null){
             savedImagePath = imagePath
         } else if (savedImagePath != null && imagePath != savedImagePath && imagePath != null){
@@ -450,7 +459,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         item.location = item_location.text.toString()
         item.description = item_descr.text.toString()
         item.expiryDate = item_exp.text.toString()
-        item.price = item_price.text.toString().toDouble()
+        item.price = item_price.text.toString()
         item.imagePath = savedImagePath
         item.category = item.category
         item.subcategory = subcategoryContent
