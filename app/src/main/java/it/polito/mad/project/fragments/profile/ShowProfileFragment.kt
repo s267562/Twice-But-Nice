@@ -26,7 +26,6 @@ class ShowProfileFragment : StoreFileFragment() {
 
     private lateinit var profileViewModel: ProfileViewModel
     private lateinit var mContext: Context
-    private lateinit var mStorageRef: StorageReference
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -34,9 +33,8 @@ class ShowProfileFragment : StoreFileFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        //profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
-        //profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)
-        mStorageRef = FirebaseStorage.getInstance().getReference()
+        profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
+        profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)
         setHasOptionsMenu(true)
 
         return inflater.inflate(R.layout.fragment_show_profile, container, false)
