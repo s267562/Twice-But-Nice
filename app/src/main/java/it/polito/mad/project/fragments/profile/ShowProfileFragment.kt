@@ -6,26 +6,27 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.User
-import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 import java.io.File
 
-
-// POINT 6: Convert the ShowProfileActivity into Fragment
 
 class ShowProfileFragment : StoreFileFragment() {
 
     private lateinit var profileViewModel: ProfileViewModel
     private lateinit var mContext: Context
+    private lateinit var mStorageRef: StorageReference
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -33,8 +34,9 @@ class ShowProfileFragment : StoreFileFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
-        profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)
+        //profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
+        //profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)
+        mStorageRef = FirebaseStorage.getInstance().getReference()
         setHasOptionsMenu(true)
 
         return inflater.inflate(R.layout.fragment_show_profile, container, false)
