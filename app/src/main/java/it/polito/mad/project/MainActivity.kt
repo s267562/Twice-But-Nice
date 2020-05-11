@@ -15,6 +15,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.database.*
 import com.google.gson.Gson
 import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.fragments.profile.UserViewModel
@@ -26,8 +27,6 @@ import org.w3c.dom.Text
 import java.io.File
 
 
-// POINT 2: Implement the MainActivity, controller of fragments and Navigation
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -38,16 +37,37 @@ class MainActivity : AppCompatActivity() {
     //private var location: TextView? = null
     private var user_photo: ImageView? = null
 
+    // Adding two references to items and users DB
+
+    lateinit var userRef: DatabaseReference
+    lateinit var itemRef: DatabaseReference
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         setNavView()
 
+        // Retrieving data from the Cloud Firebase DB
+
+        userRef = FirebaseDatabase.getInstance().getReference("user")
+        itemRef = FirebaseDatabase.getInstance().getReference("item")
+
         val hView = navView.getHeaderView(0)
         full_name = hView.findViewById<TextView>(R.id.full_name)
         //location = hView.findViewById<TextView>(R.id.location)
         user_photo = hView.findViewById<ImageView>(R.id.user_photo)
+
+        userRef.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                TODO("Not yet implemented")
+            }
+
+        })
 
 
         // Load store file of our app from shared preferences
