@@ -35,7 +35,7 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
         holder.bind(items[position],
             {
                 var bundle = bundleOf(ArgumentKey.SHOW_ITEM to Gson().toJson(items[position]))
-                holder.itemView.findNavController().navigate(R.id.action_navAdvertisements_to_showItemFragment, bundle)
+                holder.itemView.findNavController().navigate(R.id.action_navAdvertisements_to_itemListFragment, bundle)
             },
             {
                 var bundle = bundleOf(ArgumentKey.EDIT_ITEM to Gson().toJson(items[position]))

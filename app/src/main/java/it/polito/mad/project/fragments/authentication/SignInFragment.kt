@@ -7,6 +7,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -17,12 +19,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import it.polito.mad.project.R
+import kotlinx.android.synthetic.main.fragment_login_google.*
 
 
 class SignInFragment : Fragment(){
 
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    //private lateinit var signInBtn: Button
 
     val RC_SIGN_IN = 1
 
@@ -42,6 +46,13 @@ class SignInFragment : Fragment(){
 
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
         auth = FirebaseAuth.getInstance()
+
+        signInGoogleBtn.setOnClickListener {
+            Toast.makeText(activity, "Button clicked", Toast.LENGTH_SHORT).show()
+            signIn()
+        }
+
+
 
     }
 

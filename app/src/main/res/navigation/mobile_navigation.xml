@@ -30,17 +30,28 @@
 
     <fragment
         android:id="@+id/navAdvertisements"
-        android:name="it.polito.mad.project.fragments.advertisements.ItemListFragment"
-        android:label="@string/menu_advertisements"
-        tools:layout="@layout/fragment_item_list" >
+        android:name="it.polito.mad.project.fragments.authentication.SignInFragment"
+        android:label="@string/menu_home">
         <action
-            android:id="@+id/action_navAdvertisements_to_showItemFragment"
-            app:destination="@id/showItemFragment"
+            android:id="@+id/action_navAdvertisements_to_itemListFragment"
+            app:destination="@id/itemListFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit" />
         <action
             android:id="@+id/action_navAdvertisements_to_navHome"
             app:destination="@id/navHome" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/itemListFragment"
+        android:name="it.polito.mad.project.fragments.advertisements.ItemListFragment"
+        android:label="@string/menu_advertisements"
+        tools:layout="@layout/fragment_item_list">
+        <action
+            android:id="@+id/action_itemListFragment_to_showItemFragment"
+            app:destination="@id/showItemFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit" />
         <action
             android:id="@+id/action_navAdvertisements_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
@@ -56,7 +67,6 @@
             app:enterAnim="@anim/fragment_fade_enter"
             app:exitAnim="@anim/fragment_fade_exit"
             app:popUpTo="@id/navAdvertisements" />
-
         <action
             android:id="@+id/action_showItemFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
