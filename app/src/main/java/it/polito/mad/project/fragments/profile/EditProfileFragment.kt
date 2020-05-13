@@ -23,6 +23,11 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.google.gson.Gson
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
@@ -42,6 +47,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 // POINT 6: Convert the EdtiProfileActivity into Fragment
 
@@ -56,7 +62,6 @@ class EditProfileFragment : StoreFileFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
-
     }
 
 
@@ -285,6 +290,8 @@ class EditProfileFragment : StoreFileFragment() {
         val location = location.text.toString()
         var path = savedImagePath
         saveToStoreFile(StoreFileKey.USER, User(name,"", nickname, email, location, path))
+
+
 
     }
 
