@@ -51,14 +51,10 @@ class SignInFragment : Fragment(){
             Toast.makeText(activity, "Button clicked", Toast.LENGTH_SHORT).show()
             signIn()
         }
-
-
-
     }
 
     override fun onStart() {
         super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
         updateUI(currentUser)
     }
@@ -90,6 +86,7 @@ class SignInFragment : Fragment(){
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
+
                     updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
@@ -108,7 +105,7 @@ class SignInFragment : Fragment(){
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
-    private fun signOut() {
+    /*private fun signOut() {
         // Firebase sign out
         auth.signOut()
         // Google sign out
@@ -120,12 +117,11 @@ class SignInFragment : Fragment(){
     private fun revokeAccess() {
         // Firebase sign out
         auth.signOut()
-
         // Google revoke access
         googleSignInClient.revokeAccess().addOnCompleteListener(requireActivity()) {
             updateUI(null)
         }
-    }
+    }*/
 
     private fun updateUI(user: FirebaseUser?) {
         if (user != null) {

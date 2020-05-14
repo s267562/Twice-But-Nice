@@ -24,6 +24,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -45,11 +46,11 @@ import kotlinx.android.synthetic.main.fragment_show_profile.user_photo
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
 
-// POINT 6: Convert the EdtiProfileActivity into Fragment
 
 class EditProfileFragment : StoreFileFragment() {
 
@@ -58,6 +59,8 @@ class EditProfileFragment : StoreFileFragment() {
     private var imagePath: String? = null
     private var savedImagePath: String? =null
     private lateinit var mContext: Context
+
+    private lateinit var db: FirebaseFirestore
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -76,6 +79,9 @@ class EditProfileFragment : StoreFileFragment() {
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Initialize the DB
+        db = FirebaseFirestore.getInstance()
 
         if (savedInstanceState != null) {
             imagePath = savedInstanceState.getString("ImagePath")
@@ -291,7 +297,16 @@ class EditProfileFragment : StoreFileFragment() {
         var path = savedImagePath
         saveToStoreFile(StoreFileKey.USER, User(name,"", nickname, email, location, path))
 
+        // Save file in the Cloud DB
 
+        val newIn = User(name, name, nickname, email, location, path)
+        db.collection("users").add(newIn)
+            .addOnSuccessListener {
+                Toast.makeText(activity, "Done", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener{
+                Toast.makeText(activity, "Wrong", Toast.LENGTH_SHORT).show()
+            }
 
     }
 
@@ -306,7 +321,7 @@ class EditProfileFragment : StoreFileFragment() {
         super.onDestroy()
         if (activity?.isFinishing!! && imagePath!=null && imagePath!=savedImagePath){
             File(imagePath).delete()
-        }else{
+        } else {
             //it's an orientation change
         }
     }
