@@ -20,6 +20,9 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
@@ -30,6 +33,8 @@ import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_item_edit.*
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.Double.parseDouble
+import java.lang.Integer.parseInt
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -43,6 +48,12 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
     private var savedImagePath: String? =null
 
     private var dateValue: String? = null
+
+    private lateinit var db: FirebaseFirestore
+    private lateinit var fAuth: FirebaseAuth
+    private lateinit var reference: DocumentReference
+
+    private lateinit var itemID: String
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -62,7 +73,10 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         setDatePicker()
         setCategorySpinner()
 
-        // TODO: impostare le sub categories
+        // Initialize the DB and the instance
+        db = FirebaseFirestore.getInstance()
+        fAuth = FirebaseAuth.getInstance()
+
         if (savedInstanceState != null) {
             imagePath = savedInstanceState.getString("ImagePath")
             dateValue = savedInstanceState.getString("Date")
@@ -467,5 +481,26 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         if (items.size > item.id) items[item.id] = item else items.add(item)
         saveToStoreFile(StoreFileKey.ITEM, item)
         saveToStoreFile(StoreFileKey.ITEMS, items.toTypedArray())
+
+        // Save file in the Cloud DB
+        itemID = fAuth.currentUser!!.uid
+        val newIn = Item(parseInt(itemID), item.title, item.category, item.subcategory, parseDouble(item.price),
+            item.description, item.expiryDate, item.location, item.imagePath)
+        /*db.collection("users").add(newIn)
+            .addOnSuccessListener {
+                Toast.makeText(activity, "Done", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener{
+                Toast.makeText(activity, "Wrong", Toast.LENGTH_SHORT).show()
+            }*/
+
+        reference = db.collection("users").document(itemID)
+        reference.set(newIn)
+            .addOnSuccessListener {
+                Toast.makeText(activity, "Done", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener{
+                Toast.makeText(activity, "Wrong", Toast.LENGTH_SHORT).show()
+            }
     }
 }

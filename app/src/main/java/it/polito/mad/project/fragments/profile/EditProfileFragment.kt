@@ -24,6 +24,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -61,6 +62,10 @@ class EditProfileFragment : StoreFileFragment() {
     private lateinit var mContext: Context
 
     private lateinit var db: FirebaseFirestore
+    private lateinit var fAuth: FirebaseAuth
+    private lateinit var reference: DocumentReference
+
+    private lateinit var userID: String
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -80,8 +85,9 @@ class EditProfileFragment : StoreFileFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize the DB
+        // Initialize the DB and the instance
         db = FirebaseFirestore.getInstance()
+        fAuth = FirebaseAuth.getInstance()
 
         if (savedInstanceState != null) {
             imagePath = savedInstanceState.getString("ImagePath")
@@ -300,14 +306,22 @@ class EditProfileFragment : StoreFileFragment() {
         // Save file in the Cloud DB
 
         val newIn = User(name, name, nickname, email, location, path)
-        db.collection("users").add(newIn)
+        /*db.collection("users").add(newIn)
+            .addOnSuccessListener {
+                Toast.makeText(activity, "Done", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener{
+                Toast.makeText(activity, "Wrong", Toast.LENGTH_SHORT).show()
+            }*/
+        userID = fAuth.currentUser!!.uid
+        reference = db.collection("users").document(userID)
+        reference.set(newIn)
             .addOnSuccessListener {
                 Toast.makeText(activity, "Done", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener{
                 Toast.makeText(activity, "Wrong", Toast.LENGTH_SHORT).show()
             }
-
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
