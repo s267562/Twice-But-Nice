@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/showProfileFragment"
-        android:name="it.polito.mad.project.fragments.profile.ShowProfileFragment"
+        android:name="it.polito.mad.project.fragments.profile.UserDetailsFragment"
         android:label="@string/menu_profile"
         tools:layout="@layout/fragment_show_profile" >
         <action
@@ -67,7 +67,7 @@
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
-        android:name="it.polito.mad.project.fragments.profile.EditProfileFragment"
+        android:name="it.polito.mad.project.fragments.profile.UserEditFragment"
         android:label="@string/menu_edit_profile"
         tools:layout="@layout/fragment_edit_profile" >
         <action
