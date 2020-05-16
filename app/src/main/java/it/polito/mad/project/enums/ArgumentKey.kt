@@ -4,4 +4,5 @@ object ArgumentKey {
     const val SHOW_ITEM = "ShowItemArgument"
     const val ADD_ITEM = "AddItemArgument"
     const val EDIT_ITEM = "EditItemArgument"
+    const val EDIT_USER = "EditUserArgument"
 }

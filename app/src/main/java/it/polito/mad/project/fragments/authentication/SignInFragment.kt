@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -18,18 +19,18 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import it.polito.mad.project.R
-import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.fragments.common.StoreFileFragment
+import it.polito.mad.project.fragments.profile.UserViewModel
 import it.polito.mad.project.models.User
 import kotlinx.android.synthetic.main.fragment_login.*
+import kotlin.concurrent.fixedRateTimer
 
 
 class SignInFragment : StoreFileFragment() {
+    private lateinit var firebaseStore: FirebaseFirestore
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var databaseRef: DatabaseReference
     private lateinit var googleSignInClient: GoogleSignInClient
 
     private val rcSignIn: Int = 1
@@ -37,6 +38,18 @@ class SignInFragment : StoreFileFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as AppCompatActivity?)?.supportActionBar?.hide()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+        firebaseAuth = FirebaseAuth.getInstance()
+        firebaseStore = FirebaseFirestore.getInstance()
+        updateUI(firebaseAuth.currentUser)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -47,22 +60,13 @@ class SignInFragment : StoreFileFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-
-        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
-        firebaseAuth = FirebaseAuth.getInstance()
-//        databaseRef = FirebaseDatabase.getInstance().reference
-
         signInGoogleBtn.setOnClickListener {
             Toast.makeText(activity, "Button clicked", Toast.LENGTH_SHORT).show()
             signInWithGoogle()
         }
 
         signInBtn.setOnClickListener {
-            signIn()
+            signInWithEmail()
         }
 
         logToReg.setOnClickListener {
@@ -70,9 +74,25 @@ class SignInFragment : StoreFileFragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        updateUI(firebaseAuth.currentUser)
+    private fun signInWithGoogle() {
+        val signInIntent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, rcSignIn)
+    }
+
+    private fun signInWithEmail() {
+        firebaseAuth.signInWithEmailAndPassword(log_nickname.text.toString(), log_password.text.toString()).addOnCompleteListener{ it ->
+            if (it.isSuccessful) {
+                updateUI(it.result?.user)
+            } else {
+                Toast.makeText(activity, it.exception?.message, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun updateUI(user: FirebaseUser?) {
+        if (user != null) {
+            findNavController().navigate(R.id.action_navHome_to_itemListFragment)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -98,47 +118,27 @@ class SignInFragment : StoreFileFragment() {
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         firebaseAuth.signInWithCredential(credential).addOnCompleteListener(requireActivity()) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success")
-                    updateUI(firebaseAuth.currentUser)
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
-                    // [START_EXCLUDE]
-                    //val view = binding.mainLayout
-                    // [END_EXCLUDE]
-                    view?.let { Snackbar.make(it, "Authentication Failed.", Snackbar.LENGTH_SHORT).show() }
+            if (task.isSuccessful) {
+                // Sign in success, update UI with the signed-in user's information
+                Log.d(TAG, "signInWithCredential:success")
+                var firebaseUser = firebaseAuth.currentUser
+                var user = User(firebaseUser!!.displayName?:"")
+                user.id = firebaseUser!!.uid
+                user.email = firebaseUser!!.email?:""
+                firebaseStore.collection("users").document(user.id).set(user).addOnCompleteListener {
+                    updateUI(firebaseUser)
                 }
-            }
-    }
-
-    private fun signInWithGoogle() {
-        val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, rcSignIn)
-    }
-
-    private fun signIn() {
-
-        firebaseAuth.signInWithEmailAndPassword(log_nickname.text.toString(), log_password.text.toString()).addOnCompleteListener{ it ->
-            if (it.isSuccessful) {
-                updateUI(it.result?.user)
             } else {
-                Toast.makeText(activity, it.exception?.message, Toast.LENGTH_LONG).show()
+                // If sign in fails, display a message to the user.
+                Log.w(TAG, "signInWithCredential:failure", task.exception)
+                // [START_EXCLUDE]
+                //val view = binding.mainLayout
+                // [END_EXCLUDE]
+                view?.let { Snackbar.make(it, "Authentication Failed.", Snackbar.LENGTH_SHORT).show() }
             }
         }
     }
 
-    private fun updateUI(user: FirebaseUser?) {
-        if (user != null) {
-            var userModel = loadFromStoreFile(StoreFileKey.USER, User::class.java)
-//            databaseRef.child("users").child(user.uid).setValue(userModel).addOnCompleteListener {
-//                if (it.isSuccessful) {
-//                }
-//            }
-            findNavController().navigate(R.id.action_navHome_to_itemListFragment)
-        }
-    }
 
     /*private fun signOut() {
         // Firebase sign out

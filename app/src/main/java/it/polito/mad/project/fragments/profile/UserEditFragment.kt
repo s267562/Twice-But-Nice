@@ -17,27 +17,14 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import com.google.gson.Gson
 import it.polito.mad.project.R
-import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.enums.IntentRequest
-import it.polito.mad.project.enums.StoreFileKey
-import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.User
-import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_show_profile.email
 import kotlinx.android.synthetic.main.fragment_show_profile.full_name
@@ -47,37 +34,32 @@ import kotlinx.android.synthetic.main.fragment_show_profile.user_photo
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 
-class EditProfileFragment : StoreFileFragment() {
+class UserEditFragment : Fragment() {
 
-    private lateinit var profileViewModel: ProfileViewModel
+    private lateinit var mContext: Context
+    private lateinit var userViewModel: UserViewModel
+
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
-    private lateinit var mContext: Context
+    private val selectImage = 2
 
-    private lateinit var db: FirebaseFirestore
-    private lateinit var fAuth: FirebaseAuth
-    private lateinit var reference: DocumentReference
-
-    private lateinit var userID: String
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        userViewModel = ViewModelProvider(activity?:this).get(UserViewModel::class.java)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
     }
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
-        profileViewModel.user.value = loadFromStoreFile(StoreFileKey.USER, User::class.java)?:profileViewModel.user.value
         setHasOptionsMenu(true)
-
         return inflater.inflate(R.layout.fragment_edit_profile, container, false)
     }
 
@@ -85,16 +67,12 @@ class EditProfileFragment : StoreFileFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize the DB and the instance
-        db = FirebaseFirestore.getInstance()
-        fAuth = FirebaseAuth.getInstance()
-
         if (savedInstanceState != null) {
             imagePath = savedInstanceState.getString("ImagePath")
         }
 
         var image: Bitmap?=null
-        val it = profileViewModel.user.value
+        val it = userViewModel.user.value
         if (it != null) {
             if (it.name != null && it.name.isNotEmpty())
                 full_name.text = it.name
@@ -159,7 +137,6 @@ class EditProfileFragment : StoreFileFragment() {
         return when (item.itemId) {
             R.id.save_option -> {
                 saveProfile()
-                this.findNavController().popBackStack()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -205,7 +182,7 @@ class EditProfileFragment : StoreFileFragment() {
                     startActivityForResult(cameraIntent, IntentRequest.UserImage.CODE)
                 }
             } else {
-                //displayMessage(mContext, "Camera Intent Resolve Activity is null.")
+                Toast.makeText(mContext, "Camera intent, resolve activity is null", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -217,7 +194,7 @@ class EditProfileFragment : StoreFileFragment() {
                 && grantResults[1] == PackageManager.PERMISSION_GRANTED){
                 openCamera()
             } else {
-                //displayMessage(baseContext, "Camera Permission has been denied")
+                Toast.makeText(mContext, "Camera permission has been denied", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -234,7 +211,7 @@ class EditProfileFragment : StoreFileFragment() {
         }
 
         // Open Gallery
-        else if (requestCode == SELECT_IMAGE && resultCode == Activity.RESULT_OK){
+        else if (requestCode == selectImage && resultCode == Activity.RESULT_OK){
             val uriPic = data?.data
             user_photo.setImageURI(uriPic)
             if (uriPic != null) {
@@ -272,8 +249,7 @@ class EditProfileFragment : StoreFileFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("DEBUG", profileViewModel.user.value.toString())
-        //saveToStoreFile(StoreFileKey.USER, profileViewModel.user.value)
+        Log.d("DEBUG", userViewModel.user.value.toString())
     }
 
     private fun rotateImage(img:Bitmap, degree:Int):Bitmap {
@@ -285,7 +261,7 @@ class EditProfileFragment : StoreFileFragment() {
         val file: File = createImageFile()
         val fOut = FileOutputStream(file)
         rotatedImg.compress(Bitmap.CompressFormat.JPEG,100,fOut)
-        this.imagePath=file.absolutePath
+        this.imagePath = file.absolutePath
         return rotatedImg
     }
 
@@ -301,26 +277,15 @@ class EditProfileFragment : StoreFileFragment() {
         val email = email.text.toString()
         val location = location.text.toString()
         var path = savedImagePath
-        saveToStoreFile(StoreFileKey.USER, User(name,"", nickname, email, location, path))
 
+        val user = User(name, name, nickname, email, location, path)
         // Save file in the Cloud DB
-
-        val newIn = User(name, name, nickname, email, location, path)
-        /*db.collection("users").add(newIn)
-            .addOnSuccessListener {
-                Toast.makeText(activity, "Done", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener{
-                Toast.makeText(activity, "Wrong", Toast.LENGTH_SHORT).show()
-            }*/
-        userID = fAuth.currentUser!!.uid
-        reference = db.collection("users").document(userID)
-        reference.set(newIn)
-            .addOnSuccessListener {
-                Toast.makeText(activity, "Done", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener{
-                Toast.makeText(activity, "Wrong", Toast.LENGTH_SHORT).show()
+        userViewModel.saveUser(user)
+            .addOnCompleteListener {
+                if (!it.isSuccessful) {
+                    Toast.makeText(mContext, "Error during user update info", Toast.LENGTH_SHORT).show()
+                }
+                findNavController().popBackStack()
             }
     }
 
@@ -338,6 +303,14 @@ class EditProfileFragment : StoreFileFragment() {
         } else {
             //it's an orientation change
         }
+    }
+
+    // Methods to manage the camera
+    private fun openGallery(){
+        val galleryIntent = Intent()
+        galleryIntent.type = "image/*"
+        galleryIntent.action = Intent.ACTION_GET_CONTENT
+        startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), selectImage)
     }
 
 }
