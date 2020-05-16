@@ -48,13 +48,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Fullname"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:layout_marginBottom="16dp" />
-
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/au_fullname"
                 android:layout_width="match_parent"
@@ -68,13 +61,6 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nickname"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:layout_marginBottom="16dp" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/au_nickname"
@@ -90,13 +76,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Email"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:layout_marginBottom="16dp" />
-
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/au_email"
                 android:layout_width="match_parent"
@@ -111,12 +90,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Location"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:layout_marginBottom="16dp" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/au_location"
@@ -132,12 +105,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Password"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:layout_marginBottom="16dp" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/au_password"
@@ -158,11 +125,12 @@
             android:hint="Register"
             />
 
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/regToLog"
-            android:text="Already Registered? LogIn here"
+            android:text="Already Registered? Log in here"
             android:padding="20dp"
             android:layout_gravity="center"
             android:gravity="center"

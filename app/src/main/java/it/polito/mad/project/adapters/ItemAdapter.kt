@@ -1,12 +1,9 @@
 package it.polito.mad.project.adapters
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.os.bundleOf
@@ -16,10 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
-import it.polito.mad.project.enums.StoreFileKey
 import it.polito.mad.project.models.Item
-import it.polito.mad.project.utils.Util.Companion.saveToStoreFile
-import java.io.File
 
 class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
@@ -35,11 +29,11 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
         holder.bind(items[position],
             {
                 var bundle = bundleOf(ArgumentKey.SHOW_ITEM to Gson().toJson(items[position]))
-                holder.itemView.findNavController().navigate(R.id.action_navAdvertisements_to_itemListFragment, bundle)
+                holder.itemView.findNavController().navigate(R.id.action_navHome_to_itemListFragment, bundle)
             },
             {
                 var bundle = bundleOf(ArgumentKey.EDIT_ITEM to Gson().toJson(items[position]))
-                holder.itemView.findNavController().navigate(R.id.action_navAdvertisements_to_itemEditFragment, bundle)
+                holder.itemView.findNavController().navigate(R.id.action_itemListFragment_to_itemEditFragment, bundle)
             })
 
     }

@@ -3,16 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/navAdvertisements">
+    app:startDestination="@id/navHome">
 
-    <fragment android:id="@+id/navHome">
+    <fragment
+        android:id="@+id/navHome"
+        android:name="it.polito.mad.project.fragments.authentication.SignInFragment"
+        android:label="@string/menu_home">
         <action
             android:id="@+id/action_navHome_to_showProfileFragment"
             app:destination="@id/showProfileFragment" />
-
         <action
-            android:id="@+id/action_navHome_to_navAdvertisements"
-            app:destination="@id/navAdvertisements" />
+            android:id="@+id/action_navHome_to_itemListFragment"
+            app:destination="@id/itemListFragment" />
+        <action
+            android:id="@+id/action_navHome_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+
     </fragment>
 
     <fragment
@@ -21,25 +27,8 @@
         android:label="@string/menu_profile"
         tools:layout="@layout/fragment_show_profile" >
         <action
-            android:id="@+id/action_showProfileFragment_to_navHome"
-            app:destination="@id/navHome" />
-        <action
             android:id="@+id/action_showProfileFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/navAdvertisements"
-        android:name="it.polito.mad.project.fragments.authentication.SignInFragment"
-        android:label="@string/menu_home">
-        <action
-            android:id="@+id/action_navAdvertisements_to_itemListFragment"
-            app:destination="@id/itemListFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit" />
-        <action
-            android:id="@+id/action_navAdvertisements_to_navHome"
-            app:destination="@id/navHome" />
     </fragment>
 
     <fragment
@@ -53,7 +42,7 @@
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit" />
         <action
-            android:id="@+id/action_navAdvertisements_to_itemEditFragment"
+            android:id="@+id/action_itemListFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
     </fragment>
     <fragment
@@ -61,12 +50,6 @@
         android:name="it.polito.mad.project.fragments.advertisements.ItemDetailsFragment"
         android:label="@string/menu_show_advertisement"
         tools:layout="@layout/fragment_item_details">
-        <action
-            android:id="@+id/action_showItemFragment_to_navAdvertisements"
-            app:destination="@id/navAdvertisements"
-            app:enterAnim="@anim/fragment_fade_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
-            app:popUpTo="@id/navAdvertisements" />
         <action
             android:id="@+id/action_showItemFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
@@ -81,9 +64,6 @@
             android:id="@+id/action_itemEditFragment_to_showItemFragment"
             app:destination="@id/showItemFragment"
             app:popUpTo="@id/showItemFragment" />
-        <action
-            android:id="@+id/action_itemEditFragment_to_navAdvertisements"
-            app:destination="@id/navAdvertisements" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
@@ -94,4 +74,8 @@
             android:id="@+id/action_editProfileFragment_to_showProfileFragment"
             app:destination="@id/showProfileFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="it.polito.mad.project.fragments.authentication.SignUpFragment"
+        android:label="SignUpFragment" />
 </navigation>

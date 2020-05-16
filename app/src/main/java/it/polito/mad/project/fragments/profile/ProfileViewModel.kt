@@ -7,4 +7,12 @@ import it.polito.mad.project.models.User
 
 class ProfileViewModel : ViewModel() {
     val user = MutableLiveData<User>()
+
+    fun isAuth(): Boolean {
+       return user.value?.isAuthenticated?:false
+    }
+
+    fun isCreated(): Boolean {
+        return user.value?.isCreated?:false
+    }
 }

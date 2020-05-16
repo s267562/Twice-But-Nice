@@ -1,10 +1,10 @@
 package it.polito.mad.project.fragments.advertisements
 
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -26,6 +26,7 @@ class ItemListFragment : StoreFileFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        (activity as AppCompatActivity?)?.supportActionBar?.show()
         adsViewModel =
             ViewModelProvider(this).get(ItemListViewModel::class.java)
 
@@ -66,7 +67,7 @@ class ItemListFragment : StoreFileFragment() {
         saleFab.setOnClickListener {
 
             saveToStoreFile(StoreFileKey.TEMP_ITEM, Item(adsViewModel.index.value?:0))
-            this.findNavController().navigate(R.id.action_navAdvertisements_to_itemEditFragment)
+            this.findNavController().navigate(R.id.action_itemListFragment_to_itemEditFragment)
         }
     }
 }

@@ -38,9 +38,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
-        <activity android:name=".activities.profile.ShowProfileActivity" />
-        <activity android:name=".activities.profile.EditProfileActivity" />
     </application>
 
 </manifest>

@@ -7,9 +7,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -18,22 +18,30 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import it.polito.mad.project.R
-import kotlinx.android.synthetic.main.fragment_login_google.*
+import it.polito.mad.project.enums.StoreFileKey
+import it.polito.mad.project.fragments.common.StoreFileFragment
+import it.polito.mad.project.models.User
+import kotlinx.android.synthetic.main.fragment_login.*
 
 
-class SignInFragment : Fragment(){
-
-    private lateinit var auth: FirebaseAuth
+class SignInFragment : StoreFileFragment() {
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var databaseRef: DatabaseReference
     private lateinit var googleSignInClient: GoogleSignInClient
-    //private lateinit var signInBtn: Button
 
-    val RC_SIGN_IN = 1
+    private val rcSignIn: Int = 1
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity?)?.supportActionBar?.hide()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_login_google, container, false)
+        return inflater.inflate(R.layout.fragment_login, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,24 +53,32 @@ class SignInFragment : Fragment(){
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
-        auth = FirebaseAuth.getInstance()
+        firebaseAuth = FirebaseAuth.getInstance()
+//        databaseRef = FirebaseDatabase.getInstance().reference
 
         signInGoogleBtn.setOnClickListener {
             Toast.makeText(activity, "Button clicked", Toast.LENGTH_SHORT).show()
+            signInWithGoogle()
+        }
+
+        signInBtn.setOnClickListener {
             signIn()
+        }
+
+        logToReg.setOnClickListener {
+            findNavController().navigate(R.id.action_navHome_to_signUpFragment)
         }
     }
 
     override fun onStart() {
         super.onStart()
-        val currentUser = auth.currentUser
-        updateUI(currentUser)
+        updateUI(firebaseAuth.currentUser)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == rcSignIn) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 // Google Sign In was successful, authenticate with Firebase
@@ -81,13 +97,11 @@ class SignInFragment : Fragment(){
 
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
-        auth.signInWithCredential(credential).addOnCompleteListener(requireActivity()) { task ->
+        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
-                    val user = auth.currentUser
-
-                    updateUI(user)
+                    updateUI(firebaseAuth.currentUser)
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
@@ -95,14 +109,35 @@ class SignInFragment : Fragment(){
                     //val view = binding.mainLayout
                     // [END_EXCLUDE]
                     view?.let { Snackbar.make(it, "Authentication Failed.", Snackbar.LENGTH_SHORT).show() }
-                    updateUI(null)
                 }
             }
     }
 
-    private fun signIn() {
+    private fun signInWithGoogle() {
         val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
+        startActivityForResult(signInIntent, rcSignIn)
+    }
+
+    private fun signIn() {
+
+        firebaseAuth.signInWithEmailAndPassword(log_nickname.text.toString(), log_password.text.toString()).addOnCompleteListener{ it ->
+            if (it.isSuccessful) {
+                updateUI(it.result?.user)
+            } else {
+                Toast.makeText(activity, it.exception?.message, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun updateUI(user: FirebaseUser?) {
+        if (user != null) {
+            var userModel = loadFromStoreFile(StoreFileKey.USER, User::class.java)
+//            databaseRef.child("users").child(user.uid).setValue(userModel).addOnCompleteListener {
+//                if (it.isSuccessful) {
+//                }
+//            }
+            findNavController().navigate(R.id.action_navHome_to_itemListFragment)
+        }
     }
 
     /*private fun signOut() {
@@ -122,12 +157,4 @@ class SignInFragment : Fragment(){
             updateUI(null)
         }
     }*/
-
-    private fun updateUI(user: FirebaseUser?) {
-        if (user != null) {
-            // Caricare il fragment item list
-        } else {
-
-        }
-    }
 }
