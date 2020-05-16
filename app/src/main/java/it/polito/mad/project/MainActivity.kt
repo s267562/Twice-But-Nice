@@ -19,7 +19,6 @@ import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var userViewModel: UserViewModel
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,23 +26,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         setNavView()
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        if (userViewModel.isAuth()) {
-            userViewModel.loadUser()
-        }
-        // Observe the user changes
-        userViewModel.user.observe(this, Observer {
-            if (it!=null){
-                if (full_name != null && !it.name.isNullOrEmpty())
-                    full_name!!.text = it.name
-                if (user_photo != null &&  !it.photoProfilePath.isNullOrEmpty()) {
-                    if (File(it.photoProfilePath).isFile) {
-                        val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
-                        if (image != null) user_photo!!.setImageBitmap(image)
-                    }
-                }
-            }
-        })
     }
 
     override fun onSupportNavigateUp(): Boolean {
