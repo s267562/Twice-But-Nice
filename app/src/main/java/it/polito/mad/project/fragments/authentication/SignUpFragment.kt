@@ -17,6 +17,7 @@ import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.User
 import kotlinx.android.synthetic.main.fragment_signup.*
 
+// Sign Up with email and password
 
 class SignUpFragment: StoreFileFragment() {
     private lateinit var firebaseAuth: FirebaseAuth
