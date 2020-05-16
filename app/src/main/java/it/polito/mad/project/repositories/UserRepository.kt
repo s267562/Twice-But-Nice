@@ -12,19 +12,19 @@ class UserRepository {
 
     private val TAG = "FIREBASE_REPOSITORY"
     private var database = FirebaseFirestore.getInstance()
-    private var auth = FirebaseAuth.getInstance().currentUser
+    private var auth = FirebaseAuth.getInstance()
 
     // save user to firebase
     fun saveUser(user: User): Task<Void> {
-        return database.collection("users").document(auth!!.uid).set(user)
+        return database.collection("users").document(auth.currentUser!!.uid).set(user)
     }
 
     // get saved addresses from firebase
     fun getUser(): Task<DocumentSnapshot> {
-        return database.collection("users").document(auth!!.uid).get()
+        return database.collection("users").document(auth.currentUser!!.uid).get()
     }
 
     fun isCurrentUserAuth(): Boolean {
-        return auth != null
+        return auth.currentUser != null
     }
 }
