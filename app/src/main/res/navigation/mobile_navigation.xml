@@ -78,4 +78,8 @@
         android:id="@+id/signUpFragment"
         android:name="it.polito.mad.project.fragments.authentication.SignUpFragment"
         android:label="SignUpFragment" />
+    <fragment
+        android:id="@+id/onSaleListFragment"
+        android:name="it.polito.mad.project.fragments.advertisements.OnSaleListFragment"
+        android:label="@string/menu_on_sale" />
 </navigation>
