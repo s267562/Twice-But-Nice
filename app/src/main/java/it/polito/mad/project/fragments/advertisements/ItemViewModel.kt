@@ -19,7 +19,7 @@ class ItemViewModel : CommonViewModel() {
 
     fun saveItem(item: Item): Task<Void> {
         loader.value = true
-        return itemRepository.saveUserItem(item)
+        return itemRepository.saveItem(item)
             .addOnSuccessListener {
                 this.item.value = item
                 if (item.id == items.size) {
