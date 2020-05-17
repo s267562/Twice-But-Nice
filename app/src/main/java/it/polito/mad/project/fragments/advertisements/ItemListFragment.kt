@@ -5,32 +5,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.R
-import it.polito.mad.project.fragments.common.StoreFileFragment
-import it.polito.mad.project.enums.StoreFileKey
-import it.polito.mad.project.models.Item
+import it.polito.mad.project.enums.ArgumentKey
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
 // POINT 5: Implement ItemListFragment
 
-class ItemListFragment : StoreFileFragment() {
+class ItemListFragment : Fragment() {
 
-    private lateinit var adsViewModel: ItemListViewModel
+    private lateinit var adsViewModel: ItemViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        adsViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
+    }
+
+    override fun onStart() {
+        super.onStart()
         (activity as AppCompatActivity?)?.supportActionBar?.show()
-        adsViewModel =
-            ViewModelProvider(this).get(ItemListViewModel::class.java)
-
-        adsViewModel.index.observe(this.viewLifecycleOwner, Observer {
+        adsViewModel.counter.observe(viewLifecycleOwner, Observer {
             if(it == 0) {
                 emptyListLayout.visibility = View.VISIBLE
                 itemRecyclerView.visibility = View.GONE
@@ -39,14 +38,9 @@ class ItemListFragment : StoreFileFragment() {
                 itemRecyclerView.visibility = View.VISIBLE
             }
         })
-
-        adsViewModel.items = loadFromStoreFile(StoreFileKey.ITEMS, Array<Item>::class.java)?.toMutableList()?: mutableListOf()
-        adsViewModel.index.value = adsViewModel.items.size
-        adsViewModel.adapter.setItems(adsViewModel.items)
-
-        // RESET
-        removeFromStoreFile(StoreFileKey.ITEM)
-        removeFromStoreFile(StoreFileKey.TEMP_ITEM)
+        adsViewModel.loadItems()
+    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_item_list, container, false)
     }
 
@@ -57,17 +51,11 @@ class ItemListFragment : StoreFileFragment() {
         setFabButton()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        saveToStoreFile(StoreFileKey.ITEMS, adsViewModel.items.toTypedArray())
-    }
-
     private fun setFabButton() {
         saleFab.show()
         saleFab.setOnClickListener {
-
-            saveToStoreFile(StoreFileKey.TEMP_ITEM, Item(adsViewModel.index.value?:0))
-            this.findNavController().navigate(R.id.action_itemListFragment_to_itemEditFragment)
+            var bundle = bundleOf(ArgumentKey.EDIT_ITEM to adsViewModel.counter.value!!)
+            this.findNavController().navigate(R.id.action_itemListFragment_to_itemEditFragment, bundle)
         }
     }
 }

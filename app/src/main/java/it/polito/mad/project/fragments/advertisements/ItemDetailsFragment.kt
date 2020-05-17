@@ -4,27 +4,32 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.*
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 
 import it.polito.mad.project.R
-import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.enums.ArgumentKey
-import it.polito.mad.project.enums.StoreFileKey
-import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_item_details.*
 
 // POINT 3: Implement the ItemDetailsFragment
 
-class ItemDetailsFragment : StoreFileFragment() {
+class ItemDetailsFragment : Fragment() {
 
-//    private lateinit var viewModel: ShowItemViewModel
-    private lateinit var item: Item
+    private lateinit var adsViewModel: ItemViewModel
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-//        viewModel = ViewModelProvider(this).get(ShowItemViewModel::class.java)
-        // TODO: Use the ViewModel
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        adsViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        var selectedId = arguments?.getInt(ArgumentKey.SHOW_ITEM)?:0
+        adsViewModel.loadItem(selectedId)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -34,21 +39,22 @@ class ItemDetailsFragment : StoreFileFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        item = Gson().fromJson(arguments?.getString(ArgumentKey.SHOW_ITEM), Item::class.java)
-        item = loadFromStoreFile(StoreFileKey.ITEM, Item::class.java)?:item
 
-        if (item != null) {
-            item_title.text = item.title
-            item_descr.text = item.description
-            item_location.text = item.location
-            item_category.text = "${item.category} - ${item.subcategory}"
-            item_price.text = "${item.price?.toString()} €"
-            item_exp.text = item.expiryDate
-            if (item.imagePath != null && item.imagePath!!.isNotEmpty()) {
-                val image: Bitmap = BitmapFactory.decodeFile(item.imagePath)
-                if (image != null) item_photo.setImageBitmap(image)
+        adsViewModel.selected.observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                item_title.text = it.title
+                item_descr.text = it.description
+                item_location.text = it.location
+                item_category.text = "${it.category} - ${it.subcategory}"
+                item_price.text = "${it.price?.toString()} €"
+                item_exp.text = it.expiryDate
+                if (it.imagePath != null && it.imagePath!!.isNotEmpty()) {
+                    val image: Bitmap = BitmapFactory.decodeFile(it.imagePath)
+                    if (image != null) item_photo.setImageBitmap(image)
+                }
             }
-        }
+        })
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -60,7 +66,7 @@ class ItemDetailsFragment : StoreFileFragment() {
         // Handle item selection
         return when (option.itemId) {
             R.id.pencil_option -> {
-                saveToStoreFile(StoreFileKey.TEMP_ITEM, item)
+                var bundle = bundleOf(ArgumentKey.EDIT_ITEM to null)
                 this.findNavController().navigate(R.id.action_showItemFragment_to_itemEditFragment)
                 true
             }
