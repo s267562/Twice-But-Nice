@@ -24,4 +24,8 @@ data class Item (val id: Int) : Serializable {
         this.location = location
         this.imagePath = imagePath?: ""
     }
+
+    constructor(): this(0) {
+
+    }
 }
