@@ -44,7 +44,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var savedImagePath: String? =null
     private var dateValue: String? = null
     private var subCategoriesResArray: IntArray = intArrayOf(R.array.item_sub_art, R.array.item_sub_sports, R.array.item_sub_baby,
-        R.array.item_sub_women, R.array.item_sub_men, R.array.item_sub_electo, R.array.item_sub_games)
+        R.array.item_sub_women, R.array.item_sub_men, R.array.item_sub_electo, R.array.item_sub_games, R.array.item_sub_auto)
 
     private val selectImage = 2
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -193,7 +193,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         localItem.category = category
         localItem.categoryPos = pos
 
-        if(pos > 0 && pos < subCategoriesResArray.size)
+        if(pos >= 0 && pos < subCategoriesResArray.size)
             setSubcategory(subCategoriesResArray[pos])
     }
 
