@@ -18,8 +18,8 @@ class UserRepository {
     }
 
     // get saved addresses from firebase
-    fun getUser(): Task<DocumentSnapshot> {
-        return database.collection("users").document(auth.currentUser!!.uid).get()
+    fun getUser(): Task<DocumentSnapshot>? {
+        return auth.currentUser?.uid?.let { database.collection("users").document(it).get() }
     }
 
     fun isCurrentUserAuth(): Boolean {
