@@ -26,6 +26,20 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         setNavView()
+
+        val userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel.user.observe(this, Observer{
+            if (it != null) {
+                if (it.name.isNotEmpty())
+                    full_name.text = it.name
+                if (it.photoProfilePath.isNotEmpty()) {
+                    if (File(it.photoProfilePath).isFile){
+                        val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
+                        user_photo.setImageBitmap(image)
+                    }
+                }
+            }
+        })
     }
 
     override fun onSupportNavigateUp(): Boolean {
