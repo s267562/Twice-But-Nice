@@ -4,18 +4,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.models.Item
+import java.util.*
 
-class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
+class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>(), Filterable {
+
+    private var filteredItems: MutableList<Item>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val userItemView = LayoutInflater.from(parent.context).inflate(
@@ -48,7 +52,6 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
         diffs.dispatchUpdatesTo(this) //animate UI
     }
 
-
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val category: TextView = view.findViewById(R.id.item_category)
         private val title: TextView = view.findViewById(R.id.item_title)
@@ -71,4 +74,36 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
             container.setOnClickListener(null)
         }
     }
+
+    override fun getFilter(): Filter? {
+        return filter
+    }
+
+    private val filter: Filter = object : Filter() {
+        override fun performFiltering(constraint: CharSequence): FilterResults {
+            val filteredList: MutableList<Item> = mutableListOf()
+            if (constraint == null || constraint.length == 0) {
+                filteredList.addAll(items)
+            } else {
+                val filterPattern =
+                    constraint.toString().toLowerCase()
+                for (item in items) {
+                    if (item.title.toLowerCase().contains(filterPattern)) {
+                        filteredList.add(item)
+                    }
+                }
+            }
+            val results = FilterResults()
+            results.values = filteredList
+            //notifyDataSetChanged()
+            return results
+        }
+
+        override fun publishResults(constraint: CharSequence, results: FilterResults) {
+            filteredItems?.clear()
+            filteredItems?.addAll(results.values as Collection<Item>)
+            notifyDataSetChanged()
+        }
+    }
+
 }
