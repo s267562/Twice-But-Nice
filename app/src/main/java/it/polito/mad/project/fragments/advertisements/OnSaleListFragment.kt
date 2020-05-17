@@ -1,10 +1,7 @@
 package it.polito.mad.project.fragments.advertisements
 
-import android.app.SearchManager
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.SearchView
 import android.widget.SearchView.OnQueryTextListener
@@ -15,7 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.R
-import kotlinx.android.synthetic.main.fragment_item_list.*
+import kotlinx.android.synthetic.main.fragment_on_sale_list.*
 
 
 class OnSaleListFragment : Fragment() {
@@ -25,11 +22,11 @@ class OnSaleListFragment : Fragment() {
     private var searchView: SearchView? = null
     private var queryTextListener: OnQueryTextListener? = null
 
-    private lateinit var adsViewModel: ItemViewModel
+    private lateinit var itemViewModel: ItemViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adsViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
+        itemViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -41,22 +38,28 @@ class OnSaleListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         itemRecyclerView.layoutManager = LinearLayoutManager(this.activity)
-        itemRecyclerView.adapter = adsViewModel.adapter
+        itemRecyclerView.adapter = itemViewModel.adapter
     }
 
     override fun onStart() {
         super.onStart()
         (activity as AppCompatActivity?)?.supportActionBar?.show()
-        adsViewModel.counter.observe(viewLifecycleOwner, Observer {
-            if(it == 0) {
-                emptyListLayout.visibility = View.VISIBLE
-                itemRecyclerView.visibility = View.GONE
+        itemViewModel.loader.observe(viewLifecycleOwner, Observer {
+            if (it == false) {
+                // loader ended
+                itemViewModel.adapter.setItems(itemViewModel.items)
+                if(itemViewModel.items.size == 0) {
+                    emptyListLayout.visibility = View.VISIBLE
+                    itemRecyclerView.visibility = View.GONE
+                } else {
+                    emptyListLayout.visibility = View.GONE
+                    itemRecyclerView.visibility = View.VISIBLE
+                }
+                loadingLayout.visibility = View.GONE
             } else {
-                emptyListLayout.visibility = View.GONE
-                itemRecyclerView.visibility = View.VISIBLE
+                loadingLayout.visibility = View.VISIBLE
             }
         })
-        adsViewModel.loadItems()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
