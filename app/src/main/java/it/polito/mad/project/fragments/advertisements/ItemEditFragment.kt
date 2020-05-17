@@ -19,52 +19,75 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.gson.Gson
+import androidx.lifecycle.Observer
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.enums.IntentRequest
-import it.polito.mad.project.enums.StoreFileKey
-import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_item_edit.*
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.Double.parseDouble
-import java.lang.Integer.parseInt
 import java.text.SimpleDateFormat
 import java.util.*
 
 // POINT 4: Implement the ItemEditFragment
 
-class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener {
+class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
-    private lateinit var item: Item
+    private lateinit var adsViewModel: ItemViewModel
+    private lateinit var tempItem: Item
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
-
     private var dateValue: String? = null
-
     private var subCategoriesResArray: IntArray = intArrayOf(R.array.item_sub_art, R.array.item_sub_sports, R.array.item_sub_baby,
-    R.array.item_sub_women, R.array.item_sub_men, R.array.item_sub_electo, R.array.item_sub_games)
+        R.array.item_sub_women, R.array.item_sub_men, R.array.item_sub_electo, R.array.item_sub_games)
 
-    private lateinit var db: FirebaseFirestore
-    private lateinit var fAuth: FirebaseAuth
-    private lateinit var reference: DocumentReference
+    private val selectImage = 2
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        adsViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
+    }
 
-    private lateinit var itemID: String
+    override fun onStart() {
+        super.onStart()
+        var selectedId = arguments?.getInt(ArgumentKey.EDIT_ITEM)
+        if (selectedId != null) {
+            if (selectedId < adsViewModel.counter.value!!) {
+                adsViewModel.loadItem(selectedId)
+            } else if (selectedId == adsViewModel.counter.value!!) {
+                adsViewModel.selected.value = Item(selectedId)
+            }
+        }
+        adsViewModel.selected.observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                item_title.setText(it.title)
+                if (it.categoryPos >= 0)
+                    item_category_spinner.setSelection(it.categoryPos)
+                item_descr.setText(it.description)
+                item_location.setText(it.location)
+                item_price.setText(it.price)
+                item_exp.text = it.expiryDate
+                if (it.imagePath != null && it.imagePath!!.isNotEmpty()) {
+                    savedImagePath = it.imagePath
+                    var image = BitmapFactory.decodeFile(it.imagePath)
+                    if (image == null){
+                        item_photo_rotate.visibility = View.GONE
+                    } else {
+                        item_photo_rotate.visibility = View.VISIBLE
+                        item_photo.setImageBitmap(image)
+                    }
+                }
+                tempItem = it
+            }
+        })
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        item = if(arguments != null && requireArguments().containsKey(ArgumentKey.EDIT_ITEM)) {
-            Gson().fromJson(arguments?.getString(ArgumentKey.EDIT_ITEM), Item::class.java)
-        } else {
-            loadFromStoreFile(StoreFileKey.TEMP_ITEM, Item::class.java)?:item
-        }
         return inflater.inflate(R.layout.fragment_item_edit, container, false)
     }
 
@@ -76,37 +99,13 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         setDatePicker()
         setCategorySpinner()
 
-        // Initialize the DB and the instance
-        db = FirebaseFirestore.getInstance()
-        fAuth = FirebaseAuth.getInstance()
-
         if (savedInstanceState != null) {
             imagePath = savedInstanceState.getString("ImagePath")
             dateValue = savedInstanceState.getString("Date")
         }
-        var image: Bitmap?=null
-        if (item != null) {
-            item_title.setText(item.title)
-            if (item.categoryPos >= 0)
-                item_category_spinner.setSelection(item.categoryPos)
-            item_descr.setText(item.description)
-            item_location.setText(item.location)
-            item_price.setText(item.price)
-            item_exp.text = item.expiryDate
-            if (item.imagePath != null && item.imagePath!!.isNotEmpty()) {
-                savedImagePath = item.imagePath
-                image = BitmapFactory.decodeFile(item.imagePath)
-                if (image == null){
-                    item_photo_rotate.visibility = View.GONE
-                } else {
-                    item_photo_rotate.visibility = View.VISIBLE
-                    item_photo.setImageBitmap(image)
-                }
-            }
-        }
 
         if (this.imagePath != null){
-            image = BitmapFactory.decodeFile(imagePath)
+            var image = BitmapFactory.decodeFile(imagePath)
             this.item_photo.setImageBitmap(image)
             item_photo_rotate.visibility = View.VISIBLE
         }
@@ -157,7 +156,6 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
 
     override fun onDestroyView() {
         super.onDestroyView()
-        saveToStoreFile(StoreFileKey.TEMP_ITEM, item)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -181,8 +179,8 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
         var category: String = parent?.getItemAtPosition(pos) as String
-        item.category = category
-        item.categoryPos = pos
+        tempItem.category = category
+        tempItem.categoryPos = pos
 
         if(pos > 0 && pos < subCategoriesResArray.size)
             setSubcategory(subCategoriesResArray[pos])
@@ -245,7 +243,7 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
         }
 
         // Open Gallery
-        else if (requestCode == SELECT_IMAGE && resultCode == Activity.RESULT_OK){
+        else if (requestCode == selectImage && resultCode == Activity.RESULT_OK){
             val uriPic = data?.data
             item_photo.setImageURI(uriPic)
             if (uriPic != null) {
@@ -363,8 +361,6 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
     }
 
     private fun saveItem() {
-        var items: MutableList<Item> = loadFromStoreFile(StoreFileKey.ITEMS, Array<Item>::class.java)?.toMutableList()?: mutableListOf()
-
         val subSpinner: Spinner? = activity?.findViewById(R.id.item_subcategory_spinner)
         val subcategoryContent : String = subSpinner?.selectedItem.toString()
         if(savedImagePath == null && imagePath != null){
@@ -373,38 +369,24 @@ class ItemEditFragment : StoreFileFragment(), AdapterView.OnItemSelectedListener
             File(savedImagePath).delete()
             savedImagePath = imagePath
         }
-        item.title = item_title.text.toString()
-        item.location = item_location.text.toString()
-        item.description = item_descr.text.toString()
-        item.expiryDate = item_exp.text.toString()
-        item.price = item_price.text.toString()
-        item.imagePath = savedImagePath
-        item.category = item.category
-        item.subcategory = subcategoryContent
-        item.categoryPos = item.categoryPos
-        if (items.size > item.id) items[item.id] = item else items.add(item)
-        saveToStoreFile(StoreFileKey.ITEM, item)
-        saveToStoreFile(StoreFileKey.ITEMS, items.toTypedArray())
+        tempItem.title = item_title.text.toString()
+        tempItem.location = item_location.text.toString()
+        tempItem.description = item_descr.text.toString()
+        tempItem.expiryDate = item_exp.text.toString()
+        tempItem.price = item_price.text.toString()
+        tempItem.imagePath = savedImagePath
+        tempItem.category = tempItem.category
+        tempItem.subcategory = subcategoryContent
+        tempItem.categoryPos = tempItem.categoryPos
 
-        // Save file in the Cloud DB
-        itemID = fAuth.currentUser!!.uid
-        val newIn = Item(parseInt(itemID), item.title, item.category, item.subcategory, parseDouble(item.price),
-            item.description, item.expiryDate, item.location, item.imagePath)
-        /*db.collection("users").add(newIn)
-            .addOnSuccessListener {
-                Toast.makeText(activity, "Done", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener{
-                Toast.makeText(activity, "Wrong", Toast.LENGTH_SHORT).show()
-            }*/
+        adsViewModel.saveItem(tempItem)
+    }
 
-        reference = db.collection("users").document(itemID)
-        reference.set(newIn)
-            .addOnSuccessListener {
-                Toast.makeText(activity, "Done", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener{
-                Toast.makeText(activity, "Wrong", Toast.LENGTH_SHORT).show()
-            }
+    // Methods to manage the camera
+    private fun openGallery(){
+        val galleryIntent = Intent()
+        galleryIntent.type = "image/*"
+        galleryIntent.action = Intent.ACTION_GET_CONTENT
+        startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), selectImage)
     }
 }
