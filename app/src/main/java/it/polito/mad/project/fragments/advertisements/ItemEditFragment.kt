@@ -378,7 +378,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         localItem.subcategory = subcategoryContent
         localItem.categoryPos = localItem.categoryPos
 
-        if (localItem.id > 0) {
+        if (localItem.id >= 0) {
             itemViewModel.saveItem(localItem).addOnCompleteListener {
                 if (it.isSuccessful) {
                     findNavController().popBackStack()
