@@ -15,10 +15,6 @@ class UserViewModel : ViewModel() {
 
     private val userRepository = UserRepository()
 
-    fun isAuth(): Boolean {
-        return  userRepository.isCurrentUserAuth()
-    }
-
     fun saveUser(user: User): Task<Void> {
         reload = true
         return userRepository.saveUser(user)
@@ -31,7 +27,7 @@ class UserViewModel : ViewModel() {
             }
             reload = false
         } else {
-            Log.d("UserViewModel", "User repository not invoked because: reload = $reload, auth = ${isAuth()}")
+            Log.d("UserViewModel", "User repository not invoked because reload = $reload")
         }
 
     }
