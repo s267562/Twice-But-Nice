@@ -15,7 +15,7 @@ class ItemRepository {
     // save user to firebase
     fun saveUserItem(item: Item): Task<Void> {
         val userId = auth.currentUser!!.uid
-        return database.collection("users").document(userId).collection("items").document("$userId - ${item.id}").set(item)
+        return database.collection("users").document(userId).collection("items").document("$userId-${item.id}").set(item)
     }
 
     // get saved addresses from firebase

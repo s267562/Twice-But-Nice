@@ -4,12 +4,12 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.gson.Gson
 
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
@@ -30,17 +30,8 @@ class ItemDetailsFragment : Fragment() {
         super.onStart()
         var selectedId = arguments?.getInt(ArgumentKey.SHOW_ITEM)?:0
         adsViewModel.loadItem(selectedId)
-    }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_item_details, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        adsViewModel.selected.observe(viewLifecycleOwner, Observer {
+        adsViewModel.item.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 item_title.text = it.title
                 item_descr.text = it.description
@@ -55,6 +46,21 @@ class ItemDetailsFragment : Fragment() {
             }
         })
 
+        adsViewModel.loader.observe(viewLifecycleOwner, Observer {
+            if (it == false) {
+                loadingLayout.visibility = View.GONE
+                if (adsViewModel.error) {
+                    Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                loadingLayout.visibility = View.VISIBLE
+            }
+        })
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
+        return inflater.inflate(R.layout.fragment_item_details, container, false)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -67,7 +73,7 @@ class ItemDetailsFragment : Fragment() {
         return when (option.itemId) {
             R.id.pencil_option -> {
                 var bundle = bundleOf(ArgumentKey.EDIT_ITEM to null)
-                this.findNavController().navigate(R.id.action_showItemFragment_to_itemEditFragment)
+                this.findNavController().navigate(R.id.action_showItemFragment_to_itemEditFragment, bundle)
                 true
             }
             else -> super.onOptionsItemSelected(option)

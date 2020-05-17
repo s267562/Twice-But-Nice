@@ -21,8 +21,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.enums.IntentRequest
@@ -37,8 +37,8 @@ import java.util.*
 
 class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
-    private lateinit var adsViewModel: ItemViewModel
-    private lateinit var tempItem: Item
+    private lateinit var itemViewModel: ItemViewModel
+    private var localItem: Item = Item(-1)
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
@@ -49,20 +49,21 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val selectImage = 2
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adsViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
+        itemViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
     }
 
     override fun onStart() {
         super.onStart()
         var selectedId = arguments?.getInt(ArgumentKey.EDIT_ITEM)
         if (selectedId != null) {
-            if (selectedId < adsViewModel.counter.value!!) {
-                adsViewModel.loadItem(selectedId)
-            } else if (selectedId == adsViewModel.counter.value!!) {
-                adsViewModel.selected.value = Item(selectedId)
+            if (selectedId < itemViewModel.items.size) {
+                itemViewModel.loadItem(selectedId)
+            } else if (selectedId == itemViewModel.items.size) {
+                itemViewModel.item.value = Item(selectedId)
             }
         }
-        adsViewModel.selected.observe(viewLifecycleOwner, Observer {
+
+        itemViewModel.item.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 item_title.setText(it.title)
                 if (it.categoryPos >= 0)
@@ -81,9 +82,21 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         item_photo.setImageBitmap(image)
                     }
                 }
-                tempItem = it
+                localItem = it
             }
         })
+
+        itemViewModel.loader.observe(viewLifecycleOwner, Observer {
+            if (it == false) {
+                loadingLayout.visibility = View.GONE
+                if (itemViewModel.error) {
+                    Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                loadingLayout.visibility = View.VISIBLE
+            }
+        })
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -97,7 +110,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         registerForContextMenu(item_photo_add)
         setCameraButtons()
         setDatePicker()
-        setCategorySpinner()
+        setCategory()
 
         if (savedInstanceState != null) {
             imagePath = savedInstanceState.getString("ImagePath")
@@ -131,7 +144,6 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         return when (option.itemId) {
             R.id.save_option -> {
                 saveItem()
-                this.findNavController().popBackStack()
                 true
             }
             else -> super.onOptionsItemSelected(option)
@@ -154,10 +166,6 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         if (this.imagePath != null) {
@@ -171,24 +179,22 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onDestroy() {
         super.onDestroy()
         if (activity?.isFinishing!! && imagePath!=null && imagePath!=savedImagePath){
+            //it's NOT an orientation change
             File(imagePath).delete()
-        }else{
-            //it's an orientation change
         }
+    }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) {
+        TODO("Not yet implemented")
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
         var category: String = parent?.getItemAtPosition(pos) as String
-        tempItem.category = category
-        tempItem.categoryPos = pos
+        localItem.category = category
+        localItem.categoryPos = pos
 
         if(pos > 0 && pos < subCategoriesResArray.size)
             setSubcategory(subCategoriesResArray[pos])
-    }
-
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-        TODO("Not yet implemented")
-
     }
 
     @SuppressLint("UseRequireInsteadOfGet")
@@ -200,8 +206,6 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
             if (cameraIntent.resolveActivity(activity?.packageManager!!) != null) {
                 // Create the File where the photo should go
                 imageFile = createImageFile()
-                //displayMessage(baseContext, imageFile!!.absolutePath)
-                Log.i("TeamSVIK", imageFile!!.absolutePath)
 
                 // Continue only if the File was successfully created
                 if (imageFile != null) {
@@ -213,8 +217,6 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                     startActivityForResult(cameraIntent, IntentRequest.UserImage.CODE)
                 }
-            } else {
-                //displayMessage(baseContext, "Camera Intent Resolve Activity is null.")
             }
         }
     }
@@ -225,8 +227,6 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
             if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
                 && grantResults[1] == PackageManager.PERMISSION_GRANTED){
                 openCamera()
-            } else {
-                //displayMessage(baseContext, "Camera Permission has been denied")
             }
         }
     }
@@ -307,7 +307,6 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val image = File.createTempFile(
             imageFileName, /* prefix */
             ".jpg" /* suffix */
-            //storageDir      /* directory */
         )
         this.imagePath= image.absolutePath
         return image
@@ -335,7 +334,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    private fun setCategorySpinner() {
+    private fun setCategory() {
         context?.let {
             ArrayAdapter.createFromResource(it, R.array.item_categories, android.R.layout.simple_spinner_item)
                 .also { adapter ->
@@ -357,7 +356,6 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     item_subcategory_spinner.adapter = adapter
                 }
         }
-        //item_subcategory_spinner.onItemSelectedListener = this
     }
 
     private fun saveItem() {
@@ -369,17 +367,28 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
             File(savedImagePath).delete()
             savedImagePath = imagePath
         }
-        tempItem.title = item_title.text.toString()
-        tempItem.location = item_location.text.toString()
-        tempItem.description = item_descr.text.toString()
-        tempItem.expiryDate = item_exp.text.toString()
-        tempItem.price = item_price.text.toString()
-        tempItem.imagePath = savedImagePath
-        tempItem.category = tempItem.category
-        tempItem.subcategory = subcategoryContent
-        tempItem.categoryPos = tempItem.categoryPos
 
-        adsViewModel.saveItem(tempItem)
+        localItem.title = item_title.text.toString()
+        localItem.location = item_location.text.toString()
+        localItem.description = item_descr.text.toString()
+        localItem.expiryDate = item_exp.text.toString()
+        localItem.price = item_price.text.toString()
+        localItem.imagePath = savedImagePath
+        localItem.category = localItem.category
+        localItem.subcategory = subcategoryContent
+        localItem.categoryPos = localItem.categoryPos
+
+        if (localItem.id > 0) {
+            itemViewModel.saveItem(localItem).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    findNavController().popBackStack()
+                } else {
+                    Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            Toast.makeText(context, "Error on saving new item", Toast.LENGTH_SHORT).show()
+        }
     }
 
     // Methods to manage the camera

@@ -29,16 +29,22 @@ class ItemListFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         (activity as AppCompatActivity?)?.supportActionBar?.show()
-        adsViewModel.counter.observe(viewLifecycleOwner, Observer {
-            if(it == 0) {
-                emptyListLayout.visibility = View.VISIBLE
-                itemRecyclerView.visibility = View.GONE
+        adsViewModel.loader.observe(viewLifecycleOwner, Observer {
+            if (it == false) {
+                // loader ended
+                adsViewModel.adapter.setItems(adsViewModel.items)
+                if(adsViewModel.items.size == 0) {
+                    emptyListLayout.visibility = View.VISIBLE
+                    itemRecyclerView.visibility = View.GONE
+                } else {
+                    emptyListLayout.visibility = View.GONE
+                    itemRecyclerView.visibility = View.VISIBLE
+                }
+                loadingLayout.visibility = View.GONE
             } else {
-                emptyListLayout.visibility = View.GONE
-                itemRecyclerView.visibility = View.VISIBLE
+                loadingLayout.visibility = View.VISIBLE
             }
         })
-        adsViewModel.loadItems()
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_item_list, container, false)
@@ -54,7 +60,7 @@ class ItemListFragment : Fragment() {
     private fun setFabButton() {
         saleFab.show()
         saleFab.setOnClickListener {
-            var bundle = bundleOf(ArgumentKey.EDIT_ITEM to adsViewModel.counter.value!!)
+            var bundle = bundleOf(ArgumentKey.EDIT_ITEM to adsViewModel.items.size)
             this.findNavController().navigate(R.id.action_itemListFragment_to_itemEditFragment, bundle)
         }
     }

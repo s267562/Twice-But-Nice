@@ -22,15 +22,11 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.Observer
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.User
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
-import kotlinx.android.synthetic.main.fragment_show_profile.email
-import kotlinx.android.synthetic.main.fragment_show_profile.full_name
-import kotlinx.android.synthetic.main.fragment_show_profile.location
-import kotlinx.android.synthetic.main.fragment_show_profile.nickname
-import kotlinx.android.synthetic.main.fragment_show_profile.user_photo
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -46,11 +42,26 @@ class UserEditFragment : Fragment() {
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
+    private var updateUser = false
     private val selectImage = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         userViewModel = ViewModelProvider(activity?:this).get(UserViewModel::class.java)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        userViewModel.loader.observe(viewLifecycleOwner, Observer {
+            if (it == false) {
+                loadingLayout.visibility = View.GONE
+                if (userViewModel.error) {
+                    Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                loadingLayout.visibility = View.VISIBLE
+            }
+        })
     }
 
     override fun onAttach(context: Context) {
@@ -75,13 +86,13 @@ class UserEditFragment : Fragment() {
         val user = userViewModel.user.value
         if (user != null) {
             if (user.name != null && user.name.isNotEmpty())
-                full_name.text = user.name
+                full_name.setText(user.name)
             if (user.nickname != null && user.nickname.isNotEmpty())
-                nickname.text = user.nickname
+                nickname.setText(user.nickname)
             if (user.email != null && user.email.isNotEmpty())
-                email.text = user.email
+                email.setText(user.email)
             if (user.location != null && user.location.isNotEmpty())
-                location.text = user.location
+                location.setText(user.location)
             if (user.photoProfilePath != null && user.photoProfilePath.isNotEmpty()) {
                 if (File(user.photoProfilePath).isFile)  {
                     savedImagePath = user.photoProfilePath

@@ -1,35 +1,47 @@
 package it.polito.mad.project.fragments.profile
 
-import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
-import com.google.android.material.snackbar.Snackbar
+import it.polito.mad.project.commons.CommonViewModel
 import it.polito.mad.project.models.User
 import it.polito.mad.project.repositories.UserRepository
 
-class UserViewModel : ViewModel() {
+class UserViewModel : CommonViewModel() {
     val user = MutableLiveData<User>()
-    private var reload = true
+
 
     private val userRepository = UserRepository()
 
+    init {
+        loadUser()
+    }
+
     fun saveUser(user: User): Task<Void> {
-        reload = true
+        loader.value = true
         return userRepository.saveUser(user)
-    }
-
-    fun loadUser() {
-        if (reload) {
-            userRepository.getUser().addOnSuccessListener {
-                user.value = it?.toObject(User::class.java)?:null
+            .addOnSuccessListener {
+                this.user.value = user
+                loader.value = false
+                error = false
             }
-            reload = false
-        } else {
-            Log.d("UserViewModel", "User repository not invoked because reload = $reload")
-        }
-
+            .addOnFailureListener {
+                loader.value = false
+                error = true
+            }
     }
+
+    private fun loadUser() {
+        loader.value = true
+        userRepository.getUser()
+            .addOnSuccessListener {
+                user.value = it.toObject(User::class.java)
+                loader.value = false
+                error = false
+            }
+            .addOnFailureListener {
+                error = true
+                loader.value = false
+            }
+}
 
 }

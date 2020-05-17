@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -25,16 +26,6 @@ class UserDetailsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        userViewModel.loadUser()
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_show_profile, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         userViewModel.user.observe(viewLifecycleOwner, Observer{
             if (it != null) {
                 if (it.name != null && it.name.isNotEmpty())
@@ -53,6 +44,22 @@ class UserDetailsFragment : Fragment() {
                 }
             }
         })
+
+        userViewModel.loader.observe(viewLifecycleOwner, Observer {
+            if (it == false) {
+                loadingLayout.visibility = View.GONE
+                if (userViewModel.error) {
+                    Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                loadingLayout.visibility = View.VISIBLE
+            }
+        })
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
+        return inflater.inflate(R.layout.fragment_show_profile, container, false)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
