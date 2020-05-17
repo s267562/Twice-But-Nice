@@ -5,17 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.StoreFileKey
-import it.polito.mad.project.fragments.common.StoreFileFragment
 import it.polito.mad.project.models.User
 import kotlinx.android.synthetic.main.fragment_signup.*
 
-
-class SignUpFragment: StoreFileFragment() {
+class SignUpFragment: Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firebaseStore: FirebaseFirestore
 
@@ -49,8 +48,7 @@ class SignUpFragment: StoreFileFragment() {
                             Toast.makeText(activity, "Successfully Registered. User saved remote", Toast.LENGTH_LONG).show()
                         }
                         .addOnFailureListener {
-                            Toast.makeText(activity, "Successfully Registered. User saved local", Toast.LENGTH_LONG).show()
-                            saveToStoreFile(StoreFileKey.USER, user)
+                            Toast.makeText(activity, "Successfully Registered. User info not save remote", Toast.LENGTH_LONG).show()
                         }
 
                     findNavController().popBackStack()

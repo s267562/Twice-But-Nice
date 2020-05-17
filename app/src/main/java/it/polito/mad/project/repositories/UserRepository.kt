@@ -9,8 +9,6 @@ import it.polito.mad.project.models.User
 import kotlinx.android.synthetic.main.fragment_login.*
 
 class UserRepository {
-
-    private val TAG = "FIREBASE_REPOSITORY"
     private var database = FirebaseFirestore.getInstance()
     private var auth = FirebaseAuth.getInstance()
 

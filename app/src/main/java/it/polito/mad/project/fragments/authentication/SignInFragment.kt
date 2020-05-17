@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -21,14 +21,10 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import it.polito.mad.project.R
-import it.polito.mad.project.fragments.common.StoreFileFragment
-import it.polito.mad.project.fragments.profile.UserViewModel
 import it.polito.mad.project.models.User
 import kotlinx.android.synthetic.main.fragment_login.*
-import kotlin.concurrent.fixedRateTimer
 
-
-class SignInFragment : StoreFileFragment() {
+class SignInFragment : Fragment() {
     private lateinit var firebaseStore: FirebaseFirestore
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient

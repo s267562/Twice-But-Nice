@@ -72,20 +72,20 @@ class UserEditFragment : Fragment() {
         }
 
         var image: Bitmap?=null
-        val it = userViewModel.user.value
-        if (it != null) {
-            if (it.name != null && it.name.isNotEmpty())
-                full_name.text = it.name
-            if (it.nickname != null && it.nickname.isNotEmpty())
-                nickname.text = it.nickname
-            if (it.email != null && it.email.isNotEmpty())
-                email.text = it.email
-            if (it.location != null && it.location.isNotEmpty())
-                location.text = it.location
-            if (it.photoProfilePath != null && it.photoProfilePath.isNotEmpty()) {
-                if (File(it.photoProfilePath).isFile)  {
-                    savedImagePath = it.photoProfilePath
-                    image = BitmapFactory.decodeFile(it.photoProfilePath)
+        val user = userViewModel.user.value
+        if (user != null) {
+            if (user.name != null && user.name.isNotEmpty())
+                full_name.text = user.name
+            if (user.nickname != null && user.nickname.isNotEmpty())
+                nickname.text = user.nickname
+            if (user.email != null && user.email.isNotEmpty())
+                email.text = user.email
+            if (user.location != null && user.location.isNotEmpty())
+                location.text = user.location
+            if (user.photoProfilePath != null && user.photoProfilePath.isNotEmpty()) {
+                if (File(user.photoProfilePath).isFile)  {
+                    savedImagePath = user.photoProfilePath
+                    image = BitmapFactory.decodeFile(user.photoProfilePath)
                     if (image != null) {
                         user_photo.setImageBitmap(image)
                         rotation_button.visibility=View.VISIBLE
