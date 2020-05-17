@@ -11,13 +11,19 @@
         android:label="@string/menu_home">
         <action
             android:id="@+id/action_navHome_to_showProfileFragment"
-            app:destination="@id/showProfileFragment" />
+            app:destination="@id/showProfileFragment" >
+            <argument
+                android:name="UserId" />
+        </action>
         <action
             android:id="@+id/action_navHome_to_itemListFragment"
             app:destination="@id/itemListFragment" />
         <action
             android:id="@+id/action_navHome_to_signUpFragment"
             app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_navHome_to_onSaleListFragment"
+            app:destination="@id/onSaleListFragment" />
 
     </fragment>
 
@@ -29,6 +35,9 @@
         <action
             android:id="@+id/action_showProfileFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
+        <argument android:name="UserId"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 
     <fragment

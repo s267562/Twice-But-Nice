@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
 import androidx.fragment.app.Fragment
+import com.google.android.gms.tasks.Task
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 import java.io.File
 
@@ -24,8 +25,13 @@ class UserDetailsFragment : Fragment() {
         userViewModel = ViewModelProvider(activity?:this).get(UserViewModel::class.java)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
+        return inflater.inflate(R.layout.fragment_show_profile, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         userViewModel.user.observe(viewLifecycleOwner, Observer{
             if (it != null) {
                 if (it.name != null && it.name.isNotEmpty())
@@ -55,16 +61,14 @@ class UserDetailsFragment : Fragment() {
                 loadingLayout.visibility = View.VISIBLE
             }
         })
-    }
+        userViewModel.loadUser(arguments?.getString("UserId"))
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_show_profile, container, false)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.edit_menu, menu)
+        if (userViewModel.isAuthUser())
+            inflater.inflate(R.menu.edit_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

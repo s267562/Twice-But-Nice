@@ -8,8 +8,6 @@ import it.polito.mad.project.repositories.UserRepository
 
 class UserViewModel : CommonViewModel() {
     val user = MutableLiveData<User>()
-
-
     private val userRepository = UserRepository()
 
     init {
@@ -30,18 +28,25 @@ class UserViewModel : CommonViewModel() {
             }
     }
 
-    private fun loadUser() {
-        loader.value = true
-        userRepository.getUser()
-            .addOnSuccessListener {
-                user.value = it.toObject(User::class.java)
-                loader.value = false
-                error = false
-            }
-            .addOnFailureListener {
-                error = true
-                loader.value = false
-            }
-}
+    fun loadUser(id: String? = null) {
+        val verifiedId = id?:userRepository.getAuthUserId()
+        if (verifiedId != user.value?.id) {
+            loader.value = true
+            userRepository.getUserById(verifiedId)
+                .addOnSuccessListener {
+                    user.value = it.toObject(User::class.java)
+                    loader.value = false
+                    error = false
+                }
+                .addOnFailureListener {
+                    error = true
+                    loader.value = false
+                }
+        }
+    }
+
+    fun isAuthUser(): Boolean {
+        return user.value?.id == userRepository.getAuthUserId()
+    }
 
 }

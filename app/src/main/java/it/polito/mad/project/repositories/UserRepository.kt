@@ -14,15 +14,17 @@ class UserRepository {
 
     // save user to firebase
     fun saveUser(user: User): Task<Void> {
-        return database.collection("users").document(auth.currentUser!!.uid).set(user)
+        user.id = auth.currentUser!!.uid
+        return database.collection("users").document(user.id).set(user)
     }
 
-    // get saved addresses from firebase
-    fun getUser(): Task<DocumentSnapshot> {
-        return database.collection("users").document(auth.currentUser!!.uid).get()
+    // get the user by id. if null return logged user
+    fun getUserById(id: String? = null): Task<DocumentSnapshot> {
+        var id = id?:auth.currentUser!!.uid
+        return database.collection("users").document(id).get()
     }
 
-    fun isCurrentUserAuth(): Boolean {
-        return auth.currentUser != null
+    fun getAuthUserId(): String? {
+        return auth.currentUser?.uid
     }
 }
