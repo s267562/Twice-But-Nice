@@ -9,8 +9,13 @@ import android.view.*
 import android.widget.SearchView
 import android.widget.SearchView.OnQueryTextListener
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.R
+import kotlinx.android.synthetic.main.fragment_item_list.*
 
 
 class OnSaleListFragment : Fragment() {
@@ -20,16 +25,44 @@ class OnSaleListFragment : Fragment() {
     private var searchView: SearchView? = null
     private var queryTextListener: OnQueryTextListener? = null
 
+    private lateinit var adsViewModel: ItemViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        adsViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)
-        setHasOptionsMenu(true)
+        super.onCreateView(inflater, container, savedInstanceState)
+        //setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_on_sale_list, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        itemRecyclerView.layoutManager = LinearLayoutManager(this.activity)
+        itemRecyclerView.adapter = adsViewModel.adapter
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity?)?.supportActionBar?.show()
+        adsViewModel.counter.observe(viewLifecycleOwner, Observer {
+            if(it == 0) {
+                emptyListLayout.visibility = View.VISIBLE
+                itemRecyclerView.visibility = View.GONE
+            } else {
+                emptyListLayout.visibility = View.GONE
+                itemRecyclerView.visibility = View.VISIBLE
+            }
+        })
+        adsViewModel.loadItems()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.search_menu, menu)
+        /*inflater.inflate(R.menu.search_menu, menu)
         val searchItem: MenuItem = menu.findItem(R.id.action_search)
         val searchManager =
             requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
@@ -37,7 +70,7 @@ class OnSaleListFragment : Fragment() {
             searchView = searchItem.getActionView() as SearchView?
         }
         if (searchView != null) {
-            searchView!!.setSearchableInfo(searchManager.getSearchableInfo(activity!!.componentName))
+            searchView!!.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
             queryTextListener = object : OnQueryTextListener {
                 override fun onQueryTextChange(newText: String): Boolean {
                     Log.i("onQueryTextChange", newText)
@@ -50,7 +83,7 @@ class OnSaleListFragment : Fragment() {
                 }
             }
             searchView!!.setOnQueryTextListener(queryTextListener)
-        }
+        }*/
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -61,7 +94,7 @@ class OnSaleListFragment : Fragment() {
             else -> {
             }
         }
-        searchView!!.setOnQueryTextListener(queryTextListener)
+        //searchView!!.setOnQueryTextListener(queryTextListener)
         return super.onOptionsItemSelected(item)
     }
 }

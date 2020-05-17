@@ -40,7 +40,8 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.showProfileFragment,
-                R.id.itemListFragment
+                R.id.itemListFragment,
+                R.id.onSaleListFragment
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
