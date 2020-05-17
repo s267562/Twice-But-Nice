@@ -76,7 +76,7 @@ class SignInFragment : Fragment() {
     }
 
     private fun signInWithEmail() {
-        firebaseAuth.signInWithEmailAndPassword(log_nickname.text.toString(), log_password.text.toString()).addOnCompleteListener{ it ->
+        firebaseAuth.signInWithEmailAndPassword(log_email.text.toString(), log_password.text.toString()).addOnCompleteListener{ it ->
             if (it.isSuccessful) {
                 updateUI(it.result?.user)
             } else {

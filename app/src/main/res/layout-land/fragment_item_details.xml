@@ -44,8 +44,6 @@
     </LinearLayout>
 
     <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/info_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -173,10 +171,10 @@
                         android:id="@+id/item_category"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Category"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:layout_marginBottom="8dp"
-                        android:maxLines="1" />
+                        android:maxLines="10"
+                        android:text="Category"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
                     <TextView
                         android:id="@+id/item_price"
