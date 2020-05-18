@@ -45,16 +45,16 @@ class SignUpFragment: Fragment() {
 
                     firebaseStore.collection("users").document(user.id).set(user)
                         .addOnSuccessListener {
-                            Toast.makeText(activity, "Successfully Registered. User saved remote", Toast.LENGTH_LONG).show()
+                            ///Toast.makeText(this.context, "Successfully Registered. User saved remote", Toast.LENGTH_LONG).show()
                         }
                         .addOnFailureListener {
-                            Toast.makeText(activity, "Successfully Registered. User info not save remote", Toast.LENGTH_LONG).show()
+                            //Toast.makeText(this.context, "Failed Registered. User info not save remote", Toast.LENGTH_LONG).show()
                         }
 
                     findNavController().popBackStack()
                 }
                 .addOnFailureListener {
-                    Toast.makeText(activity, it.message, Toast.LENGTH_LONG).show()
+                    //Toast.makeText(activity, it.message, Toast.LENGTH_LONG).show()
                 }
         }
 

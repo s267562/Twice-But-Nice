@@ -49,13 +49,13 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/log_nickname"
+                android:id="@+id/log_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:hint="Nickname"
-                android:inputType="textWebEditText"
-                android:imeOptions="actionNext" />
+                android:hint="Email Address"
+                android:imeOptions="actionNext"
+                android:inputType="textEmailAddress"
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -94,7 +94,8 @@
             android:id="@+id/signInGoogleBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center">
+            android:textAlignment="center"
+            >
         </com.google.android.gms.common.SignInButton>
 
         <TextView

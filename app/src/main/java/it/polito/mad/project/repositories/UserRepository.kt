@@ -19,7 +19,7 @@ class UserRepository {
     }
 
     // get the user by id. if null return logged user
-    fun getUserById(id: String? = null): Task<DocumentSnapshot> {
+    fun getUserById(id: String? = null): Task<DocumentSnapshot>? {
         var id = id?:auth.currentUser!!.uid
         return database.collection("users").document(id).get()
     }

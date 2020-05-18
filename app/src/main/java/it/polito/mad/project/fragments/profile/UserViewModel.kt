@@ -33,12 +33,12 @@ class UserViewModel : CommonViewModel() {
         if (verifiedId != user.value?.id) {
             loader.value = true
             userRepository.getUserById(verifiedId)
-                .addOnSuccessListener {
+            ?.addOnSuccessListener {
                     user.value = it.toObject(User::class.java)
                     loader.value = false
                     error = false
                 }
-                .addOnFailureListener {
+            ?.addOnFailureListener {
                     error = true
                     loader.value = false
                 }

@@ -176,7 +176,7 @@
                         android:text="Category"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:layout_marginBottom="8dp"
-                        android:maxLines="1" />
+                        android:maxLines="10" />
 
                     <TextView
                         android:id="@+id/item_price"

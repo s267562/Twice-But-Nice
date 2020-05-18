@@ -3,6 +3,7 @@ package it.polito.mad.project.fragments.advertisements
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
 import it.polito.mad.project.adapters.ItemAdapter
+import it.polito.mad.project.adapters.ItemOnSaleAdapter
 import it.polito.mad.project.commons.CommonViewModel
 import it.polito.mad.project.models.Item
 import it.polito.mad.project.repositories.ItemRepository
@@ -10,6 +11,7 @@ import it.polito.mad.project.repositories.ItemRepository
 class ItemViewModel : CommonViewModel() {
     var items: MutableList<Item> = mutableListOf()
     var adapter: ItemAdapter = ItemAdapter(items)
+    var adapterOnSale: ItemOnSaleAdapter = ItemOnSaleAdapter(items)
     var item = MutableLiveData<Item>()
 
     private val itemRepository = ItemRepository()
@@ -19,7 +21,7 @@ class ItemViewModel : CommonViewModel() {
 
     fun saveItem(item: Item): Task<Void> {
         loader.value = true
-        return itemRepository.saveUserItem(item)
+        return itemRepository.saveItem(item)
             .addOnSuccessListener {
                 this.item.value = item
                 if (item.id == items.size) {

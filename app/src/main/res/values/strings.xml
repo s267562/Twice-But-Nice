@@ -20,6 +20,8 @@
 
     <string name="category_def">Category</string>
     <string name="subcategory_def">Subcategory</string>
+    <string name="search_title">Search</string>
+    <string name="search_hint">Hint</string>
 
 
     <string-array name="item_categories">
