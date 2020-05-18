@@ -10,8 +10,9 @@ import it.polito.mad.project.repositories.ItemRepository
 
 class ItemViewModel : CommonViewModel() {
     var items: MutableList<Item> = mutableListOf()
+    var itemsOnSale: MutableList<Item> = mutableListOf()
     var adapter: ItemAdapter = ItemAdapter(items)
-    var adapterOnSale: ItemOnSaleAdapter = ItemOnSaleAdapter(items)
+    var adapterOnSale: ItemOnSaleAdapter = ItemOnSaleAdapter(itemsOnSale)
     var item = MutableLiveData<Item>()
 
     private val itemRepository = ItemRepository()
@@ -56,6 +57,19 @@ class ItemViewModel : CommonViewModel() {
         itemRepository.getUserItems()
             .addOnSuccessListener {
                 items = it.toObjects(Item::class.java).toMutableList()
+                loader.value = false
+                error = false
+            }.addOnFailureListener {
+                loader.value = false
+                error = true
+            }
+    }
+
+    fun loadItemsOnSale() {
+        loader.value = true
+        itemRepository.getAllItems()
+            .addOnSuccessListener {
+                itemsOnSale = it.toObjects(Item::class.java).toMutableList()
                 loader.value = false
                 error = false
             }.addOnFailureListener {

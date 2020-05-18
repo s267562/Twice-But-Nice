@@ -22,7 +22,6 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private lateinit var itemViewModel: ItemViewModel
     lateinit var searchView: SearchView
-    lateinit var recyclerAdapter: ItemOnSaleAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +39,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         itemRecyclerView.setHasFixedSize(true)
         itemRecyclerView.layoutManager = LinearLayoutManager(this.activity)
         itemRecyclerView.adapter = itemViewModel.adapterOnSale
-        recyclerAdapter = itemRecyclerView.adapter as ItemOnSaleAdapter
+        itemViewModel.loadItemsOnSale()
     }
 
     override fun onStart() {
@@ -49,7 +48,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         itemViewModel.loader.observe(viewLifecycleOwner, Observer {
             if (it == false) {
                 // loader ended
-                itemViewModel.adapterOnSale.setItems(itemViewModel.items)
+                itemViewModel.adapterOnSale.setItems(itemViewModel.itemsOnSale)
                 if(itemViewModel.items.size == 0) {
                     emptyListLayout.visibility = View.VISIBLE
                     itemRecyclerView.visibility = GONE
@@ -90,7 +89,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onQueryTextChange(newText: String?): Boolean {
         if(newText!!.isNotEmpty()){
             Toast.makeText(requireActivity(), newText, Toast.LENGTH_SHORT).show()
-            recyclerAdapter.getFilter().filter(newText)
+            itemViewModel.adapterOnSale.filter.filter(newText)
         }
         return true
     }

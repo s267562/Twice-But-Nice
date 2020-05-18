@@ -31,23 +31,22 @@ class UserViewModel : CommonViewModel() {
     }
 
     fun loadUser(id: String? = null) {
-        val verifiedId = id?:userRepository.getAuthUserId()
+        val verifiedId = id ?: userRepository.getAuthUserId()
         if (verifiedId != user.value?.id) {
             loader.value = true
             userRepository.getUserById(verifiedId)
-            ?.addOnSuccessListener {
+                ?.addOnSuccessListener {
                     user.value = it.toObject(User::class.java)
-                loadPhoto()
-                userLoaded=false
+                    loadPhoto()
+                    userLoaded = false
                     loader.value = false
                     error = false
                 }
-            ?.addOnFailureListener {
+                ?.addOnFailureListener {
                     error = true
                     loader.value = false
                 }
         }
-     }
     }
 
     fun isAuthUser(): Boolean {
@@ -55,7 +54,7 @@ class UserViewModel : CommonViewModel() {
     }
 
     private fun loadPhoto(){
-            userRepository.getUserPhoto(user.value!!)
+        userRepository.getUserPhoto(user.value!!)
     }
 
 
