@@ -3,10 +3,7 @@ package it.polito.mad.project.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.Filter
-import android.widget.Filterable
-import android.widget.TextView
+import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
@@ -15,11 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.models.Item
-import java.util.*
 
-class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>(), Filterable {
-
-    private var filteredItems: MutableList<Item>? = null
+class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val userItemView = LayoutInflater.from(parent.context).inflate(
@@ -39,7 +33,6 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
                 var bundle = bundleOf(ArgumentKey.EDIT_ITEM to position)
                 holder.itemView.findNavController().navigate(R.id.action_itemListFragment_to_itemEditFragment, bundle)
             })
-
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
@@ -75,35 +68,41 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
         }
     }
 
+    fun setFilter(newList: MutableList<Item>) {
+        var arrayList = mutableListOf<Item>()
+        arrayList.addAll(newList)
+        notifyDataSetChanged()
+    }
+
+    /*
+        QUESTI SERVONO SOLO SE SI IMPLEMENTA l'interfaccia Filterable
+
+
     override fun getFilter(): Filter? {
         return filter
     }
 
     private val filter: Filter = object : Filter() {
-        override fun performFiltering(constraint: CharSequence): FilterResults {
-            val filteredList: MutableList<Item> = mutableListOf()
-            if (constraint == null || constraint.length == 0) {
-                filteredList.addAll(items)
+        override fun performFiltering(constraint: CharSequence?): FilterResults {
+            var filterResults = FilterResults()
+
+            if(constraint!!.isEmpty()){
+                filterResults.values = items
             } else {
-                val filterPattern =
-                    constraint.toString().toLowerCase()
-                for (item in items) {
-                    if (item.title.toLowerCase().contains(filterPattern)) {
-                        filteredList.add(item)
-                    }
+                var line: String = constraint.toString().toLowerCase()
+                for(i in items){
+                    if(i.title.toLowerCase().contains(line) || i.category.toLowerCase().contains(line))
+                        filteredItems?.add(i)
                 }
+                filterResults.values = filteredItems
             }
-            val results = FilterResults()
-            results.values = filteredList
-            //notifyDataSetChanged()
-            return results
+            return filterResults
         }
 
-        override fun publishResults(constraint: CharSequence, results: FilterResults) {
-            filteredItems?.clear()
-            filteredItems?.addAll(results.values as Collection<Item>)
+        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+            listFiltered?.clear()
+            listFiltered = results?.values as MutableList<Item>?
             notifyDataSetChanged()
         }
-    }
-
+    }*/
 }

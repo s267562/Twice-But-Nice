@@ -3,7 +3,7 @@ package it.polito.mad.project.fragments.advertisements
 import android.os.Build
 import android.os.Bundle
 import android.view.*
-import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.annotation.RequiresApi
@@ -18,7 +18,7 @@ import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_on_sale_list.*
 
 
-class OnSaleListFragment : Fragment() {
+class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private lateinit var itemViewModel: ItemViewModel
     lateinit var searchView: SearchView
@@ -37,9 +37,10 @@ class OnSaleListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        itemRecyclerView.setHasFixedSize(true)
         itemRecyclerView.layoutManager = LinearLayoutManager(this.activity)
-        itemRecyclerView.adapter = itemViewModel.adapter
-        recyclerAdapter = itemRecyclerView.adapter as ItemAdapter
+        recyclerAdapter = itemViewModel.adapter
+        itemRecyclerView.adapter = recyclerAdapter
     }
 
     override fun onStart() {
@@ -65,35 +66,47 @@ class OnSaleListFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.search_menu, menu)
         var itemMenu: MenuItem = menu!!.findItem(R.id.menu_search)
+
         if(itemMenu != null){
-            //Toast.makeText(activity, "GOOD", Toast.LENGTH_LONG).show()
             searchView = itemMenu.actionView as SearchView
 
-            searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    return true
-                }
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    recyclerAdapter.filter?.filter(newText)
-                    itemRecyclerView.adapter = recyclerAdapter
-                    return true
-                }
+            val editText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+            editText.hint = "Type title or category"
 
-            })
+            searchView.setOnQueryTextListener(this)
         } else {
-            Toast.makeText(activity, "WRONG", Toast.LENGTH_LONG).show()
+            //Toast.makeText(activity, "WRONG", Toast.LENGTH_LONG).show()
         }
     }
 
-    override fun onContextItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_search -> {
-                true
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        if(newText!!.isNotEmpty()){
+            // perform the filter
+            val line = newText.toLowerCase()
+            var newList = mutableListOf<Item>()
+            for(i: Item in itemViewModel.items){
+                val title = i.title.toLowerCase()
+                val category = i.category.toLowerCase()
+                val sub = i.subcategory.toLowerCase()
+                val descri = i.description.toLowerCase()
+                val price = i.price.toLowerCase()
+                if(line.contains(title) || line.contains(category) || line.contains(sub)
+                    || line.contains(descri) || line.contains(price)){
+                    Toast.makeText(activity, line, Toast.LENGTH_SHORT).show()
+                    newList.add(i)
+                }
             }
-            else -> super.onContextItemSelected(item)
+            recyclerAdapter.setFilter(newList)
+            itemRecyclerView.adapter = recyclerAdapter
         }
+        return true
     }
 }
