@@ -98,8 +98,9 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
                 val sub = i.subcategory.toLowerCase()
                 val descri = i.description.toLowerCase()
                 val price = i.price.toLowerCase()
+                val loc = i.location.toLowerCase()
                 if(line.contains(title) || line.contains(category) || line.contains(sub)
-                    || line.contains(descri) || line.contains(price)){
+                    || line.contains(descri) || line.contains(price) || line.contains(loc)){
                     Toast.makeText(activity, line, Toast.LENGTH_SHORT).show()
                     newList.add(i)
                 }
