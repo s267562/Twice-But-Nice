@@ -8,6 +8,7 @@ import it.polito.mad.project.repositories.UserRepository
 
 class UserViewModel : CommonViewModel() {
     val user = MutableLiveData<User>()
+    private var userLoaded = false
 
 
     private val userRepository = UserRepository()
@@ -21,6 +22,7 @@ class UserViewModel : CommonViewModel() {
         return userRepository.saveUser(user)
             .addOnSuccessListener {
                 this.user.value = user
+                userRepository.loadUserPhoto(this.user.value!!)
                 loader.value = false
                 error = false
             }
@@ -30,11 +32,13 @@ class UserViewModel : CommonViewModel() {
             }
     }
 
-    private fun loadUser() {
+     private fun loadUser() {
         loader.value = true
         userRepository.getUser()
             ?.addOnSuccessListener {
                 user.value = it.toObject(User::class.java)
+                loadPhoto()
+                userLoaded=false
                 loader.value = false
                 error = false
             }
@@ -42,6 +46,11 @@ class UserViewModel : CommonViewModel() {
                 error = true
                 loader.value = false
             }
-}
+     }
+
+    private fun loadPhoto(){
+            userRepository.getUserPhoto(user.value!!)
+    }
+
 
 }
