@@ -12,6 +12,8 @@ data class Item (val id: Int) : Serializable {
     var expiryDate: String = ""
     var location: String = ""
     var imagePath: String? = ""
+    var user: String=""
+    var itemId: String=""
 
     constructor(id: Int, title: String, category: String, subcategory: String, price: Double,
                 description: String, expiryDate: String, location: String, imagePath: String? = "") : this(id){

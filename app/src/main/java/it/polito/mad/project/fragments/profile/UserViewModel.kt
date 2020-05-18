@@ -33,12 +33,12 @@ class UserViewModel : CommonViewModel() {
     private fun loadUser() {
         loader.value = true
         userRepository.getUser()
-            .addOnSuccessListener {
+            ?.addOnSuccessListener {
                 user.value = it.toObject(User::class.java)
                 loader.value = false
                 error = false
             }
-            .addOnFailureListener {
+            ?.addOnFailureListener {
                 error = true
                 loader.value = false
             }

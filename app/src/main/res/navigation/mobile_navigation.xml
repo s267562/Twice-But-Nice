@@ -81,5 +81,12 @@
     <fragment
         android:id="@+id/onSaleListFragment"
         android:name="it.polito.mad.project.fragments.advertisements.OnSaleListFragment"
-        android:label="@string/menu_on_sale" />
+        android:label="@string/menu_on_sale" >
+        <action
+            android:id="@+id/action_onSaleListFragment_to_showItemFragment"
+            app:destination="@id/showItemFragment" />
+        <action
+            android:id="@+id/action_onSaleListFragment_to_itemEditFragment"
+            app:destination="@id/itemEditFragment" />
+    </fragment>
 </navigation>
