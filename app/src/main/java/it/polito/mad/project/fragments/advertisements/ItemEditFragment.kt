@@ -74,7 +74,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 item_exp.text = it.expiryDate
                 if (it.imagePath != null && it.imagePath!!.isNotEmpty()) {
                     savedImagePath = it.imagePath
-                    var image = BitmapFactory.decodeFile(it.imagePath)
+                    val image = BitmapFactory.decodeFile(it.imagePath)
                     if (image == null){
                         item_photo_rotate.visibility = View.GONE
                     } else {
