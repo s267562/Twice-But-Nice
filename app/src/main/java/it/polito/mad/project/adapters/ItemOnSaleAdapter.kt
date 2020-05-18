@@ -20,8 +20,7 @@ import kotlinx.android.synthetic.main.item.view.*
 
 
 class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemOnSaleAdapter.ViewHolder>(), Filterable{
-
-    private var itemsToFilter: MutableList<Item> = mutableListOf()
+    private var totalItems: MutableList<Item> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val userItemView = LayoutInflater.from(parent.context).inflate(
@@ -51,6 +50,8 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
     fun setItems(newItems: MutableList<Item>) {
         val diffs = DiffUtil.calculateDiff(ItemDiffCallback(items, newItems))
         items = newItems //update data
+        totalItems.clear()
+        totalItems.addAll(items)
         diffs.dispatchUpdatesTo(this) //animate UI
     }
 
@@ -87,13 +88,15 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
     }
 
     private var filter = object : Filter() {
+
         override fun performFiltering(constraint: CharSequence?): FilterResults {
+
             var filteredList: MutableList<Item> = mutableListOf()
             if(constraint.isNullOrEmpty()){
-                filteredList.addAll(itemsToFilter)
+                filteredList = totalItems
             } else {
                 var line: String = constraint.toString().toLowerCase().trim()
-                for(i: Item in itemsToFilter){
+                for(i: Item in totalItems){
                     val title = i.title.toLowerCase()
                     val category = i.category.toLowerCase()
                     val sub = i.subcategory.toLowerCase()
@@ -113,8 +116,8 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
         }
 
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-            itemsToFilter.clear()
-            itemsToFilter.addAll(results?.values as MutableList<Item>)
+            items.clear()
+            items.addAll(results?.values as MutableList<Item>)
             // To refresh the adapter:
             notifyDataSetChanged()
         }

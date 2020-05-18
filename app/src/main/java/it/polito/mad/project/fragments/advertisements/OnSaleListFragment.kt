@@ -49,7 +49,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
             if (it == false) {
                 // loader ended
                 itemViewModel.adapterOnSale.setItems(itemViewModel.itemsOnSale)
-                if(itemViewModel.items.size == 0) {
+                if(itemViewModel.itemsOnSale.size == 0) {
                     emptyListLayout.visibility = View.VISIBLE
                     itemRecyclerView.visibility = GONE
                 } else {
@@ -87,10 +87,8 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        if(newText!!.isNotEmpty()){
-            Toast.makeText(requireActivity(), newText, Toast.LENGTH_SHORT).show()
-            itemViewModel.adapterOnSale.filter.filter(newText)
-        }
+        Toast.makeText(requireActivity(), newText, Toast.LENGTH_SHORT).show()
+        itemViewModel.adapterOnSale.filter.filter(newText)
         return true
     }
 }
