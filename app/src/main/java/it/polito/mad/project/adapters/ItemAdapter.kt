@@ -67,10 +67,4 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
             container.setOnClickListener(null)
         }
     }
-
-    fun setFilter(newList: MutableList<Item>) {
-        var arrayList = mutableListOf<Item>()
-        arrayList.addAll(newList)
-        notifyDataSetChanged()
-    }
 }

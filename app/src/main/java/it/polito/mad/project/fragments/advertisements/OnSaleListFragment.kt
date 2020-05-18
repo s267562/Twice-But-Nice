@@ -42,11 +42,6 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         itemRecyclerView.layoutManager = LinearLayoutManager(this.activity)
         recyclerAdapter = itemViewModel.adapterOnSale
         itemRecyclerView.adapter = recyclerAdapter
-
-        /*if(item_edit_button == null){
-            Toast.makeText(activity, "Bottone null", Toast.LENGTH_SHORT).show()
-            item_edit_button.visibility = GONE
-        }*/
     }
 
     override fun onStart() {
@@ -95,24 +90,8 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextChange(newText: String?): Boolean {
         if(newText!!.isNotEmpty()){
-            // perform the filter
-            val line = newText.toLowerCase()
-            var newList = mutableListOf<Item>()
-            for(i: Item in itemViewModel.items){
-                val title = i.title.toLowerCase()
-                val category = i.category.toLowerCase()
-                val sub = i.subcategory.toLowerCase()
-                val descri = i.description.toLowerCase()
-                val price = i.price.toLowerCase()
-                val loc = i.location.toLowerCase()
-                if(line.contains(title) || line.contains(category) || line.contains(sub)
-                    || line.contains(descri) || line.contains(price) || line.contains(loc)){
-                    Toast.makeText(activity, line, Toast.LENGTH_SHORT).show()
-                    newList.add(i)
-                }
-            }
-            // setFilter da implementare
-            //recyclerAdapter.setFilter(newList)
+            Toast.makeText(activity, newText, Toast.LENGTH_SHORT).show()
+            recyclerAdapter.filter.filter(newText)
             itemRecyclerView.adapter = recyclerAdapter
         }
         return true
