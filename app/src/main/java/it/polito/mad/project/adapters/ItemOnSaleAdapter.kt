@@ -102,19 +102,20 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
                     val loc = i.location.toLowerCase()
                     if(line.contains(title) || line.contains(category) || line.contains(sub)
                         || line.contains(descri) || line.contains(price) || line.contains(loc)){
-                        //Toast.makeText(activity, line, Toast.LENGTH_SHORT).show()
+
                         filteredList.add(i)
                     }
                 }
             }
-            val results: FilterResults = FilterResults()
+            val results = FilterResults()
             results.values = filteredList
             return results
         }
 
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
             itemsToFilter.clear()
-            itemsToFilter.addAll(results?.values as Collection<Item>)
+            itemsToFilter.addAll(results?.values as MutableList<Item>)
+            // To refresh the adapter:
             notifyDataSetChanged()
         }
 

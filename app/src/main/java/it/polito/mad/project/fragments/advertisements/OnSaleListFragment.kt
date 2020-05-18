@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.R
 import it.polito.mad.project.adapters.ItemOnSaleAdapter
-import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_on_sale_list.*
 
 
@@ -40,8 +39,8 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         super.onViewCreated(view, savedInstanceState)
         itemRecyclerView.setHasFixedSize(true)
         itemRecyclerView.layoutManager = LinearLayoutManager(this.activity)
-        recyclerAdapter = itemViewModel.adapterOnSale
-        itemRecyclerView.adapter = recyclerAdapter
+        itemRecyclerView.adapter = itemViewModel.adapterOnSale
+        recyclerAdapter = itemRecyclerView.adapter as ItemOnSaleAdapter
     }
 
     override fun onStart() {
@@ -76,7 +75,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
             searchView = itemMenu.actionView as SearchView
 
             val editText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
-            editText.hint = "Type title or category"
+            editText.hint = "Type any kind of info"
 
             searchView.setOnQueryTextListener(this)
         } else {
@@ -90,9 +89,8 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextChange(newText: String?): Boolean {
         if(newText!!.isNotEmpty()){
-            Toast.makeText(activity, newText, Toast.LENGTH_SHORT).show()
-            recyclerAdapter.filter.filter(newText)
-            itemRecyclerView.adapter = recyclerAdapter
+            Toast.makeText(requireActivity(), newText, Toast.LENGTH_SHORT).show()
+            recyclerAdapter.getFilter().filter(newText)
         }
         return true
     }
