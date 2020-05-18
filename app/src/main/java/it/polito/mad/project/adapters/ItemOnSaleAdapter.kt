@@ -1,7 +1,10 @@
 package it.polito.mad.project.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
@@ -12,18 +15,20 @@ import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.models.Item
+import kotlinx.android.synthetic.main.item.view.*
 
-class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>(){
+class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemOnSaleAdapter.ViewHolder>(){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemOnSaleAdapter.ViewHolder {
         val userItemView = LayoutInflater.from(parent.context).inflate(
             R.layout.item, parent, false)
-        return ViewHolder(userItemView)
+        return ItemOnSaleAdapter.ViewHolder(userItemView)
     }
 
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.itemView.item_edit_button.visibility = GONE
         holder.bind(items[position],
             {
                 var bundle = bundleOf(ArgumentKey.SHOW_ITEM to position)
@@ -35,7 +40,7 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
             })
     }
 
-    override fun onViewRecycled(holder: ViewHolder) {
+    override fun onViewRecycled(holder: ItemOnSaleAdapter.ViewHolder) {
         holder.unbind()
     }
 
@@ -66,11 +71,5 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
         fun unbind() {
             container.setOnClickListener(null)
         }
-    }
-
-    fun setFilter(newList: MutableList<Item>) {
-        var arrayList = mutableListOf<Item>()
-        arrayList.addAll(newList)
-        notifyDataSetChanged()
     }
 }

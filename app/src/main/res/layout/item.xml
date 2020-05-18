@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/ic_pencil_white_24dp"
             android:drawableTint="@color/colorPrimary"
-            android:text="EDIT"
+            android:text="EDIT ITEM"
             android:textColor="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent" />

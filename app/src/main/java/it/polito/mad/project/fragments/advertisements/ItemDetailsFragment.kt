@@ -15,8 +15,6 @@ import it.polito.mad.project.R
 import it.polito.mad.project.enums.ArgumentKey
 import kotlinx.android.synthetic.main.fragment_item_details.*
 
-// POINT 3: Implement the ItemDetailsFragment
-
 class ItemDetailsFragment : Fragment() {
 
     private lateinit var adsViewModel: ItemViewModel
