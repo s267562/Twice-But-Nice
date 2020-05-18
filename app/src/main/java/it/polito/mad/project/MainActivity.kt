@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         setNavView()
 
+        /*
         val userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         userViewModel.user.observe(this, Observer{
             if (it != null) {
@@ -40,6 +41,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+
+         */
     }
 
     override fun onSupportNavigateUp(): Boolean {

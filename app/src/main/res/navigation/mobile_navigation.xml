@@ -87,6 +87,7 @@
         android:id="@+id/signUpFragment"
         android:name="it.polito.mad.project.fragments.authentication.SignUpFragment"
         android:label="SignUpFragment" />
+
     <fragment
         android:id="@+id/onSaleListFragment"
         android:name="it.polito.mad.project.fragments.advertisements.OnSaleListFragment"
@@ -94,8 +95,5 @@
         <action
             android:id="@+id/action_onSaleListFragment_to_showItemFragment"
             app:destination="@id/showItemFragment" />
-        <action
-            android:id="@+id/action_onSaleListFragment_to_itemEditFragment"
-            app:destination="@id/itemEditFragment" />
     </fragment>
 </navigation>
