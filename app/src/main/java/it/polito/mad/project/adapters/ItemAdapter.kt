@@ -10,7 +10,6 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
-import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.models.Item
 
 class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>(){
@@ -26,11 +25,11 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(items[position],
             {
-                var bundle = bundleOf(ArgumentKey.SHOW_ITEM to position)
+                var bundle = bundleOf("ItemId" to items[position].id)
                 holder.itemView.findNavController().navigate(R.id.action_itemListFragment_to_showItemFragment, bundle)
             },
             {
-                var bundle = bundleOf(ArgumentKey.EDIT_ITEM to position)
+                var bundle = bundleOf("ItemId" to items[position].id)
                 holder.itemView.findNavController().navigate(R.id.action_itemListFragment_to_itemEditFragment, bundle)
             })
     }

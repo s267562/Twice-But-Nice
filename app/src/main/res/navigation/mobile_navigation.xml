@@ -49,7 +49,11 @@
             android:id="@+id/action_itemListFragment_to_showItemFragment"
             app:destination="@id/showItemFragment"
             app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit" />
+            app:exitAnim="@anim/fragment_open_exit" >
+            <argument
+                android:name="IsMyItem"
+                android:defaultValue="true" />
+        </action>
         <action
             android:id="@+id/action_itemListFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
@@ -62,6 +66,14 @@
         <action
             android:id="@+id/action_showItemFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
+        <argument
+            android:name="ItemId"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="IsMyItem"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"
@@ -73,6 +85,10 @@
             android:id="@+id/action_itemEditFragment_to_showItemFragment"
             app:destination="@id/showItemFragment"
             app:popUpTo="@id/showItemFragment" />
+        <argument
+            android:name="ItemId"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
@@ -94,6 +110,10 @@
         android:label="@string/menu_on_sale" >
         <action
             android:id="@+id/action_onSaleListFragment_to_showItemFragment"
-            app:destination="@id/showItemFragment" />
+            app:destination="@id/showItemFragment" >
+            <argument
+                android:name="IsMyItem"
+                android:defaultValue="false" />
+        </action>
     </fragment>
 </navigation>

@@ -5,8 +5,6 @@ import android.content.Context
 import android.widget.Toast
 import com.google.gson.Gson
 import it.polito.mad.project.R
-import it.polito.mad.project.enums.StoreFileKey
-import it.polito.mad.project.models.User
 
 class Util {
     companion object {

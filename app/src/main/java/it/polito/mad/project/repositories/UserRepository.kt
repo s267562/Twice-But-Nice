@@ -52,7 +52,7 @@ class UserRepository {
 
     }
 
-    fun getAuthUserId(): String? {
-        return auth.currentUser?.uid
+    fun getAuthUserId(): String {
+        return auth.currentUser?.uid!!
     }
 }

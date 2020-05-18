@@ -50,11 +50,14 @@ class UserViewModel : CommonViewModel() {
     }
 
     fun isAuthUser(): Boolean {
-        return user.value?.id == userRepository.getAuthUserId()
+        if (userLoaded)
+            return user.value?.id == userRepository.getAuthUserId()
+        return true
     }
 
     private fun loadPhoto(){
-        userRepository.getUserPhoto(user.value!!)
+        if (userLoaded)
+            userRepository.getUserPhoto(user.value!!)
     }
 
 

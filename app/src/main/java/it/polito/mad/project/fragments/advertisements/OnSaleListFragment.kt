@@ -14,7 +14,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.R
-import it.polito.mad.project.adapters.ItemOnSaleAdapter
 import kotlinx.android.synthetic.main.fragment_on_sale_list.*
 
 

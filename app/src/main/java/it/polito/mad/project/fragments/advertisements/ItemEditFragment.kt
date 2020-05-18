@@ -24,7 +24,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
-import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_item_edit.*
@@ -38,7 +37,7 @@ import java.util.*
 class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var itemViewModel: ItemViewModel
-    private var localItem: Item = Item(-1)
+    private lateinit var localItem: Item
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
@@ -54,16 +53,17 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onStart() {
         super.onStart()
-        var selectedId = arguments?.getInt(ArgumentKey.EDIT_ITEM)
-        if (selectedId != null) {
-            if (selectedId < itemViewModel.items.size) {
-                itemViewModel.loadItem(selectedId)
-            } else if (selectedId == itemViewModel.items.size) {
-                itemViewModel.item.value = Item(selectedId)
-            }
+        var itemId = arguments?.getString("ItemId")
+        if (itemId != null) {
+            // Item esistente
+            itemViewModel.loadItem(itemId)
+        } else {
+            // New Item
+            itemViewModel.item.value = Item(itemId)
         }
 
         itemViewModel.item.observe(viewLifecycleOwner, Observer {
+            localItem = it
             if (it != null) {
                 item_title.setText(it.title)
                 if (it.categoryPos >= 0)
@@ -82,7 +82,6 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         item_photo.setImageBitmap(image)
                     }
                 }
-                localItem = it
             }
         })
 
@@ -378,16 +377,12 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         localItem.subcategory = subcategoryContent
         localItem.categoryPos = localItem.categoryPos
 
-        if (localItem.id >= 0) {
-            itemViewModel.saveItem(localItem).addOnCompleteListener {
-                if (it.isSuccessful) {
-                    findNavController().popBackStack()
-                } else {
-                    Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()
-                }
+        itemViewModel.saveItem(localItem).addOnCompleteListener {
+            if (it.isSuccessful) {
+                findNavController().popBackStack()
+            } else {
+                Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            Toast.makeText(context, "Error on saving new item", Toast.LENGTH_SHORT).show()
         }
     }
 

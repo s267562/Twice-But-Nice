@@ -14,7 +14,6 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
-import it.polito.mad.project.enums.ArgumentKey
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.item.view.*
 
@@ -32,15 +31,11 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.itemView.item_edit_button.visibility = GONE
-        holder.bind(items[position],
-            {
-                var bundle = bundleOf(ArgumentKey.SHOW_ITEM to position)
-                holder.itemView.findNavController().navigate(R.id.action_itemListFragment_to_showItemFragment, bundle)
-            },
-            {
-                var bundle = bundleOf(ArgumentKey.EDIT_ITEM to position)
-                holder.itemView.findNavController().navigate(R.id.action_itemListFragment_to_itemEditFragment, bundle)
-            })
+        holder.bind(items[position]
+        ) {
+            var bundle = bundleOf("ItemId" to items[position].id)
+            holder.itemView.findNavController().navigate(R.id.action_onSaleListFragment_to_showItemFragment, bundle)
+        }
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
@@ -62,7 +57,7 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
         private val container: CardView = view.findViewById(R.id.item_container)
         private val button: Button = view.findViewById(R.id.item_edit_button)
 
-        fun bind(item: Item, callback: (Int) -> Unit, callbackEdit: (Int) -> Unit) {
+        fun bind(item: Item, callback: (Int) -> Unit) {
             val priceStr = "${item.price} €"
 
             category.text = item.category
@@ -70,7 +65,6 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
             price.text = priceStr
 
             container.setOnClickListener { callback(adapterPosition) }
-            button.setOnClickListener { callbackEdit(adapterPosition) }
         }
 
         fun unbind() {

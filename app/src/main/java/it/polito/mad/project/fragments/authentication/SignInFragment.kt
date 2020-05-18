@@ -91,7 +91,7 @@ class SignInFragment : Fragment() {
     private fun updateUI(user: FirebaseUser?) {
         if (user != null) {
             ViewModelProvider(activity?:this).get(UserViewModel::class.java)
-            findNavController().navigate(R.id.action_navHome_to_itemListFragment)
+            findNavController().navigate(R.id.action_navHome_to_onSaleListFragment)
         }
     }
 

@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.R
-import it.polito.mad.project.enums.ArgumentKey
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
 // POINT 5: Implement ItemListFragment
@@ -41,8 +40,10 @@ class ItemListFragment : Fragment() {
                     itemRecyclerView.visibility = View.VISIBLE
                 }
                 loadingLayout.visibility = View.GONE
+                saleFab.show()
             } else {
                 loadingLayout.visibility = View.VISIBLE
+                saleFab.hide()
             }
         })
     }
@@ -58,9 +59,8 @@ class ItemListFragment : Fragment() {
     }
 
     private fun setFabButton() {
-        saleFab.show()
         saleFab.setOnClickListener {
-            var bundle = bundleOf(ArgumentKey.EDIT_ITEM to adsViewModel.items.size)
+            var bundle = bundleOf("ItemId" to null)
             this.findNavController().navigate(R.id.action_itemListFragment_to_itemEditFragment, bundle)
         }
     }

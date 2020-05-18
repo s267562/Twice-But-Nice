@@ -12,13 +12,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 
 import it.polito.mad.project.R
-import it.polito.mad.project.enums.ArgumentKey
 import kotlinx.android.synthetic.main.fragment_item_details.*
 
 class ItemDetailsFragment : Fragment() {
 
     private lateinit var adsViewModel: ItemViewModel
-
+    private var isMyItem: Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         adsViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
@@ -26,9 +25,8 @@ class ItemDetailsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        var selectedId = arguments?.getInt(ArgumentKey.SHOW_ITEM)?:0
-        adsViewModel.loadItem(selectedId)
-
+        isMyItem = arguments?.getBoolean("IsMyItem")?:false
+        adsViewModel.loadItem(arguments?.getString("ItemId")!!)
         adsViewModel.item.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 item_title.text = it.title
@@ -43,15 +41,20 @@ class ItemDetailsFragment : Fragment() {
                 }
             }
         })
-
         adsViewModel.loader.observe(viewLifecycleOwner, Observer {
             if (it == false) {
                 loadingLayout.visibility = View.GONE
                 if (adsViewModel.error) {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                 }
+                if (!isMyItem)
+                    interestFab.show()
+                else
+                    interestFab.hide()
+
             } else {
                 loadingLayout.visibility = View.VISIBLE
+                interestFab.hide()
             }
         })
     }
@@ -61,20 +64,34 @@ class ItemDetailsFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_item_details, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setFabButton()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.edit_menu, menu)
+        if (isMyItem) {
+            inflater.inflate(R.menu.edit_menu, menu)
+        }
     }
 
     override fun onOptionsItemSelected(option: MenuItem): Boolean {
         // Handle item selection
         return when (option.itemId) {
             R.id.pencil_option -> {
-                var bundle = bundleOf(ArgumentKey.EDIT_ITEM to null)
+                var bundle = bundleOf("ItemId" to adsViewModel.item.value?.id)
                 this.findNavController().navigate(R.id.action_showItemFragment_to_itemEditFragment, bundle)
                 true
             }
             else -> super.onOptionsItemSelected(option)
+        }
+    }
+
+    private fun setFabButton() {
+        interestFab.setOnClickListener {
+            // TODO: save the user as interested for the item and send notification
+            Toast.makeText(activity, "Not yer implemented", Toast.LENGTH_SHORT)
         }
     }
 }
