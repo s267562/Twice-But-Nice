@@ -52,7 +52,6 @@ class UserRepository {
         val localFile = File.createTempFile(userId,".jpg")
         user.photoProfilePath = localFile.absolutePath
         photoRef.getFile(localFile)
-
     }
 
     fun getAuthUserId(): String {

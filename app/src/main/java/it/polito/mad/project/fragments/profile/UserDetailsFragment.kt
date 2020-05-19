@@ -18,19 +18,16 @@ import java.io.File
 class UserDetailsFragment : Fragment() {
 
     private lateinit var userViewModel: UserViewModel
-
+    private var isAuthUser = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         userViewModel = ViewModelProvider(activity?:this).get(UserViewModel::class.java)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_show_profile, container, false)
-    }
+    override fun onStart() {
+        super.onStart()
+        isAuthUser = arguments?.getBoolean("IsAuthUser")?:isAuthUser
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         userViewModel.user.observe(viewLifecycleOwner, Observer{
             if (it != null) {
                 if (it.name != null && it.name.isNotEmpty())
@@ -60,13 +57,21 @@ class UserDetailsFragment : Fragment() {
                 loadingLayout.visibility = View.VISIBLE
             }
         })
-        userViewModel.loadUser(arguments?.getString("UserId"))
+    }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
+        return inflater.inflate(R.layout.fragment_show_profile, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        userViewModel.loadUser(arguments?.getString("UserId"))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        if (userViewModel.isAuthUser())
+        if (isAuthUser)
             inflater.inflate(R.menu.edit_menu, menu)
     }
 

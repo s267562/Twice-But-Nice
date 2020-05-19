@@ -27,7 +27,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
-import it.polito.mad.project.MainActivity
 import it.polito.mad.project.R
 import it.polito.mad.project.fragments.profile.UserViewModel
 import it.polito.mad.project.models.User
@@ -38,6 +37,7 @@ class SignInFragment : Fragment() {
     private lateinit var firebaseStore: FirebaseFirestore
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var userViewModel: UserViewModel
 
     private val rcSignIn: Int = 1
 
@@ -53,8 +53,8 @@ class SignInFragment : Fragment() {
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
-        firebaseAuth = FirebaseAuth.getInstance()
         firebaseStore = FirebaseFirestore.getInstance()
+        firebaseAuth = FirebaseAuth.getInstance()
         updateUI(firebaseAuth.currentUser)
     }
 
@@ -65,7 +65,6 @@ class SignInFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         signInGoogleBtn.setOnClickListener {
             Toast.makeText(activity, "Button clicked", Toast.LENGTH_SHORT).show()
             signInWithGoogle()
@@ -97,8 +96,8 @@ class SignInFragment : Fragment() {
 
     private fun updateUI(user: FirebaseUser?) {
         if (user != null) {
-            ViewModelProvider(activity?:this).get(UserViewModel::class.java)
-
+            userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+            bindUserWithNavView()
             findNavController().navigate(R.id.action_navHome_to_onSaleListFragment)
         }
     }
@@ -155,6 +154,27 @@ class SignInFragment : Fragment() {
                 view?.let { Snackbar.make(it, "Authentication Failed.", Snackbar.LENGTH_SHORT).show() }
             }
         }
+    }
+
+    private fun bindUserWithNavView() {
+        val navView = requireActivity().findViewById<NavigationView>(R.id.navView)
+        val headerView = navView.getHeaderView(0)
+        val fullName = headerView.findViewById<TextView>(R.id.full_name)
+        val userPhoto = headerView.findViewById<ImageView>(R.id.user_photo)
+
+        val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+        userViewModel.user.observe(requireActivity(), Observer{
+            if (it != null) {
+                if (it.name.isNotEmpty())
+                    fullName.text = it.name
+                if (it.photoProfilePath.isNotEmpty()) {
+                    if (File(it.photoProfilePath).isFile){
+                        val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
+                        userPhoto.setImageBitmap(image)
+                    }
+                }
+            }
+        })
     }
 
 

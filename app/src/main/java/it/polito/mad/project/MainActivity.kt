@@ -3,6 +3,8 @@ package it.polito.mad.project
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -15,7 +17,6 @@ import com.google.firebase.auth.FirebaseAuth
 import it.polito.mad.project.fragments.profile.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.nav_header_main.*
 import java.io.File
 
 
@@ -28,23 +29,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         setNavView()
-        /*
         if(userAuth.currentUser != null){
-            val userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-            userViewModel.user.observe(this, Observer{
-                if (it != null) {
-                    if (it.name.isNotEmpty())
-                        full_name.text = it.name
-                    if (it.photoProfilePath.isNotEmpty()) {
-                        if (File(it.photoProfilePath).isFile){
-                            val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
-                            user_photo.setImageBitmap(image)
-                        }
-                    }
-                }
-            })
-        }*/
-
+            bindUserWithNavView()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -66,5 +53,25 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+    }
+
+    private fun bindUserWithNavView() {
+        val headerView = navView.getHeaderView(0)
+        val fullName = headerView.findViewById<TextView>(R.id.full_name)
+        val userPhoto = headerView.findViewById<ImageView>(R.id.user_photo)
+
+        val userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel.user.observe(this, Observer{
+            if (it != null) {
+                if (it.name.isNotEmpty())
+                    fullName.text = it.name
+                if (it.photoProfilePath.isNotEmpty()) {
+                    if (File(it.photoProfilePath).isFile){
+                        val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
+                        userPhoto.setImageBitmap(image)
+                    }
+                }
+            }
+        })
     }
 }

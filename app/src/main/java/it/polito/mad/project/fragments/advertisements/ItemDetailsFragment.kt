@@ -27,7 +27,6 @@ class ItemDetailsFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         isMyItem = arguments?.getBoolean("IsMyItem")?:false
-        adsViewModel.loadItem(arguments?.getString("ItemId")!!)
         adsViewModel.item.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 item_title.text = it.title
@@ -70,6 +69,7 @@ class ItemDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setFabButton()
+        adsViewModel.loadItem(arguments?.getString("ItemId")!!)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

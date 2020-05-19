@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.R
 import kotlinx.android.synthetic.main.fragment_on_sale_list.*
 
-
 class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private lateinit var itemViewModel: ItemViewModel
@@ -31,14 +30,6 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         super.onCreateView(inflater, container, savedInstanceState)
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_on_sale_list, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        itemRecyclerView.setHasFixedSize(true)
-        itemRecyclerView.layoutManager = LinearLayoutManager(this.activity)
-        itemRecyclerView.adapter = itemViewModel.adapterOnSale
-        itemViewModel.loadItemsOnSale()
     }
 
     override fun onStart() {
@@ -60,6 +51,14 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
                 loadingLayout.visibility = View.VISIBLE
             }
         })
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        itemRecyclerView.setHasFixedSize(true)
+        itemRecyclerView.layoutManager = LinearLayoutManager(this.activity)
+        itemRecyclerView.adapter = itemViewModel.adapterOnSale
+        itemViewModel.loadItemsOnSale()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -90,4 +89,6 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         itemViewModel.adapterOnSale.filter.filter(newText)
         return true
     }
+
+
 }

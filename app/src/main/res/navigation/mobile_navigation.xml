@@ -14,6 +14,9 @@
             app:destination="@id/showProfileFragment" >
             <argument
                 android:name="UserId" />
+            <argument
+                android:name="IsAuthUser"
+                android:defaultValue="true" />
         </action>
         <action
             android:id="@+id/action_navHome_to_itemListFragment"
@@ -38,6 +41,10 @@
         <argument android:name="UserId"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="IsAuthUser"
+            app:argType="boolean"
+            android:defaultValue="true" />
     </fragment>
 
     <fragment
