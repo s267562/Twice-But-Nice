@@ -9,6 +9,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -46,10 +47,13 @@ class ItemRepository {
         return  database.collection("items").document(id).get()
     }
 
-    fun getItemPhoto(item:Item): FileDownloadTask {
+    // get item from firebase
+    fun getItemDocument(id: String): DocumentReference {
+        return  database.collection("items").document(id)
+    }
+
+    fun getItemPhoto(localFile: File, item:Item): FileDownloadTask {
         val photoRef = mStorageRef.child("item/${item.id}")
-        val localFile = File.createTempFile(item.id,".jpg")
-        item.imagePath=localFile.path
         return photoRef.getFile(localFile)
     }
 

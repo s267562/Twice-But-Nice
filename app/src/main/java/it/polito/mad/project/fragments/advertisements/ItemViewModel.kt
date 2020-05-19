@@ -1,7 +1,6 @@
 package it.polito.mad.project.fragments.advertisements
 
 import android.graphics.Bitmap
-import android.util.Log
 import android.graphics.BitmapFactory
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
@@ -11,6 +10,7 @@ import it.polito.mad.project.adapters.ItemOnSaleAdapter
 import it.polito.mad.project.commons.CommonViewModel
 import it.polito.mad.project.models.Item
 import it.polito.mad.project.repositories.ItemRepository
+import java.io.File
 
 class ItemViewModel : CommonViewModel() {
 
@@ -38,6 +38,20 @@ class ItemViewModel : CommonViewModel() {
                 // if there's an exception, we have to skip
                 if (e != null) {
                     Log.w("UPDATEerr", "Listen failed", e)
+                    return@addSnapshotListener
+                }
+                // if we are here, this means we didn't meet any exception
+                if (itemSnapshot != null) {
+                    item.value = itemSnapshot.toObject(Item::class.java)
+                }
+            }
+    }
+
+    fun listenToChanges(): ListenerRegistration {
+        return itemRepository.getItemDocument(item.value!!.id!!)
+            .addSnapshotListener { itemSnapshot, e ->
+                // if there's an exception, we have to skip
+                if (e != null) {
                     return@addSnapshotListener
                 }
                 // if we are here, this means we didn't meet any exception
@@ -90,10 +104,14 @@ class ItemViewModel : CommonViewModel() {
             pushLoader()
             itemRepository.getItem(id)
                 .addOnSuccessListener {
-                    item.value = it.toObject(Item::class.java)
-                    if (item.value!!.imagePath.isNotBlank()) {
-                        itemRepository.getItemPhoto(item.value!!).addOnSuccessListener {
-                            itemPhoto.value =  BitmapFactory.decodeFile(item.value!!.imagePath)
+                    val localItem = it.toObject(Item::class.java)
+                    item.value = localItem
+
+                    if (localItem!!.imagePath.isNotBlank()) {
+                        val localFile = File.createTempFile(localItem.id!!,".jpg")
+                        itemRepository.getItemPhoto(localFile, localItem).addOnSuccessListener {
+                            itemPhoto.value =  BitmapFactory.decodeFile(localFile.path)
+                            item.value!!.imagePath = localFile.path
                         }
                     }
                     popLoader()
