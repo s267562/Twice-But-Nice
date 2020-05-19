@@ -42,7 +42,7 @@ class ItemDetailsFragment : Fragment() {
             }
         })
         adsViewModel.loader.observe(viewLifecycleOwner, Observer {
-            if (it == false) {
+            if (adsViewModel.isNotLoading()) {
                 loadingLayout.visibility = View.GONE
                 if (adsViewModel.error) {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()

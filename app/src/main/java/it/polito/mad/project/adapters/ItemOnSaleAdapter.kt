@@ -97,8 +97,8 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
                     val descri = i.description.toLowerCase()
                     val price = i.price.toLowerCase()
                     val loc = i.location.toLowerCase()
-                    if(line.contains(title) || line.contains(category) || line.contains(sub)
-                        || line.contains(descri) || line.contains(price) || line.contains(loc)){
+                    if(title.contains(line) || category.contains(line) || sub.contains(line)
+                        || descri.contains(line) || price.contains(line) || loc.contains(line)){
 
                         filteredList.add(i)
                     }

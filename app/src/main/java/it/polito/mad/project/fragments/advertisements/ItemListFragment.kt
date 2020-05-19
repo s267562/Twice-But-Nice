@@ -29,7 +29,7 @@ class ItemListFragment : Fragment() {
         super.onStart()
         (activity as AppCompatActivity?)?.supportActionBar?.show()
         adsViewModel.loader.observe(viewLifecycleOwner, Observer {
-            if (it == false) {
+            if (adsViewModel.isNotLoading()) {
                 // loader ended
                 adsViewModel.adapter.setItems(adsViewModel.items)
                 if(adsViewModel.items.size == 0) {

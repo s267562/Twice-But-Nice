@@ -53,7 +53,7 @@ class UserEditFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         userViewModel.loader.observe(viewLifecycleOwner, Observer {
-            if (it == false) {
+            if (userViewModel.isNotLoading()) {
                 loadingLayout.visibility = View.GONE
                 if (userViewModel.error) {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()

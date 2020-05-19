@@ -37,7 +37,7 @@ import java.util.*
 class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var itemViewModel: ItemViewModel
-    private lateinit var localItem: Item
+    private var localItem: Item = Item(null)
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
@@ -63,8 +63,8 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
 
         itemViewModel.item.observe(viewLifecycleOwner, Observer {
-            localItem = it
             if (it != null) {
+                localItem = it
                 item_title.setText(it.title)
                 if (it.categoryPos >= 0)
                     item_category_spinner.setSelection(it.categoryPos)
@@ -86,7 +86,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         })
 
         itemViewModel.loader.observe(viewLifecycleOwner, Observer {
-            if (it == false) {
+            if (itemViewModel.isNotLoading()) {
                 loadingLayout.visibility = View.GONE
                 if (itemViewModel.error) {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()

@@ -16,16 +16,16 @@ class UserViewModel : CommonViewModel() {
     }
 
     fun saveUser(user: User): Task<Void> {
-        loader.value = true
+        pushLoader()
         return userRepository.saveUser(user)
             .addOnSuccessListener {
                 this.user.value = user
                 userRepository.loadUserPhoto(this.user.value!!)
-                loader.value = false
+                popLoader()
                 error = false
             }
             .addOnFailureListener {
-                loader.value = false
+                popLoader()
                 error = true
             }
     }
@@ -33,18 +33,18 @@ class UserViewModel : CommonViewModel() {
     fun loadUser(id: String? = null) {
         val verifiedId = id ?: userRepository.getAuthUserId()
         if (verifiedId != user.value?.id) {
-            loader.value = true
+            pushLoader()
             userRepository.getUserById(verifiedId)
                 ?.addOnSuccessListener {
                     user.value = it.toObject(User::class.java)
                     loadPhoto()
                     userLoaded = false
-                    loader.value = false
                     error = false
+                    popLoader()
                 }
                 ?.addOnFailureListener {
                     error = true
-                    loader.value = false
+                    popLoader()
                 }
         }
     }

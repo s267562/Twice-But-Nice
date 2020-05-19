@@ -45,7 +45,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         super.onStart()
         (activity as AppCompatActivity?)?.supportActionBar?.show()
         itemViewModel.loader.observe(viewLifecycleOwner, Observer {
-            if (it == false) {
+            if (itemViewModel.isNotLoading()) {
                 // loader ended
                 itemViewModel.adapterOnSale.setItems(itemViewModel.itemsOnSale)
                 if(itemViewModel.itemsOnSale.size == 0) {

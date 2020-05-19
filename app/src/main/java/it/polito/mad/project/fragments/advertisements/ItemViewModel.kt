@@ -9,6 +9,7 @@ import it.polito.mad.project.models.Item
 import it.polito.mad.project.repositories.ItemRepository
 
 class ItemViewModel : CommonViewModel() {
+
     private val itemRepository = ItemRepository()
 
     // User items
@@ -27,14 +28,16 @@ class ItemViewModel : CommonViewModel() {
     }
 
     private fun loadItems() {
-        loader.value = true
+        pushLoader()
         val userId = itemRepository.getAuthUserId()
         itemRepository.getUserItems(userId)
             .addOnSuccessListener { it1 ->
                 items = it1.toObjects(Item::class.java).toMutableList()
                 loadItemsOnSale()
+                popLoader()
+                error = false
             }.addOnFailureListener {
-                loader.value = false
+                popLoader()
                 error = true
             }
     }
@@ -45,17 +48,17 @@ class ItemViewModel : CommonViewModel() {
             item.user = itemRepository.getAuthUserId()
             item.id = "${item.user}-${items.size}"
         }
-        loader.value = true
+        pushLoader()
         return itemRepository.saveItem(item)
             .addOnSuccessListener {
                 this.item.value = item
                 if (isNewItem) {
                     items.add(item)
                 }
-                loader.value = false
+                popLoader()
                 error = false
             }.addOnFailureListener {
-                loader.value = false
+                popLoader()
                 error = true
             }
     }
@@ -63,28 +66,29 @@ class ItemViewModel : CommonViewModel() {
     fun loadItem(id: String) {
         if (id != item.value?.id) {
             item.value = null
-            loader.value = true
+            pushLoader()
             itemRepository.getItem(id)
                 .addOnSuccessListener {
                     item.value = it.toObject(Item::class.java)
-                    loader.value = false
+                    popLoader()
                     error = false
                 }.addOnFailureListener {
-                    loader.value = false
+                    popLoader()
                     error = true
                 }
         }
     }
 
     fun loadItemsOnSale() {
-        loader.value = true
+        pushLoader()
         itemRepository.getAllItems()
             .addOnSuccessListener {
+                // Items on sale are all items sub user items
                 itemsOnSale = it.toObjects(Item::class.java).subtract(items.toList()).toMutableList()
-                loader.value = false
+                popLoader()
                 error = false
             }.addOnFailureListener {
-                loader.value = false
+                popLoader()
                 error = true
             }
     }

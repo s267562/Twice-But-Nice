@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
 import androidx.fragment.app.Fragment
-import com.google.android.gms.tasks.Task
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 import java.io.File
 
@@ -52,7 +51,7 @@ class UserDetailsFragment : Fragment() {
         })
 
         userViewModel.loader.observe(viewLifecycleOwner, Observer {
-            if (it == false) {
+            if (userViewModel.isNotLoading()) {
                 loadingLayout.visibility = View.GONE
                 if (userViewModel.error) {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
