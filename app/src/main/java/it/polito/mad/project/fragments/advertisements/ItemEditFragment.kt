@@ -74,14 +74,16 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 item_exp.text = it.expiryDate
                 if (it.imagePath != null && it.imagePath!!.isNotEmpty()) {
                     savedImagePath = it.imagePath
-                    val image = BitmapFactory.decodeFile(it.imagePath)
-                    if (image == null){
-                        item_photo_rotate.visibility = View.GONE
-                    } else {
-                        item_photo_rotate.visibility = View.VISIBLE
-                        item_photo.setImageBitmap(image)
-                    }
                 }
+            }
+        })
+
+        itemViewModel.itemPhoto.observe(viewLifecycleOwner, Observer {
+            if (it == null){
+                item_photo_rotate.visibility = View.GONE
+            } else {
+                item_photo_rotate.visibility = View.VISIBLE
+                item_photo.setImageBitmap(it)
             }
         })
 
@@ -372,7 +374,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         localItem.description = item_descr.text.toString()
         localItem.expiryDate = item_exp.text.toString()
         localItem.price = item_price.text.toString()
-        localItem.imagePath = savedImagePath
+        localItem.imagePath = savedImagePath?:""
         localItem.category = localItem.category
         localItem.subcategory = subcategoryContent
         localItem.categoryPos = localItem.categoryPos

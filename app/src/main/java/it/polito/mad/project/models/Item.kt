@@ -11,7 +11,7 @@ data class Item (var id: String?) : Serializable {
     var description: String = ""
     var expiryDate: String = ""
     var location: String = ""
-    var imagePath: String? = ""
+    var imagePath: String = ""
     var user: String=""
 
     constructor(id: String, title: String, category: String, subcategory: String, price: Double,

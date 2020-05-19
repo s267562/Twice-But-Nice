@@ -1,5 +1,7 @@
 package it.polito.mad.project.fragments.advertisements
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
 import it.polito.mad.project.adapters.ItemAdapter
@@ -22,6 +24,7 @@ class ItemViewModel : CommonViewModel() {
 
     // Single item detail loaded
     var item = MutableLiveData<Item>()
+    var itemPhoto = MutableLiveData<Bitmap>()
 
     init {
         loadItems()
@@ -66,11 +69,16 @@ class ItemViewModel : CommonViewModel() {
     fun loadItem(id: String) {
         if (id != item.value?.id) {
             item.value = null
+            itemPhoto.value = null
             pushLoader()
             itemRepository.getItem(id)
                 .addOnSuccessListener {
                     item.value = it.toObject(Item::class.java)
-                    loadPhoto()
+                    if (item.value!!.imagePath.isNotBlank()) {
+                        itemRepository.getItemPhoto(item.value!!).addOnSuccessListener {
+                            itemPhoto.value =  BitmapFactory.decodeFile(item.value!!.imagePath)
+                        }
+                    }
                     popLoader()
                     error = false
                 }.addOnFailureListener {
@@ -78,10 +86,6 @@ class ItemViewModel : CommonViewModel() {
                     error = true
                 }
         }
-    }
-
-    private fun loadPhoto(){
-        itemRepository.getItemPhoto(item.value!!)
     }
 
     fun loadItemsOnSale() {

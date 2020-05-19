@@ -38,12 +38,12 @@ class UserDetailsFragment : Fragment() {
                     email.text = it.email
                 if (it.location != null && it.location.isNotEmpty())
                     location.text = it.location
-                if (it.photoProfilePath != null && it.photoProfilePath.isNotEmpty()) {
-                    if (File(it.photoProfilePath).isFile){
-                        val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
-                        if (image != null) user_photo.setImageBitmap(image)
-                    }
-                }
+            }
+        })
+
+        userViewModel.userPhotoProfile.observe(this, Observer {
+            if (it != null) {
+                user_photo.setImageBitmap(it)
             }
         })
 

@@ -7,6 +7,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import it.polito.mad.project.models.User
@@ -46,12 +47,12 @@ class UserRepository {
         photoRef.putFile(file)
     }
 
-    fun getUserPhoto(user:User) {
+    fun getUserPhoto(user:User): FileDownloadTask {
         val userId = auth.currentUser!!.uid
         val photoRef = mStorageRef.child("user/$userId")
         val localFile = File.createTempFile(userId,".jpg")
         user.photoProfilePath = localFile.absolutePath
-        photoRef.getFile(localFile)
+        return photoRef.getFile(localFile)
     }
 
     fun getAuthUserId(): String {

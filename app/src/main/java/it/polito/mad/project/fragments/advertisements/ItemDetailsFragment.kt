@@ -13,21 +13,28 @@ import androidx.navigation.fragment.findNavController
 
 import it.polito.mad.project.R
 import kotlinx.android.synthetic.main.fragment_item_details.*
+import kotlinx.android.synthetic.main.fragment_item_details.item_descr
+import kotlinx.android.synthetic.main.fragment_item_details.item_exp
+import kotlinx.android.synthetic.main.fragment_item_details.item_location
+import kotlinx.android.synthetic.main.fragment_item_details.item_photo
+import kotlinx.android.synthetic.main.fragment_item_details.item_price
+import kotlinx.android.synthetic.main.fragment_item_details.item_title
+import kotlinx.android.synthetic.main.fragment_item_details.loadingLayout
 import java.io.File
 
 class ItemDetailsFragment : Fragment() {
 
-    private lateinit var adsViewModel: ItemViewModel
+    private lateinit var itemViewModel: ItemViewModel
     private var isMyItem: Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adsViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
+        itemViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
     }
 
     override fun onStart() {
         super.onStart()
         isMyItem = arguments?.getBoolean("IsMyItem")?:false
-        adsViewModel.item.observe(viewLifecycleOwner, Observer {
+        itemViewModel.item.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 item_title.text = it.title
                 item_descr.text = it.description
@@ -35,18 +42,19 @@ class ItemDetailsFragment : Fragment() {
                 item_category.text = "${it.category} - ${it.subcategory}"
                 item_price.text = "${it.price?.toString()} €"
                 item_exp.text = it.expiryDate
-                if (it.imagePath != null && it.imagePath!!.isNotEmpty()) {
-                    if(File(it.imagePath).isFile){
-                        val image: Bitmap = BitmapFactory.decodeFile(it.imagePath)
-                        if (image != null) item_photo.setImageBitmap(image)
-                    }
-                }
             }
         })
-        adsViewModel.loader.observe(viewLifecycleOwner, Observer {
-            if (adsViewModel.isNotLoading()) {
+
+        itemViewModel.itemPhoto.observe(viewLifecycleOwner, Observer {
+            if (it != null){
+                item_photo.setImageBitmap(it)
+            }
+        })
+
+        itemViewModel.loader.observe(viewLifecycleOwner, Observer {
+            if (itemViewModel.isNotLoading()) {
                 loadingLayout.visibility = View.GONE
-                if (adsViewModel.error) {
+                if (itemViewModel.error) {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                 }
                 if (!isMyItem)
@@ -69,7 +77,7 @@ class ItemDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setFabButton()
-        adsViewModel.loadItem(arguments?.getString("ItemId")!!)
+        itemViewModel.loadItem(arguments?.getString("ItemId")!!)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -83,7 +91,7 @@ class ItemDetailsFragment : Fragment() {
         // Handle item selection
         return when (option.itemId) {
             R.id.pencil_option -> {
-                var bundle = bundleOf("ItemId" to adsViewModel.item.value?.id)
+                var bundle = bundleOf("ItemId" to itemViewModel.item.value?.id)
                 this.findNavController().navigate(R.id.action_showItemFragment_to_itemEditFragment, bundle)
                 true
             }

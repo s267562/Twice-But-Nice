@@ -167,12 +167,12 @@ class SignInFragment : Fragment() {
             if (it != null) {
                 if (it.name.isNotEmpty())
                     fullName.text = it.name
-                if (it.photoProfilePath.isNotEmpty()) {
-                    if (File(it.photoProfilePath).isFile){
-                        val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
-                        userPhoto.setImageBitmap(image)
-                    }
-                }
+            }
+        })
+
+        userViewModel.userPhotoProfile.observe(requireActivity(), Observer {
+            if (it != null) {
+                userPhoto.setImageBitmap(it)
             }
         })
     }

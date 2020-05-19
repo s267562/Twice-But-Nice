@@ -1,13 +1,18 @@
 package it.polito.mad.project.fragments.profile
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
+import com.google.firebase.storage.FileDownloadTask
 import it.polito.mad.project.commons.CommonViewModel
 import it.polito.mad.project.models.User
 import it.polito.mad.project.repositories.UserRepository
 
 class UserViewModel : CommonViewModel() {
     val user = MutableLiveData<User>()
+    val userPhotoProfile = MutableLiveData<Bitmap>()
+
     private val userRepository = UserRepository()
 
     init {
@@ -31,11 +36,16 @@ class UserViewModel : CommonViewModel() {
     fun loadUser(id: String? = null) {
         val verifiedId = id ?: userRepository.getAuthUserId()
         if (verifiedId != user.value?.id) {
+            userPhotoProfile.value = null
             pushLoader()
             userRepository.getUserById(verifiedId)
                 ?.addOnSuccessListener {
                     user.value = it.toObject(User::class.java)
-                    loadPhoto()
+                    if (user.value!!.photoProfilePath.isNotBlank() ) {
+                        userRepository.getUserPhoto(user.value!!).addOnSuccessListener {
+                            userPhotoProfile.value = BitmapFactory.decodeFile(user.value!!.photoProfilePath)
+                        }
+                    }
                     error = false
                     popLoader()
                 }
@@ -45,10 +55,5 @@ class UserViewModel : CommonViewModel() {
                 }
         }
     }
-
-    private fun loadPhoto(){
-            userRepository.getUserPhoto(user.value!!)
-    }
-
 
 }

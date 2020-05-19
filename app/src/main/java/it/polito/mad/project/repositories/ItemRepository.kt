@@ -9,6 +9,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import it.polito.mad.project.models.Item
@@ -45,11 +46,11 @@ class ItemRepository {
         return  database.collection("items").document(id).get()
     }
 
-    fun getItemPhoto(item:Item){
+    fun getItemPhoto(item:Item): FileDownloadTask {
         val photoRef = mStorageRef.child("item/${item.id}")
         val localFile = File.createTempFile(item.id,".jpg")
         item.imagePath=localFile.path
-        photoRef.getFile(localFile)
+        return photoRef.getFile(localFile)
     }
 
     //save user interested to an item
