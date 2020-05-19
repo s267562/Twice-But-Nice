@@ -18,6 +18,7 @@ class ItemDetailsFragment : Fragment() {
 
     private lateinit var adsViewModel: ItemViewModel
     private var isMyItem: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         adsViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)

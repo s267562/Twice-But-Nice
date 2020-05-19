@@ -1,5 +1,6 @@
 package it.polito.mad.project.fragments.advertisements
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
 import it.polito.mad.project.adapters.ItemAdapter
@@ -23,9 +24,41 @@ class ItemViewModel : CommonViewModel() {
     // Single item detail loaded
     var item = MutableLiveData<Item>()
 
+    // Multiple items detail to load
+    var _items = MutableLiveData<MutableList<Item>>()
+
     init {
         loadItems()
+        listenToChanges()
     }
+
+    private fun listenToChanges(){
+        itemRepository.database.collection("items").addSnapshotListener{
+            snapshot, e ->
+            // if there's an exception, we have to skip
+            if(e != null){
+                Log.w("UPDATEerr", "Listen failed", e)
+                return@addSnapshotListener
+            }
+            // if we are here, this means we didn't meet any exception
+            if(snapshot != null){
+                // populate the snapshot
+                val allItems : MutableList<Item> = mutableListOf()
+                val docs = snapshot.documents
+                docs.forEach {
+                    val item = it.toObject(Item::class.java)
+                    if(item != null){
+                        allItems.add(item!!)
+                    }
+                }
+                _items.value = allItems
+            }
+        }
+    }
+
+    internal var myItems : MutableLiveData<MutableList<Item>>
+        get() { return myItems }
+        set(value) { myItems = value }
 
     private fun loadItems() {
         pushLoader()

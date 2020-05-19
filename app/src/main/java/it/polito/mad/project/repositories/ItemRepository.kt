@@ -10,7 +10,7 @@ import it.polito.mad.project.models.Item
 import it.polito.mad.project.models.User
 
 class ItemRepository {
-    private var database = FirebaseFirestore.getInstance()
+    var database = FirebaseFirestore.getInstance()
     private var auth = FirebaseAuth.getInstance()
 
     // save user to firebase
