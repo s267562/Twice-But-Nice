@@ -1,9 +1,11 @@
 package it.polito.mad.project.fragments.advertisements
 
 import android.graphics.Bitmap
+import android.util.Log
 import android.graphics.BitmapFactory
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.project.adapters.ItemAdapter
 import it.polito.mad.project.adapters.ItemOnSaleAdapter
 import it.polito.mad.project.commons.CommonViewModel
@@ -28,6 +30,21 @@ class ItemViewModel : CommonViewModel() {
 
     init {
         loadItems()
+    }
+
+    fun listenToChanges(): ListenerRegistration {
+        return itemRepository.database.collection("items").document(item.value!!.id!!)
+            .addSnapshotListener { itemSnapshot, e ->
+                // if there's an exception, we have to skip
+                if (e != null) {
+                    Log.w("UPDATEerr", "Listen failed", e)
+                    return@addSnapshotListener
+                }
+                // if we are here, this means we didn't meet any exception
+                if (itemSnapshot != null) {
+                    item.value = itemSnapshot.toObject(Item::class.java)
+                }
+            }
     }
 
     private fun loadItems() {
