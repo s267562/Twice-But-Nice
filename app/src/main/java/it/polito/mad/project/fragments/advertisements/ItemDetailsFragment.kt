@@ -1,7 +1,5 @@
 package it.polito.mad.project.fragments.advertisements
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -10,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.firestore.ListenerRegistration
 
 import it.polito.mad.project.R
 import kotlinx.android.synthetic.main.fragment_item_details.*
@@ -18,7 +17,7 @@ class ItemDetailsFragment : Fragment() {
 
     private lateinit var adsViewModel: ItemViewModel
     private var isMyItem: Boolean = false
-
+    private var listenerRegistration: ListenerRegistration? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         adsViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
@@ -36,8 +35,8 @@ class ItemDetailsFragment : Fragment() {
                 item_category.text = "${it.category} - ${it.subcategory}"
                 item_price.text = "${it.price?.toString()} €"
                 item_exp.text = it.expiryDate
-                if (it.imagePath != null && it.imagePath!!.isNotEmpty()) {
-                    val image: Bitmap = BitmapFactory.decodeFile(it.imagePath)
+                if (listenerRegistration == null)
+                   listenerRegistration = itemViewModel.listenToChanges()
                     if (image != null) item_photo.setImageBitmap(image)
                 }
             }
@@ -89,6 +88,11 @@ class ItemDetailsFragment : Fragment() {
             }
             else -> super.onOptionsItemSelected(option)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        listenerRegistration?.remove()
     }
 
     private fun setFabButton() {
