@@ -20,7 +20,6 @@ class UserViewModel : CommonViewModel() {
         return userRepository.saveUser(user)
             .addOnSuccessListener {
                 this.user.value = user
-                userRepository.loadUserPhoto(this.user.value!!)
                 popLoader()
                 error = false
             }
@@ -56,7 +55,6 @@ class UserViewModel : CommonViewModel() {
     }
 
     private fun loadPhoto(){
-        if (userLoaded)
             userRepository.getUserPhoto(user.value!!)
     }
 

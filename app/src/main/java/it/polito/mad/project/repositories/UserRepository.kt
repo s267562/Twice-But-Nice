@@ -22,6 +22,7 @@ class UserRepository {
     // save user to firebase
     fun saveUser(user: User): Task<Void> {
         user.id = auth.currentUser!!.uid
+        storeUserPhoto(user)
         return database.collection("users").document(user.id).set(user)
     }
 
@@ -29,9 +30,9 @@ class UserRepository {
     fun getUserById(id: String? = null): Task<DocumentSnapshot>? {
         var userId = id?:auth.currentUser!!.uid
         return database.collection("users").document(userId).get()
-
     }
-    fun loadUserPhoto(user:User){
+    
+    private fun storeUserPhoto(user:User){
         val userId = auth.currentUser!!.uid
         val photoRef = mStorageRef.child("user/$userId")
         var file = Uri.fromFile(File(user.photoProfilePath))
