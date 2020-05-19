@@ -11,6 +11,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.firebase.auth.FirebaseAuth
 import it.polito.mad.project.fragments.profile.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -20,6 +21,7 @@ import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private var userAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,28 +29,29 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         setNavView()
 
-        /*
-        val userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel.user.observe(this, Observer{
-            if (it != null) {
-                if (it.name.isNotEmpty())
-                    full_name.text = it.name
-                if (it.photoProfilePath.isNotEmpty()) {
-                    if (File(it.photoProfilePath).isFile){
-                        val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
-                        user_photo.setImageBitmap(image)
+        if(userAuth.currentUser != null){
+            val userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+            userViewModel.user.observe(this, Observer{
+                if (it != null) {
+                    if (it.name.isNotEmpty())
+                        full_name.text = it.name
+                    if (it.photoProfilePath.isNotEmpty()) {
+                        if (File(it.photoProfilePath).isFile){
+                            val image: Bitmap = BitmapFactory.decodeFile(it.photoProfilePath)
+                            user_photo.setImageBitmap(image)
+                        }
                     }
                 }
-            }
-        })
+            })
+        }
 
-         */
     }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.navMainHostFragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
 
     private fun setNavView() {
         val navController = findNavController(R.id.navMainHostFragment)

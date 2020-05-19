@@ -2,30 +2,37 @@ package it.polito.mad.project.fragments.authentication
 
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
+import it.polito.mad.project.MainActivity
 import it.polito.mad.project.R
 import it.polito.mad.project.fragments.profile.UserViewModel
 import it.polito.mad.project.models.User
 import kotlinx.android.synthetic.main.fragment_login.*
+import java.io.File
 
 class SignInFragment : Fragment() {
     private lateinit var firebaseStore: FirebaseFirestore
@@ -91,6 +98,7 @@ class SignInFragment : Fragment() {
     private fun updateUI(user: FirebaseUser?) {
         if (user != null) {
             ViewModelProvider(activity?:this).get(UserViewModel::class.java)
+
             findNavController().navigate(R.id.action_navHome_to_onSaleListFragment)
         }
     }
