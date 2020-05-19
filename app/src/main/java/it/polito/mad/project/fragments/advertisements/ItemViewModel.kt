@@ -33,21 +33,6 @@ class ItemViewModel : CommonViewModel() {
     }
 
     fun listenToChanges(): ListenerRegistration {
-        return itemRepository.database.collection("items").document(item.value!!.id!!)
-            .addSnapshotListener { itemSnapshot, e ->
-                // if there's an exception, we have to skip
-                if (e != null) {
-                    Log.w("UPDATEerr", "Listen failed", e)
-                    return@addSnapshotListener
-                }
-                // if we are here, this means we didn't meet any exception
-                if (itemSnapshot != null) {
-                    item.value = itemSnapshot.toObject(Item::class.java)
-                }
-            }
-    }
-
-    fun listenToChanges(): ListenerRegistration {
         return itemRepository.getItemDocument(item.value!!.id!!)
             .addSnapshotListener { itemSnapshot, e ->
                 // if there's an exception, we have to skip
