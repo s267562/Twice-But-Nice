@@ -57,14 +57,19 @@ class ItemDetailsFragment : Fragment() {
                 if (itemViewModel.error) {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                 }
-                if (!isMyItem)
+                if (!isMyItem){
+                    interestedUsersFab.hide()
                     interestFab.show()
-                else
+                }
+                else{
+                    interestedUsersFab.show()
                     interestFab.hide()
+                }
 
             } else {
                 loadingLayout.visibility = View.VISIBLE
                 interestFab.hide()
+                interestedUsersFab.hide()
             }
         })
     }
@@ -103,6 +108,9 @@ class ItemDetailsFragment : Fragment() {
         interestFab.setOnClickListener {
             // TODO: save the user as interested for the item and send notification
             Toast.makeText(activity, "Not yer implemented", Toast.LENGTH_SHORT)
+        }
+        interestedUsersFab.setOnClickListener{
+            this.findNavController().navigate(R.id.action_showItemFragment_to_usersInterestedFragment)
         }
     }
 }
