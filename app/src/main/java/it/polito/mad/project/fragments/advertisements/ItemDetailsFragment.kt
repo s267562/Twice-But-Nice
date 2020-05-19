@@ -68,6 +68,8 @@ class ItemDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setFabButton()
+        // Manca un observer qua che non so come fare
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
