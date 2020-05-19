@@ -1,25 +1,55 @@
 package it.polito.mad.project.repositories
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import it.polito.mad.project.models.Item
 import it.polito.mad.project.models.User
+import java.io.File
+import java.io.FileOutputStream
 
 class ItemRepository {
     private var database = FirebaseFirestore.getInstance()
     private var auth = FirebaseAuth.getInstance()
+    private var mStorageRef: StorageReference = FirebaseStorage.getInstance().reference
 
-    // save user to firebase
+    // save item to firebase
     fun saveItem(item: Item): Task<Void> {
+        storeItemPhoto(item)
         return database.collection("items").document(item.id!!).set(item)
     }
+
+    private fun storeItemPhoto(item: Item) {
+        if(item.imagePath == null || item.imagePath!!.isEmpty() || !File(item.imagePath).isFile )
+            return
+        val photoRef = mStorageRef.child("item/${item.id}")
+        var file = Uri.fromFile(File(item.imagePath))
+        val bitmap = BitmapFactory.decodeFile(item.imagePath)
+        val localFile = File.createTempFile(item.id,".jpg")
+        val fOut = FileOutputStream(localFile)
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100, fOut);
+        item.imagePath=localFile.path
+        photoRef.putFile(file)
+    }
+
     // get item from firebase
     fun getItem(id: String): Task<DocumentSnapshot> {
         return  database.collection("items").document(id).get()
+    }
+
+    fun getItemPhoto(item:Item){
+        val photoRef = mStorageRef.child("item/${item.id}")
+        val localFile = File.createTempFile(item.id,".jpg")
+        item.imagePath=localFile.path
+        photoRef.getFile(localFile)
     }
 
     //save user interested to an item

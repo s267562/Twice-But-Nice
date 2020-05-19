@@ -70,6 +70,7 @@ class ItemViewModel : CommonViewModel() {
             itemRepository.getItem(id)
                 .addOnSuccessListener {
                     item.value = it.toObject(Item::class.java)
+                    loadPhoto()
                     popLoader()
                     error = false
                 }.addOnFailureListener {
@@ -77,6 +78,10 @@ class ItemViewModel : CommonViewModel() {
                     error = true
                 }
         }
+    }
+
+    private fun loadPhoto(){
+        itemRepository.getItemPhoto(item.value!!)
     }
 
     fun loadItemsOnSale() {

@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         setNavView()
-
+        /*
         if(userAuth.currentUser != null){
             val userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
             userViewModel.user.observe(this, Observer{
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             })
-        }
+        }*/
 
     }
 

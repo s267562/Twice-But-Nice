@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 
 import it.polito.mad.project.R
 import kotlinx.android.synthetic.main.fragment_item_details.*
+import java.io.File
 
 class ItemDetailsFragment : Fragment() {
 
@@ -36,8 +37,10 @@ class ItemDetailsFragment : Fragment() {
                 item_price.text = "${it.price?.toString()} €"
                 item_exp.text = it.expiryDate
                 if (it.imagePath != null && it.imagePath!!.isNotEmpty()) {
-                    val image: Bitmap = BitmapFactory.decodeFile(it.imagePath)
-                    if (image != null) item_photo.setImageBitmap(image)
+                    if(File(it.imagePath).isFile){
+                        val image: Bitmap = BitmapFactory.decodeFile(it.imagePath)
+                        if (image != null) item_photo.setImageBitmap(image)
+                    }
                 }
             }
         })
