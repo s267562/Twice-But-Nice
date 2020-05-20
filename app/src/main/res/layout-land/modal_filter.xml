@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose the parameter you want to look for"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:layout_margin="15dp"
+            android:textSize="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+
+        <Spinner
+            android:id="@+id/filter_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:prompt="@string/param_def"
+            android:spinnerMode="dropdown" />
+
+        <LinearLayout
+            android:id="@+id/price_range"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Set price range"
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:layout_margin="15dp"
+                android:textSize="16dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:hint="Min Value"></EditText>
+
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:hint="Max Value"></EditText>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/filterBtn"
+            android:layout_width="277dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="Set"></Button>
+
+        <Button
+            android:id="@+id/dismissBtn"
+            android:layout_width="278dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="Dismiss"></Button>
+    </LinearLayout></androidx.constraintlayout.widget.ConstraintLayout>
