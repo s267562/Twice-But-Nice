@@ -81,6 +81,9 @@
             android:name="IsMyItem"
             app:argType="boolean"
             android:defaultValue="false" />
+        <action
+            android:id="@+id/action_showItemFragment_to_usersInterestedFragment"
+            app:destination="@id/usersInterestedFragment" />
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"
@@ -122,5 +125,14 @@
                 android:name="IsMyItem"
                 android:defaultValue="false" />
         </action>
+    </fragment>
+    <fragment
+        android:id="@+id/usersInterestedFragment"
+        android:name="it.polito.mad.project.fragments.advertisements.UsersInterestedFragment"
+        android:label="fragment_users_interested"
+        tools:layout="@layout/fragment_users_interested" >
+        <action
+            android:id="@+id/action_usersInterestedFragment_to_showProfileFragment"
+            app:destination="@id/showProfileFragment" />
     </fragment>
 </navigation>

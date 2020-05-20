@@ -59,7 +59,7 @@ class ItemRepository {
 
     //save user interested to an item
     fun saveUserToItem(user: User, id: String): Task<Void> {
-        return database.collection("items").document(id).collection("users").document().set(user)
+        return database.collection("items").document(id).collection("users").document(user.id).set(user)
     }
 
     //get list of users interested to an item

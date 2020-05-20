@@ -7,8 +7,10 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.project.adapters.ItemAdapter
 import it.polito.mad.project.adapters.ItemOnSaleAdapter
+import it.polito.mad.project.adapters.UserAdapter
 import it.polito.mad.project.commons.CommonViewModel
 import it.polito.mad.project.models.Item
+import it.polito.mad.project.models.User
 import it.polito.mad.project.repositories.ItemRepository
 import java.io.File
 
@@ -27,6 +29,10 @@ class ItemViewModel : CommonViewModel() {
     // Single item detail loaded
     var item = MutableLiveData<Item>()
     var itemPhoto = MutableLiveData<Bitmap>()
+
+    //user interested to item
+    var users: MutableList<User> = mutableListOf()
+    var adapterUser: UserAdapter = UserAdapter(users)
 
     init {
         loadItems()
@@ -99,6 +105,7 @@ class ItemViewModel : CommonViewModel() {
                             item.value!!.imagePath = localFile.path
                         }
                     }
+                    loadInterestedUsers()
                     popLoader()
                     error = false
                 }.addOnFailureListener {
@@ -121,4 +128,18 @@ class ItemViewModel : CommonViewModel() {
                 error = true
             }
     }
+
+    private fun loadInterestedUsers() {
+        //if (id != item.value?.id){
+            pushLoader()
+            itemRepository.getItemUsers(item.value!!.id.toString()).addOnSuccessListener {
+                users = it.toObjects(User::class.java).toMutableList()
+                popLoader()
+                error = false
+            }.addOnFailureListener{
+                popLoader()
+                error=true
+            }
+        }
+    //}
 }
