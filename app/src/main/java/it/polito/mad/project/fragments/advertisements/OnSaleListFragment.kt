@@ -7,6 +7,7 @@ import android.view.View.GONE
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -15,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.R
 import kotlinx.android.synthetic.main.fragment_on_sale_list.*
+import kotlinx.android.synthetic.main.modal_filter.view.*
 
 class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
 
@@ -63,9 +65,9 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.search_menu, menu)
+
         var itemMenu: MenuItem = menu!!.findItem(R.id.menu_search)
 
         if(itemMenu != null){
@@ -77,6 +79,28 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
             searchView.setOnQueryTextListener(this)
         } else {
             //Toast.makeText(activity, "WRONG", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        return when (item.itemId) {
+            R.id.search_filter -> {
+                openModal()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun openModal(){
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.modal_filter, null)
+        val builder = AlertDialog.Builder(requireContext()).setView(dialogView)
+            .setTitle("Choose the filter")
+        val alertDialog = builder.show()
+
+        dialogView.filterBtn.setOnClickListener{
+            alertDialog.dismiss()
         }
     }
 
