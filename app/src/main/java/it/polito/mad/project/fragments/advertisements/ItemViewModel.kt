@@ -143,8 +143,9 @@ class ItemViewModel : CommonViewModel() {
             }
     }
 
-    fun addUserToItem(userInterest: UserInterest): Task<Void> {
+    fun saveUserInterestToItem(interest: Boolean): Task<Void> {
         pushLoader()
+        userInterest.interest = !interest
         userInterest.userId = itemRepository.getAuthUserId()
         return itemRepository.saveUserInterest(userInterest.userId, item.value!!.id!!, userInterest).addOnSuccessListener {
             popLoader()

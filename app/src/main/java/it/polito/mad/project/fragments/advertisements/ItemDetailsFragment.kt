@@ -11,7 +11,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.firebase.firestore.ListenerRegistration
 
 import it.polito.mad.project.R
-import it.polito.mad.project.models.UserInterest
 import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.android.synthetic.main.fragment_item_details.item_descr
 import kotlinx.android.synthetic.main.fragment_item_details.item_exp
@@ -116,7 +115,7 @@ class ItemDetailsFragment : Fragment() {
 
     private fun setFabButton() {
         interestFab.setOnClickListener {
-            itemViewModel.addUserToItem(UserInterest(!itemViewModel.isInterest()))
+            itemViewModel.saveUserInterestToItem(itemViewModel.isInterest())
         }
         interestedUsersFab.setOnClickListener{
             this.findNavController().navigate(R.id.action_showItemFragment_to_usersInterestedFragment)
