@@ -89,6 +89,4 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         itemViewModel.adapterOnSale.filter.filter(newText)
         return true
     }
-
-
 }
