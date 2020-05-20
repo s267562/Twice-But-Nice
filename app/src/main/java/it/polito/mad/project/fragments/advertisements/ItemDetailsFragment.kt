@@ -1,7 +1,5 @@
 package it.polito.mad.project.fragments.advertisements
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -20,7 +18,6 @@ import kotlinx.android.synthetic.main.fragment_item_details.item_photo
 import kotlinx.android.synthetic.main.fragment_item_details.item_price
 import kotlinx.android.synthetic.main.fragment_item_details.item_title
 import kotlinx.android.synthetic.main.fragment_item_details.loadingLayout
-import java.io.File
 
 class ItemDetailsFragment : Fragment() {
 
@@ -83,6 +80,7 @@ class ItemDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setFabButton()
         itemViewModel.loadItem(arguments?.getString("ItemId")!!)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

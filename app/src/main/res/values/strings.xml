@@ -22,6 +22,11 @@
     <string name="subcategory_def">Subcategory</string>
     <string name="search_title">Search</string>
     <string name="search_hint">Hint</string>
+    <string name="no_users_interested">No users interested</string>
+    <string name="no_items_found">No items found</string>
+    <string name="user_name">Full name</string>
+    <string name="location">Location</string>
+    <string name="full_name">Full name</string>
 
 
     <string-array name="item_categories">
