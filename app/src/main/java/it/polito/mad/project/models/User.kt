@@ -11,9 +11,7 @@ data class User(val name: String) : Serializable {
     var location: String = ""
     var photoProfilePath: String = ""
     var password: String = ""
-    var authenticated = false
-    var new = false
-    var created = false
+    var notificationId: String = ""
 
     constructor(name: String, surname: String, nickname: String, email: String, location: String, photoProfilePath: String? = "") : this(name) {
         this.surname = surname
@@ -23,8 +21,7 @@ data class User(val name: String) : Serializable {
         this.photoProfilePath = photoProfilePath?: ""
     }
 
-    constructor() : this("") {
-    }
+    constructor() : this("")
 
 }
 

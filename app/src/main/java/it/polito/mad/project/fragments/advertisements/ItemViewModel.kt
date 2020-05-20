@@ -8,14 +8,14 @@ import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.project.adapters.ItemAdapter
 import it.polito.mad.project.adapters.ItemOnSaleAdapter
 import it.polito.mad.project.adapters.UserAdapter
-import it.polito.mad.project.commons.CommonViewModel
+import it.polito.mad.project.commons.LoadingViewModel
 import it.polito.mad.project.models.Item
 import it.polito.mad.project.models.User
 import it.polito.mad.project.models.ItemInterest
 import it.polito.mad.project.repositories.ItemRepository
 import java.io.File
 
-class ItemViewModel : CommonViewModel() {
+class ItemViewModel : LoadingViewModel() {
 
     private val itemRepository = ItemRepository()
 
