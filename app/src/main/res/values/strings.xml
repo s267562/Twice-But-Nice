@@ -22,6 +22,16 @@
     <string name="subcategory_def">Subcategory</string>
     <string name="search_title">Search</string>
     <string name="search_hint">Hint</string>
+    <string name="param_def">Parameters</string>
+
+    <string-array name="params">
+        <item>Title</item>
+        <item>Category</item>
+        <item>Subcategory</item>
+        <item>Location</item>
+        <item>Description</item>
+        <item>Price</item>
+    </string-array>
 
 
     <string-array name="item_categories">

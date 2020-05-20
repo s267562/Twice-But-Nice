@@ -32,8 +32,6 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-// POINT 4: Implement the ItemEditFragment
-
 class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var itemViewModel: ItemViewModel
@@ -388,7 +386,6 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    // Methods to manage the camera
     private fun openGallery(){
         val galleryIntent = Intent()
         galleryIntent.type = "image/*"
