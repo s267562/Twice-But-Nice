@@ -11,6 +11,7 @@ import it.polito.mad.project.adapters.UserAdapter
 import it.polito.mad.project.commons.CommonViewModel
 import it.polito.mad.project.models.Item
 import it.polito.mad.project.models.User
+import it.polito.mad.project.models.UserInterest
 import it.polito.mad.project.repositories.ItemRepository
 import java.io.File
 
@@ -29,6 +30,7 @@ class ItemViewModel : CommonViewModel() {
     // Single item detail loaded
     var item = MutableLiveData<Item>()
     var itemPhoto = MutableLiveData<Bitmap>()
+    private var userInterest = UserInterest(false)
 
     //user interested to item
     var users: MutableList<User> = mutableListOf()
@@ -67,6 +69,10 @@ class ItemViewModel : CommonViewModel() {
             }
     }
 
+    fun isInterest(): Boolean {
+        return userInterest.interest
+    }
+
     fun saveItem(item: Item): Task<Void> {
         val isNewItem = item.id == null
         if (isNewItem) {
@@ -92,21 +98,29 @@ class ItemViewModel : CommonViewModel() {
         if (id != item.value?.id) {
             item.value = null
             itemPhoto.value = null
+            userInterest = UserInterest(false)
             pushLoader()
             itemRepository.getItem(id)
-                .addOnSuccessListener {
-                    val localItem = it.toObject(Item::class.java)
-                    item.value = localItem
+                .addOnSuccessListener { item ->
+                    val localItem = item.toObject(Item::class.java) as Item
+                    this.item.value = localItem
 
-                    if (localItem!!.imagePath.isNotBlank()) {
+                    itemRepository.getUserInterest(itemRepository.getAuthUserId(), localItem.id!!)
+                        .addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                userInterest = it.result?.toObject(UserInterest::class.java)?:userInterest
+                            }
+                            popLoader()
+                        }
+
+                    if (localItem.imagePath.isNotBlank()) {
                         val localFile = File.createTempFile(localItem.id!!,".jpg")
                         itemRepository.getItemPhoto(localFile, localItem).addOnSuccessListener {
                             itemPhoto.value =  BitmapFactory.decodeFile(localFile.path)
-                            item.value!!.imagePath = localFile.path
+                            this.item.value!!.imagePath = localFile.path
                         }
                     }
                     loadInterestedUsers()
-                    popLoader()
                     error = false
                 }.addOnFailureListener {
                     popLoader()
@@ -129,14 +143,38 @@ class ItemViewModel : CommonViewModel() {
             }
     }
 
+    fun addUserToItem(userInterest: UserInterest): Task<Void> {
+        pushLoader()
+        userInterest.userId = itemRepository.getAuthUserId()
+        return itemRepository.saveUserInterest(userInterest.userId, item.value!!.id!!, userInterest).addOnSuccessListener {
+            popLoader()
+            error = false
+        }
+        .addOnFailureListener {
+            popLoader()
+            error = true
+        }
+    }
+
     private fun loadInterestedUsers() {
         //if (id != item.value?.id){
             pushLoader()
-            itemRepository.getItemUsers(item.value!!.id.toString()).addOnSuccessListener {
-                users = it.toObjects(User::class.java).toMutableList()
-                popLoader()
-                error = false
-            }.addOnFailureListener{
+            itemRepository.getItemInterestedUserIds(item.value!!.id!!).addOnSuccessListener { userIdsSnap ->
+                val itemInterests = userIdsSnap.toObjects(UserInterest::class.java).toMutableList()
+                if (itemInterests.size > 0) {
+                    val userIds = itemInterests.map { interest -> interest.userId }.toMutableList()
+                    itemRepository.getItemInterestedUsers(userIds).addOnSuccessListener {
+                        users = it.toObjects(User::class.java).toMutableList()
+                        popLoader()
+                        error = false
+                    }.addOnFailureListener{
+                        popLoader()
+                        error=true
+                    }
+                } else {
+                    popLoader()
+                }
+            }.addOnFailureListener {
                 popLoader()
                 error=true
             }

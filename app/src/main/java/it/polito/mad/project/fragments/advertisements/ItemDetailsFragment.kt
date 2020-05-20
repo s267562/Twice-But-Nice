@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.firebase.firestore.ListenerRegistration
 
 import it.polito.mad.project.R
+import it.polito.mad.project.models.UserInterest
 import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.android.synthetic.main.fragment_item_details.item_descr
 import kotlinx.android.synthetic.main.fragment_item_details.item_exp
@@ -58,13 +59,15 @@ class ItemDetailsFragment : Fragment() {
                 if (itemViewModel.error) {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                 }
-                if (!isMyItem){
-                    interestedUsersFab.hide()
+                if (!isMyItem) {
+                    val resourceId: Int = if (itemViewModel.isInterest()) R.drawable.ic_favorite_white_24dp else R.drawable.ic_favorite_border_white_24dp
+                    interestFab.setImageResource(resourceId)
                     interestFab.show()
+                    interestedUsersFab.hide()
                 }
                 else{
-                    interestedUsersFab.show()
                     interestFab.hide()
+                    interestedUsersFab.show()
                 }
 
             } else {
@@ -113,8 +116,7 @@ class ItemDetailsFragment : Fragment() {
 
     private fun setFabButton() {
         interestFab.setOnClickListener {
-            // TODO: save the user as interested for the item and send notification
-            Toast.makeText(activity, "Not yer implemented", Toast.LENGTH_SHORT)
+            itemViewModel.addUserToItem(UserInterest(!itemViewModel.isInterest()))
         }
         interestedUsersFab.setOnClickListener{
             this.findNavController().navigate(R.id.action_showItemFragment_to_usersInterestedFragment)

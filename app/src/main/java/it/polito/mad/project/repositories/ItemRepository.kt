@@ -15,6 +15,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import it.polito.mad.project.models.Item
 import it.polito.mad.project.models.User
+import it.polito.mad.project.models.UserInterest
 import java.io.File
 import java.io.FileOutputStream
 
@@ -58,23 +59,27 @@ class ItemRepository {
     }
 
     //save user interested to an item
-    fun saveUserToItem(user: User, id: String): Task<Void> {
-        return database.collection("items").document(id).collection("users").document(user.id).set(user)
+    fun saveUserInterest(userId: String, id: String, userInterest: UserInterest): Task<Void> {
+        return database.collection("items").document(id).collection("users").document(userId).set(userInterest)
     }
 
     //get list of users interested to an item
-    fun getItemUsers(id: String): Task<QuerySnapshot> {
-        return database.collection("items").document(id).collection("users").get()
+    fun getUserInterest(userId: String, id: String): Task<DocumentSnapshot> {
+        return database.collection("items").document(id).collection("users").document(userId).get()
+    }
+
+    //get list of users interested to an item
+    fun getItemInterestedUserIds(id: String): Task<QuerySnapshot> {
+        return database.collection("items").document(id).collection("users").whereEqualTo("interest", true).get()
+    }
+
+    fun getItemInterestedUsers(userIds: MutableList<String>): Task<QuerySnapshot> {
+        return database.collection("users").whereIn("id", userIds).get()
     }
 
     // get list of items of a single user
     fun getUserItems(userId: String): Task<QuerySnapshot> {
         return database.collection("items").whereEqualTo("user", userId).get()
-    }
-
-    //get all items
-    fun getAllItems(): Task<QuerySnapshot> {
-        return database.collection("items").get()
     }
 
     // Get only available items
