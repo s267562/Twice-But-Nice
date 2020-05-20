@@ -62,14 +62,14 @@ class AuthViewModel : LoadingViewModel() {
                         authRepository.getLoggedUser()
                             .addOnCompleteListener {
                                 user = User(firebaseUser.displayName?:"")
-                                if (it.isSuccessful) {
-                                    user = it.result?.toObject(User::class.java)?:user
-                                }
-                                user.notificationId = notificationId
                                 user.id = firebaseUser.uid
                                 user.email = firebaseUser.email?:""
                                 user.nickname = user.email.split("@")[0]
 
+                                if (it.isSuccessful) {
+                                    user = it.result?.toObject(User::class.java)?:user
+                                }
+                                user.notificationId = notificationId
                                 authRepository.updateUser(user)
                                     .addOnCompleteListener {
                                         popLoader()
