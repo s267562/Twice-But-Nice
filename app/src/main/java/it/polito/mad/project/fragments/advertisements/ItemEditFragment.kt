@@ -60,6 +60,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         } else {
             // New Item
             itemViewModel.item.value = Item(itemId)
+            itemViewModel.itemPhoto.value = null
         }
 
         itemViewModel.item.observe(viewLifecycleOwner, Observer {

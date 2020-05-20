@@ -26,7 +26,8 @@ class UserAdapter(private var users: MutableList<User>): RecyclerView.Adapter<Us
 
         holder.bind(users[position]
         ) {
-            holder.itemView.findNavController().navigate(R.id.action_usersInterestedFragment_to_showProfileFragment)
+            val bundle = bundleOf("UserId" to users[position].id, "IsAuthUser" to false)
+            holder.itemView.findNavController().navigate(R.id.action_usersInterestedFragment_to_showProfileFragment, bundle)
         }
     }
 
@@ -35,12 +36,6 @@ class UserAdapter(private var users: MutableList<User>): RecyclerView.Adapter<Us
     }
 
     fun setUsers(newUsers: MutableList<User>) {
-        /*
-        val diffs = DiffUtil.calculateDiff(ItemDiffCallback(items, newItems))
-        items = newItems //update data
-        diffs.dispatchUpdatesTo(this) //animate UI
-
-         */
         users = newUsers
     }
 
