@@ -40,7 +40,6 @@ class SignUpFragment: Fragment() {
         regBtn.setOnClickListener {
             val user = User(au_fullname.text.toString())
             user.email = au_email.text.toString()
-            user.password = au_password.text.toString()
             user.nickname = au_nickname.text.toString()
             user.location = au_location.text.toString()
             authViewModel.registerUser(user)

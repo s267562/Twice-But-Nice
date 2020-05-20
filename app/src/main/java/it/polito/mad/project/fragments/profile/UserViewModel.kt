@@ -21,6 +21,7 @@ class UserViewModel : LoadingViewModel() {
 
     fun saveUser(user: User): Task<Void> {
         pushLoader()
+        user.notificationId = this.user.value!!.notificationId
         return userRepository.saveUser(user)
             .addOnSuccessListener {
                 this.user.value = user
