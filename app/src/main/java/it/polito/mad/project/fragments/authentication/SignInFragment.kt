@@ -21,6 +21,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.project.R
 import it.polito.mad.project.fragments.profile.UserViewModel
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -109,6 +110,8 @@ class SignInFragment : Fragment() {
         val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
         userViewModel.user.observe(requireActivity(), Observer{
             if (userViewModel.isAuthUser() && it != null) {
+                FirebaseMessaging.getInstance().subscribeToTopic("/topics/${it.id}")
+
                 if (it.name.isNotEmpty())
                     fullName.text = it.name
             }

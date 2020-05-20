@@ -25,6 +25,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
+import it.polito.mad.project.commons.NotificationFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_item_edit.*
@@ -33,7 +34,7 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var itemViewModel: ItemViewModel
     private var localItem: Item = Item(null)
@@ -392,6 +393,10 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         itemViewModel.saveItem(localItem, arguments?.getInt("ItemPosition")!!)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
+                    val item = itemViewModel.item.value as Item
+                    if (item.status == "Sold") {
+                        sendNotification("Questo prodotto è stato venduto: ${item.title}", "${item.user}/${item.id}")
+                    }
                     itemViewModel.itemPhoto.value = (item_photo.drawable as BitmapDrawable).bitmap
                     findNavController().popBackStack()
                 } else {

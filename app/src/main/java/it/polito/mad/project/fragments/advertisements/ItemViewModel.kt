@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.project.adapters.ItemAdapter
 import it.polito.mad.project.adapters.ItemOnSaleAdapter
 import it.polito.mad.project.adapters.UserAdapter
@@ -13,11 +14,13 @@ import it.polito.mad.project.models.Item
 import it.polito.mad.project.models.User
 import it.polito.mad.project.models.ItemInterest
 import it.polito.mad.project.repositories.ItemRepository
+import it.polito.mad.project.services.MessageService
 import java.io.File
 
 class ItemViewModel : LoadingViewModel() {
 
     private val itemRepository = ItemRepository()
+    private val messagingService =  MessageService()
 
     // User items
     var items: MutableList<Item> = mutableListOf()
@@ -164,11 +167,11 @@ class ItemViewModel : LoadingViewModel() {
             }
     }
 
-    fun updateItemInterest() {
+    fun updateItemInterest():Task<Void> {
         pushLoader()
         itemInterest.interest = !itemInterest.interest
         itemInterest.userId = itemRepository.getAuthUserId()
-        itemRepository.saveItemInterest(itemInterest.userId, item.value!!.id!!, itemInterest)
+        return itemRepository.saveItemInterest(itemInterest.userId, item.value!!.id!!, itemInterest)
             .addOnSuccessListener {
                 popLoader()
                 error = false
