@@ -276,9 +276,10 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
             item_photo.setDrawingCacheEnabled(true)
             itemImage = item_photo.getDrawingCache(true).copy(Bitmap.Config.ARGB_8888, false)
             item_photo.destroyDrawingCache()
-            var rotateBitmap = rotateImage(itemImage!!, 90)
+            val rotateBitmap = rotateImage(itemImage!!, 90)
             itemImage = rotateBitmap
             item_photo.setImageBitmap(itemImage)
+            itemViewModel.itemPhoto.value = itemImage
         }
     }
 

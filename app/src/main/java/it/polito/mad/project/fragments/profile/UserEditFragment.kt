@@ -129,6 +129,7 @@ class UserEditFragment : Fragment() {
             var rotateBitmap = rotateImage(image!!, 90)
             image = rotateBitmap
             user_photo.setImageBitmap(image)
+            userViewModel.userPhotoProfile.value = image
         }
     }
 

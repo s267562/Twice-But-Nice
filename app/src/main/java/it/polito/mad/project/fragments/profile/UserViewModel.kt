@@ -4,10 +4,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
-import com.google.firebase.storage.FileDownloadTask
 import it.polito.mad.project.commons.CommonViewModel
 import it.polito.mad.project.models.User
 import it.polito.mad.project.repositories.UserRepository
+import java.io.File
 
 class UserViewModel : CommonViewModel() {
     val user = MutableLiveData<User>()
@@ -36,23 +36,34 @@ class UserViewModel : CommonViewModel() {
     fun loadUser(id: String? = null) {
         val verifiedId = id ?: userRepository.getAuthUserId()
         if (verifiedId != user.value?.id) {
-            userPhotoProfile.value = null
             pushLoader()
+            userPhotoProfile.value = null
             userRepository.getUserById(verifiedId)
                 ?.addOnSuccessListener {
                     user.value = it.toObject(User::class.java)
-                    if (user.value!!.photoProfilePath.isNotBlank() ) {
-                        userRepository.getUserPhoto(user.value!!).addOnSuccessListener {
-                            userPhotoProfile.value = BitmapFactory.decodeFile(user.value!!.photoProfilePath)
-                        }
-                    }
-                    error = false
                     popLoader()
+                    loadUserPhotoProfile(user.value!!.id, user.value!!.photoProfilePath)
+                    error = false
                 }
                 ?.addOnFailureListener {
                     error = true
                     popLoader()
                 }
+        }
+    }
+
+    private fun loadUserPhotoProfile(id: String, photoProfilePath: String) {
+        if (photoProfilePath.isNotBlank()) {
+            val image = BitmapFactory.decodeFile(photoProfilePath)
+            if (image != null) {
+                userPhotoProfile.value = image
+            } else {
+                val localFile = File.createTempFile(id,".jpg")
+                userRepository.getUserPhoto(id, localFile).addOnSuccessListener {
+                    userPhotoProfile.value =  BitmapFactory.decodeFile(localFile.path)
+                    user.value!!.photoProfilePath = localFile.path
+                }
+            }
         }
     }
 

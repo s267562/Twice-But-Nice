@@ -38,20 +38,17 @@ class UserRepository {
             return
         val userId = auth.currentUser!!.uid
         val photoRef = mStorageRef.child("user/$userId")
-        var file = Uri.fromFile(File(user.photoProfilePath))
+        val file = Uri.fromFile(File(user.photoProfilePath))
         val bitmap = BitmapFactory.decodeFile(user.photoProfilePath)
         val localFile = File.createTempFile(userId,".jpg")
         val fOut = FileOutputStream(localFile)
         bitmap.compress(Bitmap.CompressFormat.JPEG,100, fOut);
-        user.photoProfilePath=localFile.path
+        user.photoProfilePath = localFile.path
         photoRef.putFile(file)
     }
 
-    fun getUserPhoto(user:User): FileDownloadTask {
-        val userId = auth.currentUser!!.uid
-        val photoRef = mStorageRef.child("user/$userId")
-        val localFile = File.createTempFile(userId,".jpg")
-        user.photoProfilePath = localFile.absolutePath
+    fun getUserPhoto(id: String, localFile: File): FileDownloadTask {
+        val photoRef = mStorageRef.child("user/$id")
         return photoRef.getFile(localFile)
     }
 
