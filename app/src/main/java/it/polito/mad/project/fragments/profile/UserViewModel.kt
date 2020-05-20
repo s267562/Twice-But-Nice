@@ -67,4 +67,8 @@ class UserViewModel : CommonViewModel() {
         }
     }
 
+    fun isAuthUser(): Boolean {
+        return (userRepository.getAuthUserId() == user.value?.id ?: "")
+    }
+
 }

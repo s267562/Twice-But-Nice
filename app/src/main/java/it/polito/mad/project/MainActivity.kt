@@ -81,13 +81,13 @@ class MainActivity : AppCompatActivity() {
 
         val userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         userViewModel.user.observe(this, Observer{
-            if (it != null) {
+            if (userViewModel.isAuthUser() && it != null) {
                 if (it.name.isNotEmpty())
                     fullName.text = it.name
             }
         })
         userViewModel.userPhotoProfile.observe(this, Observer {
-            if (it != null) {
+            if (userViewModel.isAuthUser() && it != null) {
                 userPhoto.setImageBitmap(it)
             }
         })

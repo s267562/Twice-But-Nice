@@ -161,14 +161,14 @@ class SignInFragment : Fragment() {
 
         val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
         userViewModel.user.observe(requireActivity(), Observer{
-            if (it != null) {
+            if (userViewModel.isAuthUser() && it != null) {
                 if (it.name.isNotEmpty())
                     fullName.text = it.name
             }
         })
 
         userViewModel.userPhotoProfile.observe(requireActivity(), Observer {
-            if (it != null) {
+            if (userViewModel.isAuthUser() && it != null) {
                 userPhoto.setImageBitmap(it)
             }
         })
