@@ -54,7 +54,7 @@ class ItemViewModel : CommonViewModel() {
             }
     }
 
-    private fun loadItems() {
+    fun loadItems() {
         pushLoader()
         val userId = itemRepository.getAuthUserId()
         itemRepository.getUserItems(userId)

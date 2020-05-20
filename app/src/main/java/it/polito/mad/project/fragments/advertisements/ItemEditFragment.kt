@@ -400,6 +400,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         itemViewModel.saveItem(localItem).addOnCompleteListener {
             if (it.isSuccessful) {
+                itemViewModel.loadItems()
                 findNavController().popBackStack()
             } else {
                 Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()
