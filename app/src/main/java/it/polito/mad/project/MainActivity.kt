@@ -1,8 +1,7 @@
 package it.polito.mad.project
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -13,16 +12,23 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.inappmessaging.FirebaseInAppMessaging
+import com.google.firebase.inappmessaging.ktx.inAppMessaging
+import com.google.firebase.ktx.Firebase
 import it.polito.mad.project.fragments.profile.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private var userAuth = FirebaseAuth.getInstance()
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
+    private lateinit var firebaseIam: FirebaseInAppMessaging
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +38,19 @@ class MainActivity : AppCompatActivity() {
         if(userAuth.currentUser != null){
             bindUserWithNavView()
         }
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        firebaseIam = Firebase.inAppMessaging
+
+        firebaseIam.isAutomaticDataCollectionEnabled = true
+        firebaseIam.setMessagesSuppressed(false)
+
+
+        // Get and display/log the Instance ID
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnSuccessListener { instanceIdResult ->
+                val instanceId = instanceIdResult.id
+                Log.d(" ", "InstanceId: $instanceId")
+            }
     }
 
     override fun onSupportNavigateUp(): Boolean {

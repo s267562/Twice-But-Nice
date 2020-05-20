@@ -19,13 +19,15 @@ import kotlinx.android.synthetic.main.fragment_item_details.item_photo
 import kotlinx.android.synthetic.main.fragment_item_details.item_price
 import kotlinx.android.synthetic.main.fragment_item_details.item_title
 import kotlinx.android.synthetic.main.fragment_item_details.loadingLayout
-import java.io.File
 
 class ItemDetailsFragment : Fragment() {
 
     private lateinit var itemViewModel: ItemViewModel
+
     private var isMyItem: Boolean = false
+
     private var listenerRegistration: ListenerRegistration? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
@@ -59,14 +61,24 @@ class ItemDetailsFragment : Fragment() {
                 if (itemViewModel.error) {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                 }
-                if (!isMyItem)
+                if (!isMyItem) {
+                    var interestFabDrawableId: Int = R.drawable.ic_favorite_border_white_24dp
+
+                    if (itemViewModel.itemInterest.interest)
+                        interestFabDrawableId = R.drawable.ic_favorite_white_24dp
+
+                    interestFab.setImageResource(interestFabDrawableId)
                     interestFab.show()
-                else
+                    interestedUsersFab.hide()
+                } else {
                     interestFab.hide()
+                    interestedUsersFab.show()
+                }
 
             } else {
                 loadingLayout.visibility = View.VISIBLE
                 interestFab.hide()
+                interestedUsersFab.hide()
             }
         })
     }
@@ -80,6 +92,7 @@ class ItemDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setFabButton()
         itemViewModel.loadItem(arguments?.getString("ItemId")!!)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -93,7 +106,7 @@ class ItemDetailsFragment : Fragment() {
         // Handle item selection
         return when (option.itemId) {
             R.id.pencil_option -> {
-                var bundle = bundleOf("ItemId" to itemViewModel.item.value?.id)
+                var bundle = bundleOf("ItemId" to itemViewModel.item.value?.id, "ItemPosition" to arguments?.getInt("ItemPosition"))
                 this.findNavController().navigate(R.id.action_showItemFragment_to_itemEditFragment, bundle)
                 true
             }
@@ -108,8 +121,11 @@ class ItemDetailsFragment : Fragment() {
 
     private fun setFabButton() {
         interestFab.setOnClickListener {
-            // TODO: save the user as interested for the item and send notification
-            Toast.makeText(activity, "Not yer implemented", Toast.LENGTH_SHORT)
+            itemViewModel.updateItemInterest()
+        }
+        interestedUsersFab.setOnClickListener{
+            itemViewModel.loadInterestedUsers()
+            this.findNavController().navigate(R.id.action_showItemFragment_to_usersInterestedFragment)
         }
     }
 }

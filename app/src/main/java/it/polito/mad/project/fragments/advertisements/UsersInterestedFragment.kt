@@ -5,34 +5,34 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.R
-import kotlinx.android.synthetic.main.fragment_item_list.*
+import kotlinx.android.synthetic.main.fragment_users_interested.*
 
-// POINT 5: Implement ItemListFragment
+class UsersInterestedFragment : Fragment() {
 
-class ItemListFragment : Fragment() {
-
-    private lateinit var adsViewModel: ItemViewModel
+    private lateinit var itemViewModel : ItemViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adsViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
+        itemViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_users_interested, container, false)
     }
 
     override fun onStart() {
         super.onStart()
         (activity as AppCompatActivity?)?.supportActionBar?.show()
-        adsViewModel.loader.observe(viewLifecycleOwner, Observer {
-            if (adsViewModel.isNotLoading()) {
+        itemViewModel.loader.observe(viewLifecycleOwner, Observer {
+            if (itemViewModel.isNotLoading()) {
                 // loader ended
-                adsViewModel.adapter.setItems(adsViewModel.items)
-                if(adsViewModel.items.size == 0) {
+                itemViewModel.adapterUser.setUsers(itemViewModel.users)
+                if(itemViewModel.users.size == 0) {
                     emptyListLayout.visibility = View.VISIBLE
                     itemRecyclerView.visibility = View.GONE
                 } else {
@@ -40,28 +40,15 @@ class ItemListFragment : Fragment() {
                     itemRecyclerView.visibility = View.VISIBLE
                 }
                 loadingLayout.visibility = View.GONE
-                saleFab.show()
             } else {
                 loadingLayout.visibility = View.VISIBLE
-                saleFab.hide()
             }
         })
-    }
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_item_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         itemRecyclerView.layoutManager = LinearLayoutManager(this.activity)
-        itemRecyclerView.adapter = adsViewModel.adapter
-        setFabButton()
-    }
-
-    private fun setFabButton() {
-        saleFab.setOnClickListener {
-            var bundle = bundleOf("ItemId" to null, "ItemPosition" to adsViewModel.items.size)
-            this.findNavController().navigate(R.id.action_itemListFragment_to_itemEditFragment, bundle)
-        }
+        itemRecyclerView.adapter =  this.itemViewModel.adapterUser
     }
 }

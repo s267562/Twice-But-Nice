@@ -2,8 +2,6 @@ package it.polito.mad.project.fragments.authentication
 
 import android.content.ContentValues.TAG
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -31,7 +29,6 @@ import it.polito.mad.project.R
 import it.polito.mad.project.fragments.profile.UserViewModel
 import it.polito.mad.project.models.User
 import kotlinx.android.synthetic.main.fragment_login.*
-import java.io.File
 
 class SignInFragment : Fragment() {
     private lateinit var firebaseStore: FirebaseFirestore

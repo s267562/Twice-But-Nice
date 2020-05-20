@@ -1,7 +1,5 @@
 package it.polito.mad.project.fragments.profile
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -12,7 +10,6 @@ import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_show_profile.*
-import java.io.File
 
 
 class UserDetailsFragment : Fragment() {

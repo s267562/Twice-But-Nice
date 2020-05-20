@@ -11,22 +11,37 @@
         android:label="@string/menu_home">
         <action
             android:id="@+id/action_navHome_to_showProfileFragment"
-            app:destination="@id/showProfileFragment" >
-            <argument
-                android:name="UserId" />
+            app:destination="@id/showProfileFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit">
+            <argument android:name="UserId" />
             <argument
                 android:name="IsAuthUser"
                 android:defaultValue="true" />
         </action>
         <action
             android:id="@+id/action_navHome_to_itemListFragment"
-            app:destination="@id/itemListFragment" />
+            app:destination="@id/itemListFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
         <action
             android:id="@+id/action_navHome_to_signUpFragment"
-            app:destination="@id/signUpFragment" />
+            app:destination="@id/signUpFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
         <action
             android:id="@+id/action_navHome_to_onSaleListFragment"
-            app:destination="@id/onSaleListFragment" />
+            app:destination="@id/onSaleListFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
 
     </fragment>
 
@@ -37,7 +52,11 @@
         tools:layout="@layout/fragment_show_profile" >
         <action
             android:id="@+id/action_showProfileFragment_to_editProfileFragment"
-            app:destination="@id/editProfileFragment" />
+            app:destination="@id/editProfileFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
         <argument android:name="UserId"
             app:argType="string"
             app:nullable="true" />
@@ -56,14 +75,20 @@
             android:id="@+id/action_itemListFragment_to_showItemFragment"
             app:destination="@id/showItemFragment"
             app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit" >
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit">
             <argument
                 android:name="IsMyItem"
                 android:defaultValue="true" />
         </action>
         <action
             android:id="@+id/action_itemListFragment_to_itemEditFragment"
-            app:destination="@id/itemEditFragment" />
+            app:destination="@id/itemEditFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
     </fragment>
     <fragment
         android:id="@+id/showItemFragment"
@@ -72,7 +97,11 @@
         tools:layout="@layout/fragment_item_details">
         <action
             android:id="@+id/action_showItemFragment_to_itemEditFragment"
-            app:destination="@id/itemEditFragment" />
+            app:destination="@id/itemEditFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
         <argument
             android:name="ItemId"
             app:argType="string"
@@ -81,6 +110,17 @@
             android:name="IsMyItem"
             app:argType="boolean"
             android:defaultValue="false" />
+        <action
+            android:id="@+id/action_showItemFragment_to_usersInterestedFragment"
+            app:destination="@id/usersInterestedFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
+        <argument
+            android:name="ItemPosition"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"
@@ -88,24 +128,20 @@
         android:label="@string/menu_edit_advertisement"
         tools:layout="@layout/fragment_item_edit">
 
-        <action
-            android:id="@+id/action_itemEditFragment_to_showItemFragment"
-            app:destination="@id/showItemFragment"
-            app:popUpTo="@id/showItemFragment" />
         <argument
             android:name="ItemId"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="ItemPosition"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="it.polito.mad.project.fragments.profile.UserEditFragment"
         android:label="@string/menu_edit_profile"
-        tools:layout="@layout/fragment_edit_profile" >
-        <action
-            android:id="@+id/action_editProfileFragment_to_showProfileFragment"
-            app:destination="@id/showProfileFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_edit_profile" />
     <fragment
         android:id="@+id/signUpFragment"
         android:name="it.polito.mad.project.fragments.authentication.SignUpFragment"
@@ -117,10 +153,27 @@
         android:label="@string/menu_on_sale" >
         <action
             android:id="@+id/action_onSaleListFragment_to_showItemFragment"
-            app:destination="@id/showItemFragment" >
+            app:destination="@id/showItemFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit">
             <argument
                 android:name="IsMyItem"
                 android:defaultValue="false" />
         </action>
+    </fragment>
+    <fragment
+        android:id="@+id/usersInterestedFragment"
+        android:name="it.polito.mad.project.fragments.advertisements.UsersInterestedFragment"
+        android:label="fragment_users_interested"
+        tools:layout="@layout/fragment_users_interested" >
+        <action
+            android:id="@+id/action_usersInterestedFragment_to_showProfileFragment"
+            app:destination="@id/showProfileFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
     </fragment>
 </navigation>
