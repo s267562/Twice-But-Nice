@@ -68,8 +68,15 @@ class UserDetailsFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        if (isAuthUser)
+        if (isAuthUser){
+            name_container.visibility = View.VISIBLE
+            full_name.visibility = View.VISIBLE
             inflater.inflate(R.menu.edit_menu, menu)
+        }
+        else{
+            name_container.visibility = View.GONE
+            full_name.visibility = View.GONE
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -67,15 +67,15 @@
                 android:scaleY="1.2"
                 android:scaleX="1.2"
                 android:background="@color/colorPrimaryLight"
-                android:contentDescription="user photo"
+                android:contentDescription="@string/user_photo"
                 android:scaleType="centerCrop" />
         </androidx.cardview.widget.CardView>
 
         <TextView
-            android:id="@+id/full_name"
+            android:id="@+id/nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Full Name"
+            android:text="@string/Nickname"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:layout_marginTop="16dp"/>
 
@@ -127,9 +127,10 @@
                 android:layout_marginRight="16dp">
 
                 <TextView
+                    android:id="@+id/name_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nickname:"
+                    android:text="Name:"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:layout_marginBottom="8dp" />
 
@@ -149,10 +150,10 @@
                 android:layout_marginLeft="16dp">
 
                 <TextView
-                    android:id="@+id/nickname"
+                    android:id="@+id/full_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nickname"
+                    android:text="@string/full_name"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:layout_marginBottom="8dp"
                     android:maxLines="1"/>

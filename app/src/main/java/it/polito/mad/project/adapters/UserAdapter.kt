@@ -40,13 +40,13 @@ class UserAdapter(private var users: MutableList<User>): RecyclerView.Adapter<Us
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        private val fullName = view.findViewById<TextView>(R.id.full_name)
+        private val nickname = view.findViewById<TextView>(R.id.nickname)
         private val location = view.findViewById<TextView>(R.id.location)
         private val container: CardView = view.findViewById(R.id.user_container)
 
 
         fun bind (user: User, callback: (Int) -> Unit) {
-            fullName.text = user.name
+            nickname.text = user.nickname
             location.text = user.location
             container.setOnClickListener{callback(adapterPosition)}
         }

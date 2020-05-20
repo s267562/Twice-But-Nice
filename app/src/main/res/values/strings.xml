@@ -40,6 +40,9 @@
     <string name="user_name">Full name</string>
     <string name="location">Location</string>
     <string name="full_name">Full name</string>
+    <string name="Nickname">NickName</string>
+    <string name="Unknown">Unknown</string>
+    <string name="user_photo">user photo</string>
 
     <string-array name="item_status">
         <item>Available</item>
