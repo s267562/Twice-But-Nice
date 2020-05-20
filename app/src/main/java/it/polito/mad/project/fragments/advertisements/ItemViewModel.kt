@@ -117,7 +117,7 @@ class ItemViewModel : CommonViewModel() {
 
     fun loadItemsOnSale() {
         pushLoader()
-        itemRepository.getAllItems()
+        itemRepository.getAvailableItems()
             .addOnSuccessListener {
                 // Items on sale are all items sub user items
                 itemsOnSale = it.toObjects(Item::class.java).subtract(items.toList()).toMutableList()

@@ -251,6 +251,23 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="Status"
+                        android:gravity="bottom"
+                        android:textAllCaps="true"
+                        android:layout_marginBottom="8dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+
+                    <Spinner
+                        android:id="@+id/item_status_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:prompt="@string/status_def"
+                        android:spinnerMode="dropdown" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="Price"
                         android:gravity="bottom"
                         android:textAllCaps="true"

@@ -77,6 +77,11 @@ class ItemRepository {
         return database.collection("items").get()
     }
 
+    // Get only available items
+    fun getAvailableItems(): Task<QuerySnapshot> {
+        return database.collection("items").whereEqualTo("status", "Available").get()
+    }
+
     fun getAuthUserId(): String {
         return auth.currentUser?.uid!!
     }

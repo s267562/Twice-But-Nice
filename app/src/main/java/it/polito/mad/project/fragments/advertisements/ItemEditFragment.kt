@@ -112,6 +112,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         setCameraButtons()
         setDatePicker()
         setCategory()
+        setStatusSpinner()
 
         if (savedInstanceState != null) {
             imagePath = savedInstanceState.getString("ImagePath")
@@ -126,7 +127,6 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         if (this.dateValue != null){
             item_exp.text= this.dateValue
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -335,6 +335,19 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
+    private fun setStatusSpinner(){
+        context?.let {
+            ArrayAdapter.createFromResource(it, R.array.item_status, android.R.layout.simple_spinner_item)
+                .also {
+                    adapter ->
+                    // Specify the layout to use when the list of choices appears
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    // Apply the adapter to the spinner
+                    item_status_spinner.adapter = adapter
+                }
+        }
+    }
+
     private fun setCategory() {
         context?.let {
             ArrayAdapter.createFromResource(it, R.array.item_categories, android.R.layout.simple_spinner_item)
@@ -362,6 +375,10 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private fun saveItem() {
         val subSpinner: Spinner? = activity?.findViewById(R.id.item_subcategory_spinner)
         val subcategoryContent : String = subSpinner?.selectedItem.toString()
+
+        val statusSpinner: Spinner? = activity?.findViewById(R.id.item_status_spinner)
+        val statusContent : String = statusSpinner?.selectedItem.toString()
+
         if(savedImagePath == null && imagePath != null){
             savedImagePath = imagePath
         } else if (savedImagePath != null && imagePath != savedImagePath && imagePath != null){
@@ -378,6 +395,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         localItem.category = localItem.category
         localItem.subcategory = subcategoryContent
         localItem.categoryPos = localItem.categoryPos
+        localItem.status = statusContent
 
         itemViewModel.saveItem(localItem).addOnCompleteListener {
             if (it.isSuccessful) {
