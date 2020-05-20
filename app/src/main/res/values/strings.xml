@@ -20,8 +20,15 @@
 
     <string name="category_def">Category</string>
     <string name="subcategory_def">Subcategory</string>
+    <string name="status_def">Subcategory</string>
     <string name="search_title">Search</string>
     <string name="search_hint">Hint</string>
+
+    <string-array name="item_status">
+        <item>Available</item>
+        <item>Sold</item>
+        <item>Blocked</item>
+    </string-array>
 
 
     <string-array name="item_categories">
