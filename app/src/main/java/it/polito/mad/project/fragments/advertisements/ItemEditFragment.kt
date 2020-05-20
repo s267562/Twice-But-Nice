@@ -53,7 +53,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onStart() {
         super.onStart()
-        var itemId = arguments?.getString("ItemId")
+        val itemId = arguments?.getString("ItemId")
         if (itemId != null) {
             // Item esistente
             itemViewModel.loadItem(itemId)
@@ -398,14 +398,14 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         localItem.categoryPos = localItem.categoryPos
         localItem.status = statusContent
 
-        itemViewModel.saveItem(localItem).addOnCompleteListener {
-            if (it.isSuccessful) {
-                itemViewModel.loadItems()
-                findNavController().popBackStack()
-            } else {
-                Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()
+        itemViewModel.saveItem(localItem, arguments?.getInt("ItemPosition")!!)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    findNavController().popBackStack()
+                } else {
+                    Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()
+                }
             }
-        }
     }
 
     // Methods to manage the camera

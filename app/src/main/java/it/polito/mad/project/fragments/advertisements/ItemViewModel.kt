@@ -11,7 +11,7 @@ import it.polito.mad.project.adapters.UserAdapter
 import it.polito.mad.project.commons.CommonViewModel
 import it.polito.mad.project.models.Item
 import it.polito.mad.project.models.User
-import it.polito.mad.project.models.UserInterest
+import it.polito.mad.project.models.ItemInterest
 import it.polito.mad.project.repositories.ItemRepository
 import java.io.File
 
@@ -27,10 +27,10 @@ class ItemViewModel : CommonViewModel() {
     var itemsOnSale: MutableList<Item> = mutableListOf()
     var adapterOnSale: ItemOnSaleAdapter = ItemOnSaleAdapter(itemsOnSale)
 
-    // Single item detail loaded
+    // Single item detail
     var item = MutableLiveData<Item>()
     var itemPhoto = MutableLiveData<Bitmap>()
-    private var userInterest = UserInterest(false)
+    var itemInterest = ItemInterest(false)
 
     //user interested to item
     var users: MutableList<User> = mutableListOf()
@@ -40,6 +40,116 @@ class ItemViewModel : CommonViewModel() {
         loadItems()
     }
 
+    fun loadItems() {
+        pushLoader()
+        val userId = itemRepository.getAuthUserId()
+        itemRepository.getItemsByUserId(userId)
+            .addOnSuccessListener { it1 ->
+                items.clear()
+                items.addAll(it1.toObjects(Item::class.java))
+                loadItemsOnSale()
+                popLoader()
+                error = false
+            }.addOnFailureListener {
+                popLoader()
+                error = true
+            }
+    }
+
+    fun loadItemsOnSale() {
+        pushLoader()
+
+        itemRepository.getAvailableItems()
+            .addOnSuccessListener {
+                // Items on sale are all items sub user items
+                itemsOnSale.clear()
+                itemsOnSale.addAll(it.toObjects(Item::class.java).subtract(items.toList()))
+                popLoader()
+                error = false
+            }.addOnFailureListener {
+                popLoader()
+                error = true
+            }
+    }
+
+    /** ---------------------------------- SINGLE ITEM METHODS -------------------------------- **/
+
+    /**
+     * Method for insert/update single item
+     */
+    fun saveItem(item: Item, position: Int): Task<Void> {
+        val isNewItem = item.id == null
+        if (isNewItem) {
+            item.user = itemRepository.getAuthUserId()
+            item.id = "${item.user}-${items.size}"
+        }
+        pushLoader()
+        return itemRepository.saveItem(item)
+            .addOnSuccessListener {
+                this.item.value = item
+                if (isNewItem) {
+                    items.add(item)
+                } else {
+                    items[position] = item
+                }
+                popLoader()
+                error = false
+            }.addOnFailureListener {
+                popLoader()
+                error = true
+            }
+    }
+
+    fun loadItem(id: String) {
+        if (id != item.value?.id) {
+            item.value = null
+            itemPhoto.value = null
+            itemInterest = ItemInterest(false)
+            pushLoader()
+            itemRepository.getItem(id)
+                .addOnSuccessListener { it ->
+                    val localItem = it.toObject(Item::class.java) as Item
+                    item.value = localItem
+                    loadItemInterest(localItem.id!!)
+                    popLoader()
+
+                    loadItemImage(localItem.id!!, localItem.imagePath)
+                    error = false
+                }.addOnFailureListener {
+                    popLoader()
+                    error = true
+                }
+        }
+    }
+
+    private fun loadItemInterest(itemId: String) {
+        pushLoader()
+        itemRepository.getItemInterest(itemRepository.getAuthUserId(), itemId)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    itemInterest = it.result?.toObject(ItemInterest::class.java)?:itemInterest
+                }
+                popLoader()
+            }
+    }
+
+    private fun loadItemImage(id: String, imagePath: String) {
+        if (imagePath.isNotBlank()) {
+            val image = BitmapFactory.decodeFile(imagePath)
+            if (image != null) {
+                itemPhoto.value = image
+            } else {
+                val localFile = File.createTempFile(id,".jpg")
+                itemRepository.getItemImage(id, localFile).addOnSuccessListener {
+                    itemPhoto.value =  BitmapFactory.decodeFile(localFile.path)
+                    item.value!!.imagePath = localFile.path
+                }
+            }
+
+        }
+    }
+
+    /** Add listener to the current item docuement **/
     fun listenToChanges(): ListenerRegistration {
         return itemRepository.getItemDocument(item.value!!.id!!)
             .addSnapshotListener { itemSnapshot, e ->
@@ -54,131 +164,41 @@ class ItemViewModel : CommonViewModel() {
             }
     }
 
-    fun loadItems() {
+    fun updateItemInterest() {
         pushLoader()
-        val userId = itemRepository.getAuthUserId()
-        itemRepository.getUserItems(userId)
-            .addOnSuccessListener { it1 ->
-                items = it1.toObjects(Item::class.java).toMutableList()
-                loadItemsOnSale()
-                popLoader()
-                error = false
-            }.addOnFailureListener {
-                popLoader()
-                error = true
-            }
-    }
-
-    fun isInterest(): Boolean {
-        return userInterest.interest
-    }
-
-    fun saveItem(item: Item): Task<Void> {
-        val isNewItem = item.id == null
-        if (isNewItem) {
-            item.user = itemRepository.getAuthUserId()
-            item.id = "${item.user}-${items.size}"
-        }
-        pushLoader()
-        return itemRepository.saveItem(item)
+        itemInterest.interest = !itemInterest.interest
+        itemInterest.userId = itemRepository.getAuthUserId()
+        itemRepository.saveItemInterest(itemInterest.userId, item.value!!.id!!, itemInterest)
             .addOnSuccessListener {
-                this.item.value = item
-                if (isNewItem) {
-                    items.add(item)
-                }
                 popLoader()
                 error = false
-            }.addOnFailureListener {
+            }
+            .addOnFailureListener {
                 popLoader()
                 error = true
             }
-    }
-
-    fun loadItem(id: String) {
-        if (id != item.value?.id) {
-            item.value = null
-            itemPhoto.value = null
-            userInterest = UserInterest(false)
-            pushLoader()
-            itemRepository.getItem(id)
-                .addOnSuccessListener { item ->
-                    val localItem = item.toObject(Item::class.java) as Item
-                    this.item.value = localItem
-
-                    itemRepository.getUserInterest(itemRepository.getAuthUserId(), localItem.id!!)
-                        .addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                userInterest = it.result?.toObject(UserInterest::class.java)?:userInterest
-                            }
-                            popLoader()
-                        }
-
-                    if (localItem.imagePath.isNotBlank()) {
-                        val localFile = File.createTempFile(localItem.id!!,".jpg")
-                        itemRepository.getItemPhoto(localFile, localItem).addOnSuccessListener {
-                            itemPhoto.value =  BitmapFactory.decodeFile(localFile.path)
-                            this.item.value!!.imagePath = localFile.path
-                        }
-                    }
-                    error = false
-                }.addOnFailureListener {
-                    popLoader()
-                    error = true
-                }
-        }
-    }
-
-    fun loadItemsOnSale() {
-        pushLoader()
-        itemRepository.getAvailableItems()
-            .addOnSuccessListener {
-                // Items on sale are all items sub user items
-                itemsOnSale = it.toObjects(Item::class.java).subtract(items.toList()).toMutableList()
-                popLoader()
-                error = false
-            }.addOnFailureListener {
-                popLoader()
-                error = true
-            }
-    }
-
-    fun saveUserInterestToItem(interest: Boolean): Task<Void> {
-        pushLoader()
-        userInterest.interest = !interest
-        userInterest.userId = itemRepository.getAuthUserId()
-        return itemRepository.saveUserInterest(userInterest.userId, item.value!!.id!!, userInterest).addOnSuccessListener {
-            popLoader()
-            error = false
-        }
-        .addOnFailureListener {
-            popLoader()
-            error = true
-        }
     }
 
     fun loadInterestedUsers() {
-        //if (id != item.value?.id){
-            pushLoader()
-            itemRepository.getItemInterestedUserIds(item.value!!.id!!).addOnSuccessListener { userIdsSnap ->
-                val itemInterests = userIdsSnap.toObjects(UserInterest::class.java).toMutableList()
-                if (itemInterests.size > 0) {
-                    val userIds = itemInterests.map { interest -> interest.userId }.toMutableList()
-                    itemRepository.getItemInterestedUsers(userIds).addOnSuccessListener {
-                        users = it.toObjects(User::class.java).toMutableList()
-                        popLoader()
-                        error = false
-                    }.addOnFailureListener{
-                        popLoader()
-                        error=true
-                    }
-                } else {
-                    users = mutableListOf()
+        pushLoader()
+        users.clear()
+        itemRepository.getInterestedUserIds(item.value!!.id!!).addOnSuccessListener { userIdsSnap ->
+            val userIds = userIdsSnap.toObjects(ItemInterest::class.java).map { interest -> interest.userId }
+            if (userIds.isNotEmpty()) {
+                itemRepository.getUsersByUserIds(userIds).addOnSuccessListener {
+                    users.addAll(it.toObjects(User::class.java))
                     popLoader()
+                    error = false
+                }.addOnFailureListener{
+                    popLoader()
+                    error=true
                 }
-            }.addOnFailureListener {
+            } else {
                 popLoader()
-                error=true
             }
+        }.addOnFailureListener {
+            popLoader()
+            error=true
         }
-    //}
+    }
 }

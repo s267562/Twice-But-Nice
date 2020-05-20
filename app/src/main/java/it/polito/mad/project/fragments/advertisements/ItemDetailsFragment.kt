@@ -23,8 +23,11 @@ import kotlinx.android.synthetic.main.fragment_item_details.loadingLayout
 class ItemDetailsFragment : Fragment() {
 
     private lateinit var itemViewModel: ItemViewModel
+
     private var isMyItem: Boolean = false
+
     private var listenerRegistration: ListenerRegistration? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
@@ -59,12 +62,15 @@ class ItemDetailsFragment : Fragment() {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                 }
                 if (!isMyItem) {
-                    val resourceId: Int = if (itemViewModel.isInterest()) R.drawable.ic_favorite_white_24dp else R.drawable.ic_favorite_border_white_24dp
-                    interestFab.setImageResource(resourceId)
+                    var interestFabDrawableId: Int = R.drawable.ic_favorite_border_white_24dp
+
+                    if (itemViewModel.itemInterest.interest)
+                        interestFabDrawableId = R.drawable.ic_favorite_white_24dp
+
+                    interestFab.setImageResource(interestFabDrawableId)
                     interestFab.show()
                     interestedUsersFab.hide()
-                }
-                else{
+                } else {
                     interestFab.hide()
                     interestedUsersFab.show()
                 }
@@ -100,7 +106,7 @@ class ItemDetailsFragment : Fragment() {
         // Handle item selection
         return when (option.itemId) {
             R.id.pencil_option -> {
-                var bundle = bundleOf("ItemId" to itemViewModel.item.value?.id)
+                var bundle = bundleOf("ItemId" to itemViewModel.item.value?.id, "ItemPosition" to arguments?.getInt("ItemPosition"))
                 this.findNavController().navigate(R.id.action_showItemFragment_to_itemEditFragment, bundle)
                 true
             }
@@ -115,7 +121,7 @@ class ItemDetailsFragment : Fragment() {
 
     private fun setFabButton() {
         interestFab.setOnClickListener {
-            itemViewModel.saveUserInterestToItem(itemViewModel.isInterest())
+            itemViewModel.updateItemInterest()
         }
         interestedUsersFab.setOnClickListener{
             itemViewModel.loadInterestedUsers()

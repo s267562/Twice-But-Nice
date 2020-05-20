@@ -84,6 +84,10 @@
         <action
             android:id="@+id/action_showItemFragment_to_usersInterestedFragment"
             app:destination="@id/usersInterestedFragment" />
+        <argument
+            android:name="ItemPosition"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"
@@ -99,6 +103,10 @@
             android:name="ItemId"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="ItemPosition"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"

@@ -60,7 +60,7 @@ class ItemListFragment : Fragment() {
 
     private fun setFabButton() {
         saleFab.setOnClickListener {
-            var bundle = bundleOf("ItemId" to null)
+            var bundle = bundleOf("ItemId" to null, "ItemPosition" to adsViewModel.items.size)
             this.findNavController().navigate(R.id.action_itemListFragment_to_itemEditFragment, bundle)
         }
     }
