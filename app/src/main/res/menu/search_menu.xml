@@ -10,4 +10,11 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always|collapseActionView" />
 
+    <item
+        android:id="@+id/search_filter"
+        android:icon="@drawable/ic_sort_white_24dp"
+        android:title="ChooseFilter"
+        app:showAsAction="always"
+        />
+
 </menu>

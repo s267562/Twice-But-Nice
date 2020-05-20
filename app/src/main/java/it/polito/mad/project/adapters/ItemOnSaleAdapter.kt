@@ -17,7 +17,6 @@ import it.polito.mad.project.R
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.item.view.*
 
-
 class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemOnSaleAdapter.ViewHolder>(), Filterable{
     private var totalItems: MutableList<Item> = mutableListOf()
 
@@ -71,11 +70,6 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
             container.setOnClickListener(null)
         }
     }
-    /*fun setFilter(newList: MutableList<Item>) {
-        var arrayList = mutableListOf<Item>()
-        arrayList.addAll(newList)
-        notifyDataSetChanged()
-    }*/
 
     override fun getFilter(): Filter {
         return filter;

@@ -23,6 +23,16 @@
     <string name="status_def">Subcategory</string>
     <string name="search_title">Search</string>
     <string name="search_hint">Hint</string>
+    <string name="param_def">Parameters</string>
+
+    <string-array name="params">
+        <item>Title</item>
+        <item>Category</item>
+        <item>Subcategory</item>
+        <item>Location</item>
+        <item>Description</item>
+        <item>Price</item>
+    </string-array>
     <string name="no_users_interested">No users interested</string>
     <string name="no_items_found">No items found</string>
     <string name="mad_message_title">Twice but nice</string>
