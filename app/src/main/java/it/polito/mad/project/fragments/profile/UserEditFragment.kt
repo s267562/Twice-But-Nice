@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -42,7 +43,6 @@ class UserEditFragment : Fragment() {
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
-    private var updateUser = false
     private val selectImage = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +74,7 @@ class UserEditFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_edit_profile, container, false)
     }
 
+    @Suppress("DEPRECATION")
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,32 +83,28 @@ class UserEditFragment : Fragment() {
             imagePath = savedInstanceState.getString("ImagePath")
         }
 
-        var image: Bitmap?=null
-        val user = userViewModel.user.value
-        if (user != null) {
-            if (user.name != null && user.name.isNotEmpty())
-                full_name.setText(user.name)
-            if (user.nickname != null && user.nickname.isNotEmpty())
-                nickname.setText(user.nickname)
-            if (user.email != null && user.email.isNotEmpty())
-                email.setText(user.email)
-            if (user.location != null && user.location.isNotEmpty())
-                location.setText(user.location)
-            if (user.photoProfilePath != null && user.photoProfilePath.isNotEmpty()) {
-                if (File(user.photoProfilePath).isFile)  {
-                    savedImagePath = user.photoProfilePath
-                    image = BitmapFactory.decodeFile(user.photoProfilePath)
-                    if (image != null) {
-                        user_photo.setImageBitmap(image)
-                        rotation_button.visibility=View.VISIBLE
-                    }else{
-                        rotation_button.visibility=View.GONE
-                    }
-                }
+        var image: Bitmap?
+        val user = userViewModel.user.value as User
+        if (user.name.isNotEmpty())
+            full_name.setText(user.name)
+        if (user.nickname.isNotEmpty())
+            nickname.setText(user.nickname)
+        if (user.email.isNotEmpty())
+            email.setText(user.email)
+        if (user.location.isNotEmpty())
+            location.setText(user.location)
+        if (user.photoProfilePath.isNotEmpty()) {
+            savedImagePath = user.photoProfilePath
+            image = userViewModel.userPhotoProfile.value
+            if (image != null) {
+                user_photo.setImageBitmap(image)
+                rotation_button.visibility=View.VISIBLE
+            } else {
+                rotation_button.visibility=View.GONE
             }
         }
 
-        if (this.imagePath != null){
+        if (imagePath != null){
             image = BitmapFactory.decodeFile(imagePath)
             this.user_photo.setImageBitmap(image)
         }
@@ -123,10 +120,10 @@ class UserEditFragment : Fragment() {
         }
 
         rotation_button.setOnClickListener{
-            user_photo.setDrawingCacheEnabled(true)
+            user_photo.isDrawingCacheEnabled = true
             image = user_photo.getDrawingCache(true).copy(Bitmap.Config.ARGB_8888, false)
             user_photo.destroyDrawingCache()
-            var rotateBitmap = rotateImage(image!!, 90)
+            val rotateBitmap = rotateImage(image!!)
             image = rotateBitmap
             user_photo.setImageBitmap(image)
             userViewModel.userPhotoProfile.value = image
@@ -186,7 +183,7 @@ class UserEditFragment : Fragment() {
                 // Continue only if the File was successfully created
                 if (imageFile != null) {
                     imagePath = imageFile!!.absolutePath
-                    var photoURI = FileProvider.getUriForFile(mContext,
+                    val photoURI = FileProvider.getUriForFile(mContext,
                         "it.polito.mad.project",
                         imageFile!!
                     )
@@ -211,51 +208,44 @@ class UserEditFragment : Fragment() {
         }
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         rotation_button.visibility=View.VISIBLE
 
-        // Open Camera
         if (requestCode == IntentRequest.UserImage.CODE && resultCode == Activity.RESULT_OK){
-            val file = File(this.imagePath)
+            // Open Camera
+            val file = File(imagePath!!)
             val uri: Uri = Uri.fromFile(file)
             user_photo.setImageURI(uri)
-        }
-
-        // Open Gallery
-        else if (requestCode == selectImage && resultCode == Activity.RESULT_OK){
+        } else if (requestCode == selectImage && resultCode == Activity.RESULT_OK){
+            // Open Gallery
             val uriPic = data?.data
             user_photo.setImageURI(uriPic)
             if (uriPic != null) {
                 val file: File = createImageFile()
-                val fOut: FileOutputStream = FileOutputStream(file)
+                val fOut = FileOutputStream(file)
                 imageFile = file
                 imagePath = file.absolutePath
-                var mBitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver, uriPic)
+                val mBitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver, uriPic)
                 mBitmap.compress(Bitmap.CompressFormat.JPEG,100,fOut)
             }
-
         } else {
             Toast.makeText(mContext, "Something wrong", Toast.LENGTH_SHORT).show()
         }
+        userViewModel.userPhotoProfile.value = (user_photo.drawable as BitmapDrawable).bitmap
     }
 
+    @SuppressLint("SimpleDateFormat")
     @Throws(IOException::class)
     private fun createImageFile(): File {
         if(imagePath !=null && imagePath != savedImagePath){
-            File(imagePath).delete()
+            File(imagePath!!).delete()
         }
         // Create an image file name
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val imageFileName = "JPEG_" + timeStamp + "_"
-        // QUESTA NON FUNZIONA NON SO COME CORREGGERLA
-        //val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val image = File.createTempFile(
-            imageFileName, /* prefix */
-            ".jpg" /* suffix */
-            //storageDir      /* directory */
-        )
-        this.imagePath= image.absolutePath
+        val imageFileName = "JPEG_" + SimpleDateFormat("yyyyMMdd_HHmmss").format(Date()) + "_"
+        val image = File.createTempFile(imageFileName, ".jpg")
+        this.imagePath = image.absolutePath
         return image
     }
 
@@ -264,11 +254,11 @@ class UserEditFragment : Fragment() {
         Log.d("DEBUG", userViewModel.user.value.toString())
     }
 
-    private fun rotateImage(img:Bitmap, degree:Int):Bitmap {
+    private fun rotateImage(img:Bitmap, degree: Int = 90):Bitmap {
         //val img = BitmapFactory.decodeFile(path)
         val matrix = Matrix()
         matrix.postRotate(degree.toFloat())
-        val rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true)
+        val rotatedImg = Bitmap.createBitmap(img, 0, 0, img.width, img.height, matrix, true)
         img.recycle()
         val file: File = createImageFile()
         val fOut = FileOutputStream(file)
@@ -281,14 +271,14 @@ class UserEditFragment : Fragment() {
         if(savedImagePath == null && imagePath != null){
             savedImagePath = imagePath
         }else if (savedImagePath != null && imagePath != savedImagePath && imagePath != null){
-            File(savedImagePath).delete()
+            File(savedImagePath!!).delete()
             savedImagePath = imagePath
         }
         val name = full_name.text.toString()
         val nickname = nickname.text.toString()
         val email = email.text.toString()
         val location = location.text.toString()
-        var path = savedImagePath
+        val path = savedImagePath
 
         val user = User(name, name, nickname, email, location, path)
         // Save file in the Cloud DB
@@ -311,9 +301,8 @@ class UserEditFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         if (activity?.isFinishing!! && imagePath!=null && imagePath!=savedImagePath){
-            File(imagePath).delete()
-        } else {
-            //it's an orientation change
+            //it's NOT an orientation change
+            File(imagePath!!).delete()
         }
     }
 
