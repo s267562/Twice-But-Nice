@@ -26,7 +26,7 @@ class UserAdapter(private var users: MutableList<User>): RecyclerView.Adapter<Us
 
         holder.bind(users[position]
         ) {
-            holder.itemView.findNavController().navigate(R.id.action_usersInterestedFragment_to_showItemFragment)
+            holder.itemView.findNavController().navigate(R.id.action_usersInterestedFragment_to_showProfileFragment)
         }
     }
 

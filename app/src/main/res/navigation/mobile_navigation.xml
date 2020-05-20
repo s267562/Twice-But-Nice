@@ -132,7 +132,7 @@
         android:label="fragment_users_interested"
         tools:layout="@layout/fragment_users_interested" >
         <action
-            android:id="@+id/action_usersInterestedFragment_to_showItemFragment"
-            app:destination="@id/showItemFragment" />
+            android:id="@+id/action_usersInterestedFragment_to_showProfileFragment"
+            app:destination="@id/showProfileFragment" />
     </fragment>
 </navigation>
