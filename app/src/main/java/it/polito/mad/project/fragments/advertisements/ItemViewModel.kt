@@ -120,7 +120,6 @@ class ItemViewModel : CommonViewModel() {
                             this.item.value!!.imagePath = localFile.path
                         }
                     }
-                    loadInterestedUsers()
                     error = false
                 }.addOnFailureListener {
                     popLoader()
@@ -157,7 +156,7 @@ class ItemViewModel : CommonViewModel() {
         }
     }
 
-    private fun loadInterestedUsers() {
+    fun loadInterestedUsers() {
         //if (id != item.value?.id){
             pushLoader()
             itemRepository.getItemInterestedUserIds(item.value!!.id!!).addOnSuccessListener { userIdsSnap ->
@@ -173,6 +172,7 @@ class ItemViewModel : CommonViewModel() {
                         error=true
                     }
                 } else {
+                    users = mutableListOf()
                     popLoader()
                 }
             }.addOnFailureListener {

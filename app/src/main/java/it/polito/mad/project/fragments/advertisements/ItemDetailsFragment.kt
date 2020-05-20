@@ -118,6 +118,7 @@ class ItemDetailsFragment : Fragment() {
             itemViewModel.saveUserInterestToItem(itemViewModel.isInterest())
         }
         interestedUsersFab.setOnClickListener{
+            itemViewModel.loadInterestedUsers()
             this.findNavController().navigate(R.id.action_showItemFragment_to_usersInterestedFragment)
         }
     }
