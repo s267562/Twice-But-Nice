@@ -21,13 +21,8 @@ class SignUpFragment: Fragment() {
         authViewModel = ViewModelProvider(requireActivity()).get(AuthViewModel::class.java)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_signup, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onStart() {
+        super.onStart()
         authViewModel.registeredIn.observe(viewLifecycleOwner, Observer {
             if (authViewModel.error)
                 Toast.makeText(context, authViewModel.errorMessage, Toast.LENGTH_LONG).show()
@@ -37,6 +32,16 @@ class SignUpFragment: Fragment() {
                 }
             }
         })
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
+        return inflater.inflate(R.layout.fragment_signup, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
 
         regBtn.setOnClickListener {
             var dataInserted = true

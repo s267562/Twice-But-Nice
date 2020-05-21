@@ -108,4 +108,10 @@ class AuthViewModel : LoadingViewModel() {
             }
     }
 
+    fun logout() {
+        loggedIn.value = false
+        registeredIn.value = false
+        return authRepository.signOut()
+    }
+
 }

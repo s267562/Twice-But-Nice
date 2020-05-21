@@ -44,4 +44,8 @@ class AuthRepository {
     fun updateUser(user: User): Task<Void> {
         return database.collection("users").document(user.id).set(user)
     }
+
+    fun signOut() {
+        return auth.signOut()
+    }
 }

@@ -35,12 +35,21 @@ class SignInFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+
         authViewModel.loggedIn.observe(viewLifecycleOwner, Observer {
             if (authViewModel.error)
                 Toast.makeText(context, authViewModel.errorMessage, Toast.LENGTH_LONG).show()
             else {
                 if (it) {
                     findNavController().navigate(R.id.action_navHome_to_onSaleListFragment)
+                } else {
+                    (activity as AppCompatActivity?)?.supportActionBar?.hide()
+                    googleSignInClient.signOut()
                 }
             }
         })
@@ -53,12 +62,6 @@ class SignInFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
 
         signInGoogleBtn.setOnClickListener {
             startActivityForResult(googleSignInClient.signInIntent, rcSignIn)
@@ -90,23 +93,4 @@ class SignInFragment : Fragment() {
             }
         }
     }
-
-
-    /*private fun signOut() {
-        // Firebase sign out
-        auth.signOut()
-        // Google sign out
-        googleSignInClient.signOut().addOnCompleteListener(requireActivity()) {
-            updateUI(null)
-        }
-    }
-
-    private fun revokeAccess() {
-        // Firebase sign out
-        auth.signOut()
-        // Google revoke access
-        googleSignInClient.revokeAccess().addOnCompleteListener(requireActivity()) {
-            updateUI(null)
-        }
-    }*/
 }

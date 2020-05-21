@@ -9,16 +9,20 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
 import androidx.fragment.app.Fragment
+import it.polito.mad.project.fragments.authentication.AuthViewModel
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 
 
 class UserDetailsFragment : Fragment() {
 
     private lateinit var userViewModel: UserViewModel
+    private lateinit var authViewModel: AuthViewModel
+
     private var isAuthUser = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        userViewModel = ViewModelProvider(activity?:this).get(UserViewModel::class.java)
+        userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+        authViewModel = ViewModelProvider(requireActivity()).get(AuthViewModel::class.java)
     }
 
     override fun onStart() {
@@ -27,13 +31,13 @@ class UserDetailsFragment : Fragment() {
 
         userViewModel.user.observe(viewLifecycleOwner, Observer{
             if (it != null) {
-                if (it.name != null && it.name.isNotEmpty())
+                if (it.name.isNotEmpty())
                     full_name.text = it.name
-                if (it.nickname != null && it.nickname.isNotEmpty())
+                if (it.nickname.isNotEmpty())
                     nickname.text = it.nickname
-                if (it.email != null && it.email.isNotEmpty())
+                if (it.email.isNotEmpty())
                     email.text = it.email
-                if (it.location != null && it.location.isNotEmpty())
+                if (it.location.isNotEmpty())
                     location.text = it.location
             }
         })
@@ -54,6 +58,12 @@ class UserDetailsFragment : Fragment() {
                 loadingLayout.visibility = View.VISIBLE
             }
         })
+
+        if (isAuthUser) {
+            logoutFab.show()
+        } else {
+            logoutFab.hide()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -63,6 +73,7 @@ class UserDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setFabButton()
         userViewModel.loadUser(arguments?.getString("UserId"))
     }
 
@@ -93,6 +104,13 @@ class UserDetailsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         Log.d("ShowProf - onDestroy", userViewModel.user.value.toString())
+    }
+
+    private fun setFabButton() {
+        logoutFab.setOnClickListener {
+            authViewModel.logout()
+            this.findNavController().popBackStack()
+        }
     }
 
 }
