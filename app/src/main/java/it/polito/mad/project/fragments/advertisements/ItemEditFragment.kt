@@ -72,6 +72,9 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 item_location.setText(it.location)
                 item_price.setText(it.price)
                 item_exp.text = it.expiryDate
+                if(it.statusPos >= 0){
+                    item_status_spinner.setSelection(it.statusPos)
+                }
                 if (it.imagePath.isNotEmpty()) {
                     savedImagePath = it.imagePath
                 }
@@ -337,6 +340,19 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                     // Apply the adapter to the spinner
                     item_status_spinner.adapter = adapter
                 }
+            item_status_spinner.onItemSelectedListener = object :
+                AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    val status: String = parent?.getItemAtPosition(position) as String
+                    localItem.status = status
+                    localItem.statusPos = position
+                }
+
+            }
         }
     }
 
