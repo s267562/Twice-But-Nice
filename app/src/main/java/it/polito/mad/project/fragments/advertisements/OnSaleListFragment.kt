@@ -96,7 +96,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun openModal(){
         val dialogView = LayoutInflater.from(context).inflate(R.layout.modal_filter, null)
         val builder = AlertDialog.Builder(requireContext()).setView(dialogView)
-            .setTitle("Set filter")
+            .setTitle("Choose the filter")
         val alertDialog = builder.show()
 
         dialogView.filterBtn.setOnClickListener{
