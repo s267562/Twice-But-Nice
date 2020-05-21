@@ -158,6 +158,7 @@
                         android:layout_height="wrap_content"
                         android:text="Category:"
                         android:minLines="2"
+                        android:maxLines="2"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:layout_marginBottom="8dp"/>
 
@@ -173,7 +174,9 @@
                         android:layout_height="wrap_content"
                         android:text="Description:"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp"/>
+                        android:layout_marginBottom="8dp"
+                        android:minLines="2"
+                        android:maxLines="2"/>
 
                 </LinearLayout>
 
@@ -199,7 +202,8 @@
                         android:text="Category"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:layout_marginBottom="8dp"
-                        android:maxLines="10" />
+                        android:minLines="2"
+                        android:maxLines="2" />
 
                     <TextView
                         android:id="@+id/item_price"
@@ -217,7 +221,8 @@
                         android:text="Description"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:layout_marginBottom="8dp"
-                        android:maxLines="10" />
+                        android:minLines="2"
+                        android:maxLines="2" />
 
                 </LinearLayout>
 

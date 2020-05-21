@@ -156,7 +156,9 @@
                         android:layout_height="wrap_content"
                         android:text="Category:"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp"/>
+                        android:layout_marginBottom="8dp"
+                        android:minLines="2"
+                        android:maxLines="2"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -170,7 +172,9 @@
                         android:layout_height="wrap_content"
                         android:text="Description:"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp"/>
+                        android:layout_marginBottom="8dp"
+                        android:minLines="2"
+                        android:maxLines="2"/>
 
                 </LinearLayout>
 
@@ -194,7 +198,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
-                        android:maxLines="10"
+                        android:minLines="2"
+                        android:maxLines="2"
                         android:text="Category"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
@@ -214,7 +219,8 @@
                         android:text="Description"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:layout_marginBottom="8dp"
-                        android:maxLines="10" />
+                        android:minLines="2"
+                        android:maxLines="2" />
 
                 </LinearLayout>
 
