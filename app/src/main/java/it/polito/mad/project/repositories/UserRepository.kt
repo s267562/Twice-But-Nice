@@ -16,39 +16,39 @@ import java.io.FileOutputStream
 
 
 class UserRepository {
+    private var storage = FirebaseStorage.getInstance()
     private var database = FirebaseFirestore.getInstance()
     private var auth = FirebaseAuth.getInstance()
-    private var mStorageRef: StorageReference = FirebaseStorage.getInstance().reference
 
     // save user to firebase
     fun saveUser(user: User): Task<Void> {
         user.id = auth.currentUser!!.uid
-        storeUserPhoto(user)
+        saveUserPhoto(user)
         return database.collection("users").document(user.id).set(user)
     }
 
     // get the user by id. if null return logged user
     fun getUserById(id: String? = null): Task<DocumentSnapshot>? {
-        var userId = id?:auth.currentUser!!.uid
+        val userId = id ?: auth.currentUser!!.uid
         return database.collection("users").document(userId).get()
     }
     
-    private fun storeUserPhoto(user:User){
-        if(user.photoProfilePath == null ||user.photoProfilePath!!.isEmpty() || !File(user.photoProfilePath).isFile )
-            return
-        val userId = auth.currentUser!!.uid
-        val photoRef = mStorageRef.child("user/$userId")
-        val file = Uri.fromFile(File(user.photoProfilePath))
-        val bitmap = BitmapFactory.decodeFile(user.photoProfilePath)
-        val localFile = File.createTempFile(userId,".jpg")
-        val fOut = FileOutputStream(localFile)
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100, fOut);
-        user.photoProfilePath = localFile.path
-        photoRef.putFile(file)
+    private fun saveUserPhoto(user:User) {
+        if(user.photoProfilePath.isNotBlank() && File(user.photoProfilePath).isFile ) {
+            val userId = auth.currentUser!!.uid
+            val photoRef = storage.reference.child("user/$userId")
+            val file = Uri.fromFile(File(user.photoProfilePath))
+            val bitmap = BitmapFactory.decodeFile(user.photoProfilePath)
+            val localFile = File.createTempFile(userId,".jpg")
+            val fOut = FileOutputStream(localFile)
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100, fOut);
+            user.photoProfilePath = localFile.path
+            photoRef.putFile(file)
+        }
     }
 
     fun getUserPhoto(id: String, localFile: File): FileDownloadTask {
-        val photoRef = mStorageRef.child("user/$id")
+        val photoRef = storage.reference.child("user/$id")
         return photoRef.getFile(localFile)
     }
 

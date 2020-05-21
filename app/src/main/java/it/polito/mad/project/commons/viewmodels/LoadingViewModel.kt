@@ -1,4 +1,4 @@
-package it.polito.mad.project.commons
+package it.polito.mad.project.commons.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

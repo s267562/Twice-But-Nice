@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.item.view.*
+import java.util.*
 
 class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemOnSaleAdapter.ViewHolder>(), Filterable{
     private var totalItems: MutableList<Item> = mutableListOf()
@@ -32,7 +32,7 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
         holder.itemView.item_edit_button.visibility = GONE
         holder.bind(items[position]
         ) {
-            var bundle = bundleOf("ItemId" to items[position].id)
+            val bundle = bundleOf("ItemId" to items[position].id, "ItemPosition" to position)
             holder.itemView.findNavController().navigate(R.id.action_onSaleListFragment_to_showItemFragment, bundle)
         }
     }
@@ -54,7 +54,6 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
         private val title: TextView = view.findViewById(R.id.item_title)
         private val price: TextView = view.findViewById(R.id.item_price)
         private val container: CardView = view.findViewById(R.id.item_container)
-        private val button: Button = view.findViewById(R.id.item_edit_button)
 
         fun bind(item: Item, callback: (Int) -> Unit) {
             val priceStr = "${item.price} €"
@@ -72,7 +71,7 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
     }
 
     override fun getFilter(): Filter {
-        return filter;
+        return filter
     }
 
     private var filter = object : Filter() {
@@ -83,14 +82,14 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
             if(constraint.isNullOrEmpty()){
                 filteredList = totalItems
             } else {
-                var line: String = constraint.toString().toLowerCase().trim()
+                val line: String = constraint.toString().toLowerCase(Locale.ROOT).trim()
                 for(i: Item in totalItems){
-                    val title = i.title.toLowerCase()
-                    val category = i.category.toLowerCase()
-                    val sub = i.subcategory.toLowerCase()
-                    val descri = i.description.toLowerCase()
-                    val price = i.price.toLowerCase()
-                    val loc = i.location.toLowerCase()
+                    val title = i.title.toLowerCase(Locale.ROOT)
+                    val category = i.category.toLowerCase(Locale.ROOT)
+                    val sub = i.subcategory.toLowerCase(Locale.ROOT)
+                    val descri = i.description.toLowerCase(Locale.ROOT)
+                    val price = i.price.toLowerCase(Locale.ROOT)
+                    val loc = i.location.toLowerCase(Locale.ROOT)
                     if(title.contains(line) || category.contains(line) || sub.contains(line)
                         || descri.contains(line) || price.contains(line) || loc.contains(line)) {
                         filteredList.add(i)
@@ -104,7 +103,7 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
 
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
             items.clear()
-            items.addAll(results?.values as MutableList<Item>)
+            items.addAll(results?.values as Collection<Item>)
             // To refresh the adapter:
             notifyDataSetChanged()
         }

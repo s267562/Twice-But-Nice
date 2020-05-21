@@ -19,8 +19,8 @@ import java.io.FileOutputStream
 
 class ItemRepository {
     private var database = FirebaseFirestore.getInstance()
+    private var storage = FirebaseStorage.getInstance()
     private var auth = FirebaseAuth.getInstance()
-    private var mStorageRef: StorageReference = FirebaseStorage.getInstance().reference
 
     // set item to firebase
     fun saveItem(item: Item): Task<Void> {
@@ -30,16 +30,16 @@ class ItemRepository {
 
     // set item image
     private fun saveItemImage(item: Item) {
-        if(item.imagePath == null || item.imagePath!!.isEmpty() || !File(item.imagePath).isFile )
-            return
-        val photoRef = mStorageRef.child("item/${item.id}")
-        var file = Uri.fromFile(File(item.imagePath))
-        val bitmap = BitmapFactory.decodeFile(item.imagePath)
-        val localFile = File.createTempFile(item.id,".jpg")
-        val fOut = FileOutputStream(localFile)
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100, fOut);
-        item.imagePath=localFile.path
-        photoRef.putFile(file)
+        if(item.imagePath.isNotBlank() && File(item.imagePath).isFile ) {
+            val photoRef = storage.reference.child("item/${item.id}")
+            val file = Uri.fromFile(File(item.imagePath))
+            val bitmap = BitmapFactory.decodeFile(item.imagePath)
+            val localFile = File.createTempFile(item.id,".jpg")
+            val fOut = FileOutputStream(localFile)
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100, fOut);
+            item.imagePath=localFile.path
+            photoRef.putFile(file)
+        }
     }
 
     // get item from firebase
@@ -54,7 +54,7 @@ class ItemRepository {
 
     // get item image
     fun getItemImage(id: String, localFile: File): FileDownloadTask {
-        val photoRef = mStorageRef.child("item/$id")
+        val photoRef = storage.reference.child("item/$id")
         return photoRef.getFile(localFile)
     }
 

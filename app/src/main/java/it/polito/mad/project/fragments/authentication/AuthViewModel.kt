@@ -3,19 +3,23 @@ package it.polito.mad.project.fragments.authentication
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseUser
-import it.polito.mad.project.commons.LoadingViewModel
+import it.polito.mad.project.commons.viewmodels.LoadingViewModel
 import it.polito.mad.project.models.User
 import it.polito.mad.project.repositories.AuthRepository
 
 class AuthViewModel : LoadingViewModel() {
     var loggedIn = MutableLiveData<Boolean>(false)
+    var registeredIn = MutableLiveData<Boolean>(false)
+
     var errorMessage = ""
     private var user = User("")
 
     private var authRepository = AuthRepository()
 
     init {
+        error = false
         loggedIn.value = authRepository.getFirebaseUser() != null
+        registeredIn.value = authRepository.getFirebaseUser() != null
     }
 
     fun registerUser(registerUser: User) {
@@ -35,7 +39,7 @@ class AuthViewModel : LoadingViewModel() {
                                 error = !it.isSuccessful
                                 errorMessage = it.exception?.message ?: ""
                                 popLoader()
-                                loggedIn.value = true
+                                registeredIn.value = true
                             }
                     }
             }
@@ -43,7 +47,7 @@ class AuthViewModel : LoadingViewModel() {
                 errorMessage = it.message?:""
                 error = true
                 popLoader()
-                loggedIn.value = false
+                registeredIn.value = false
             }
     }
 

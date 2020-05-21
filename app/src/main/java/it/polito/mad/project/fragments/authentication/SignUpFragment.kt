@@ -28,17 +28,18 @@ class SignUpFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        authViewModel.loggedIn.observe(viewLifecycleOwner, Observer {
-            if (it) {
-                if (!authViewModel.error)
+        authViewModel.registeredIn.observe(viewLifecycleOwner, Observer {
+            if (authViewModel.error)
+                Toast.makeText(context, authViewModel.errorMessage, Toast.LENGTH_LONG).show()
+            else {
+                if (it) {
                     findNavController().popBackStack()
-                else
-                    Toast.makeText(context, authViewModel.errorMessage, Toast.LENGTH_LONG)
+                }
             }
         })
 
         regBtn.setOnClickListener {
-            var dataInserted : Boolean = true
+            var dataInserted = true
 
             if (au_nickname.text.isNullOrBlank()){
                 au_nickname.error = "Insert Nickname"
@@ -69,6 +70,7 @@ class SignUpFragment: Fragment() {
                 user.email = au_email.text.toString()
                 user.nickname = au_nickname.text.toString()
                 user.location = au_location.text.toString()
+                user.password = au_password.text.toString()
                 authViewModel.registerUser(user)
             }
 

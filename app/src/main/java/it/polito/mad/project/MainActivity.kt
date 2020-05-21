@@ -1,40 +1,54 @@
 package it.polito.mad.project
 
 import android.os.Bundle
-import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
+import it.polito.mad.project.fragments.authentication.AuthViewModel
 
 import it.polito.mad.project.fragments.profile.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private var userAuth = FirebaseAuth.getInstance()
+
+    private lateinit var authViewModel: AuthViewModel
+    private lateinit var userViewModel: UserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         setNavView()
+        authViewModel = ViewModelProvider(this).get(AuthViewModel::class.java)
 
-        if(userAuth.currentUser != null){
-            bindUserWithNavView()
-        }
+        authViewModel.loggedIn.observe(this, Observer {
+            if (it) {
+                bindUserWithNavView()
+            }
+        })
+
+        authViewModel.loader.observe(this, Observer {
+            if (authViewModel.isNotLoading()) {
+                loadingLayout.visibility = View.GONE
+            } else {
+                loadingLayout.visibility = View.VISIBLE
+            }
+        })
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -62,10 +76,9 @@ class MainActivity : AppCompatActivity() {
         val headerView = navView.getHeaderView(0)
         val fullName = headerView.findViewById<TextView>(R.id.full_name)
         val userPhoto = headerView.findViewById<ImageView>(R.id.user_photo)
-
-        val userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         userViewModel.user.observe(this, Observer{
-            if (userViewModel.isAuthUser() && it != null) {
+            if (it != null) {
                 FirebaseMessaging.getInstance().subscribeToTopic("/topics/${it.id}")
 
                 if (it.name.isNotEmpty())
@@ -73,7 +86,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
         userViewModel.userPhotoProfile.observe(this, Observer {
-            if (userViewModel.isAuthUser() && it != null) {
+            if (it != null) {
                 userPhoto.setImageBitmap(it)
             }
         })

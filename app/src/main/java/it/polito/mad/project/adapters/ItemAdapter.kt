@@ -25,11 +25,11 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(items[position],
             {
-                var bundle = bundleOf("ItemId" to items[position].id, "ItemPosition" to position)
+                val bundle = bundleOf("ItemId" to items[position].id, "ItemPosition" to position)
                 holder.itemView.findNavController().navigate(R.id.action_itemListFragment_to_showItemFragment, bundle)
             },
             {
-                var bundle = bundleOf("ItemId" to items[position].id, "ItemPosition" to position)
+                val bundle = bundleOf("ItemId" to items[position].id, "ItemPosition" to position)
                 holder.itemView.findNavController().navigate(R.id.action_itemListFragment_to_itemEditFragment, bundle)
             })
     }

@@ -1,10 +1,6 @@
 package it.polito.mad.project.repositories
 
-import android.content.ContentValues
-import android.content.ContentValues.TAG
-import android.util.Log
 import com.google.android.gms.tasks.Task
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth

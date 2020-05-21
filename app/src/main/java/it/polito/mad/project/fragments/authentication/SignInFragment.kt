@@ -7,8 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -19,17 +17,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.project.R
-import it.polito.mad.project.fragments.profile.UserViewModel
 import kotlinx.android.synthetic.main.fragment_login.*
 
 class SignInFragment : Fragment() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var authViewModel: AuthViewModel
-    private lateinit var userViewModel: UserViewModel
 
     private val rcSignIn: Int = 1
 
@@ -42,11 +36,12 @@ class SignInFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         authViewModel.loggedIn.observe(viewLifecycleOwner, Observer {
-            if (it) {
-                if (!authViewModel.error)
-                    enterInApp()
-                else
-                    Toast.makeText(context, authViewModel.errorMessage, Toast.LENGTH_LONG)
+            if (authViewModel.error)
+                Toast.makeText(context, authViewModel.errorMessage, Toast.LENGTH_LONG).show()
+            else {
+                if (it) {
+                    findNavController().navigate(R.id.action_navHome_to_onSaleListFragment)
+                }
             }
         })
     }
@@ -78,11 +73,6 @@ class SignInFragment : Fragment() {
         }
     }
 
-    private fun enterInApp() {
-        bindUserWithNavView()
-        findNavController().navigate(R.id.action_navHome_to_onSaleListFragment)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
@@ -99,29 +89,6 @@ class SignInFragment : Fragment() {
                 Log.w(TAG, "Google sign in failed", e)
             }
         }
-    }
-
-    private fun bindUserWithNavView() {
-        val navView = requireActivity().findViewById<NavigationView>(R.id.navView)
-        val headerView = navView.getHeaderView(0)
-        val fullName = headerView.findViewById<TextView>(R.id.full_name)
-        val userPhoto = headerView.findViewById<ImageView>(R.id.user_photo)
-
-        val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
-        userViewModel.user.observe(requireActivity(), Observer{
-            if (userViewModel.isAuthUser() && it != null) {
-                FirebaseMessaging.getInstance().subscribeToTopic("/topics/${it.id}")
-
-                if (it.name.isNotEmpty())
-                    fullName.text = it.name
-            }
-        })
-
-        userViewModel.userPhotoProfile.observe(requireActivity(), Observer {
-            if (userViewModel.isAuthUser() && it != null) {
-                userPhoto.setImageBitmap(it)
-            }
-        })
     }
 
 

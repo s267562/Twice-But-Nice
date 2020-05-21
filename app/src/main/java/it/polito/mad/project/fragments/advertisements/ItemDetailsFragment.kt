@@ -4,17 +4,14 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.android.volley.RequestQueue
-import com.android.volley.toolbox.Volley
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.messaging.FirebaseMessaging
 
 import it.polito.mad.project.R
-import it.polito.mad.project.commons.NotificationFragment
+import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.android.synthetic.main.fragment_item_details.item_descr

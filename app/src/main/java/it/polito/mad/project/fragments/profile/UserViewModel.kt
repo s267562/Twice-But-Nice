@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
-import it.polito.mad.project.commons.LoadingViewModel
+import it.polito.mad.project.commons.viewmodels.LoadingViewModel
 import it.polito.mad.project.models.User
 import it.polito.mad.project.repositories.UserRepository
 import java.io.File

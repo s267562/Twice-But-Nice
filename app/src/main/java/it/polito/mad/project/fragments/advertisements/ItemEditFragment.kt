@@ -20,12 +20,11 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
-import it.polito.mad.project.commons.NotificationFragment
+import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_item_edit.*
@@ -411,7 +410,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                     if (item.status == "Sold") {
                         sendNotification("Questo prodotto è stato venduto: ${item.title}", "${item.user}/${item.id}")
                     }
-                    itemViewModel.itemPhoto.value = (item_photo.drawable as BitmapDrawable).bitmap
+                    if (item.imagePath.isNotBlank())
+                        itemViewModel.itemPhoto.value = (item_photo.drawable as BitmapDrawable).bitmap
                     findNavController().popBackStack()
                 } else {
                     Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()
