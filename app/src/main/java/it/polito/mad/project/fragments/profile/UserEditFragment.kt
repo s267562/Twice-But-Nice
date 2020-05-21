@@ -274,6 +274,33 @@ class UserEditFragment : Fragment() {
             File(savedImagePath!!).delete()
             savedImagePath = imagePath
         }
+        var dataInserted : Boolean = true
+
+        if (nickname.text.isNullOrBlank()){
+            nickname.error = "Insert Nickname"
+            dataInserted = false
+        }
+        if (full_name.text.isNullOrBlank()){
+            full_name.error = "Insert full name"
+            dataInserted = false
+
+        }
+        if (email.text.isNullOrBlank()){
+            email.error = "Insert email address"
+            dataInserted = false
+
+        }
+        if (location.text.isNullOrBlank()){
+            location.error = "Insert full name"
+            dataInserted = false
+        }
+
+        if (!dataInserted){
+            return
+        }
+
+
+
         val name = full_name.text.toString()
         val nickname = nickname.text.toString()
         val email = email.text.toString()

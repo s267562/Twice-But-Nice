@@ -378,6 +378,20 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
             savedImagePath = imagePath
         }
 
+        var dataInserted : Boolean = true
+
+        if (item_title.text.isNullOrBlank()){
+            item_title.error = "Insert Title"
+            dataInserted = false
+        }
+        if (item_price.text.isNullOrBlank()){
+            item_price.error = "Insert Price"
+            dataInserted = false
+        }
+        if (!dataInserted){
+            return
+        }
+
         localItem.title = item_title.text.toString()
         localItem.location = item_location.text.toString()
         localItem.description = item_descr.text.toString()

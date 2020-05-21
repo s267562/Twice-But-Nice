@@ -38,11 +38,40 @@ class SignUpFragment: Fragment() {
         })
 
         regBtn.setOnClickListener {
-            val user = User(au_fullname.text.toString())
-            user.email = au_email.text.toString()
-            user.nickname = au_nickname.text.toString()
-            user.location = au_location.text.toString()
-            authViewModel.registerUser(user)
+            var dataInserted : Boolean = true
+
+            if (au_nickname.text.isNullOrBlank()){
+                au_nickname.error = "Insert Nickname"
+                dataInserted = false
+            }
+            if (au_fullname.text.isNullOrBlank()){
+                au_fullname.error = "Insert full name"
+                dataInserted = false
+
+            }
+            if (au_email.text.isNullOrBlank()){
+                au_email.error = "Insert email address"
+                dataInserted = false
+
+            }
+            if (au_location.text.isNullOrBlank()){
+                au_location.error = "Insert full name"
+                dataInserted = false
+            }
+            if (au_password.text.isNullOrBlank()){
+                au_password.error = "Insert password"
+                dataInserted = false
+            }
+
+
+            if (dataInserted){
+                val user = User(au_fullname.text.toString())
+                user.email = au_email.text.toString()
+                user.nickname = au_nickname.text.toString()
+                user.location = au_location.text.toString()
+                authViewModel.registerUser(user)
+            }
+
         }
 
         regToLog.setOnClickListener {
