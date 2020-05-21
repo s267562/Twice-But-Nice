@@ -15,6 +15,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 
 import it.polito.mad.project.fragments.profile.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -65,6 +66,8 @@ class MainActivity : AppCompatActivity() {
         val userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         userViewModel.user.observe(this, Observer{
             if (userViewModel.isAuthUser() && it != null) {
+                FirebaseMessaging.getInstance().subscribeToTopic("/topics/${it.id}")
+
                 if (it.name.isNotEmpty())
                     fullName.text = it.name
             }
