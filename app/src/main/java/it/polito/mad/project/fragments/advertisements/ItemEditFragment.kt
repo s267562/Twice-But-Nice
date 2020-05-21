@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -20,10 +21,11 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
+import it.polito.mad.project.commons.NotificationFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_item_edit.*
@@ -32,7 +34,7 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var itemViewModel: ItemViewModel
     private var localItem: Item = Item(null)
@@ -71,7 +73,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 item_location.setText(it.location)
                 item_price.setText(it.price)
                 item_exp.text = it.expiryDate
-                if (it.imagePath != null && it.imagePath!!.isNotEmpty()) {
+                if (it.imagePath.isNotEmpty()) {
                     savedImagePath = it.imagePath
                 }
             }
@@ -119,8 +121,8 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
 
         if (this.imagePath != null){
-            var image = BitmapFactory.decodeFile(imagePath)
-            this.item_photo.setImageBitmap(image)
+            val image = BitmapFactory.decodeFile(imagePath)
+            item_photo.setImageBitmap(image)
             item_photo_rotate.visibility = View.VISIBLE
         }
         if (this.dateValue != null){
@@ -178,9 +180,9 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (activity?.isFinishing!! && imagePath!=null && imagePath!=savedImagePath){
+        if (activity?.isFinishing!! && imagePath != null && imagePath != savedImagePath){
             //it's NOT an orientation change
-            File(imagePath).delete()
+            File(imagePath!!).delete()
         }
     }
 
@@ -189,7 +191,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-        var category: String = parent?.getItemAtPosition(pos) as String
+        val category: String = parent?.getItemAtPosition(pos) as String
         localItem.category = category
         localItem.categoryPos = pos
 
@@ -210,7 +212,7 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 // Continue only if the File was successfully created
                 if (imageFile != null) {
                     imagePath = imageFile!!.absolutePath
-                    var photoURI = FileProvider.getUriForFile(activity?.baseContext!!,
+                    val photoURI = FileProvider.getUriForFile(activity?.baseContext!!,
                         "it.polito.mad.project",
                         imageFile!!
                     )
@@ -231,35 +233,34 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         item_photo_rotate.visibility=View.VISIBLE
 
-        // Open Camera
         if (requestCode == IntentRequest.UserImage.CODE && resultCode == Activity.RESULT_OK){
-            val file = File(this.imagePath)
+            // Open Camera
+            val file = File(imagePath!!)
             val uri: Uri = Uri.fromFile(file)
             item_photo.setImageURI(uri)
-        }
-
-        // Open Gallery
-        else if (requestCode == selectImage && resultCode == Activity.RESULT_OK){
+        } else if (requestCode == selectImage && resultCode == Activity.RESULT_OK) {
+            // Open Gallery
             val uriPic = data?.data
             item_photo.setImageURI(uriPic)
             if (uriPic != null) {
                 val file: File = createImageFile()
-                val fOut: FileOutputStream = FileOutputStream(file)
+                val fOut = FileOutputStream(file)
                 imageFile = file
                 imagePath = file.absolutePath
-                var mBitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver, uriPic)
+                val mBitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver, uriPic)
                 mBitmap.compress(Bitmap.CompressFormat.JPEG,100,fOut)
             }
-
         } else {
             Toast.makeText(activity?.baseContext, "Something wrong", Toast.LENGTH_SHORT).show()
         }
     }
 
+    @Suppress("DEPRECATION")
     @RequiresApi(Build.VERSION_CODES.N)
     private fun setCameraButtons() {
         item_photo_add.isLongClickable = false
@@ -271,44 +272,36 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
             true
         }
 
-        var itemImage: Bitmap?=null
         item_photo_rotate.setOnClickListener{
-            item_photo.setDrawingCacheEnabled(true)
-            itemImage = item_photo.getDrawingCache(true).copy(Bitmap.Config.ARGB_8888, false)
-            item_photo.destroyDrawingCache()
-            val rotateBitmap = rotateImage(itemImage!!, 90)
+            var itemImage = item_photo.getDrawingCache(true).copy(Bitmap.Config.ARGB_8888, false)
+            val rotateBitmap = rotateImage(itemImage)
             itemImage = rotateBitmap
+            item_photo.isDrawingCacheEnabled = true
+            item_photo.destroyDrawingCache()
             item_photo.setImageBitmap(itemImage)
-            itemViewModel.itemPhoto.value = itemImage
         }
     }
 
-    private fun rotateImage(img:Bitmap, degree:Int):Bitmap {
-        //val img = BitmapFactory.decodeFile(path)
+    private fun rotateImage(img:Bitmap, degree:Int = 90):Bitmap {
         val matrix = Matrix()
         matrix.postRotate(degree.toFloat())
-        val rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true)
+        val rotatedImg = Bitmap.createBitmap(img, 0, 0, img.width, img.height, matrix, true)
         img.recycle()
         val file: File = createImageFile()
         val fOut = FileOutputStream(file)
         rotatedImg.compress(Bitmap.CompressFormat.JPEG,100,fOut)
-        this.imagePath=file.absolutePath
+        imagePath = file.absolutePath
         return rotatedImg
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun createImageFile(): File {
-        if(imagePath !=null && imagePath != savedImagePath){
-            File(imagePath).delete()
+        if (imagePath != null && imagePath != savedImagePath){
+            File(imagePath!!).delete()
         }
         // Create an image file name
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val imageFileName = "JPEG_" + timeStamp + "_"
-        // QUESTA NON FUNZIONA NON SO COME CORREGGERLA
-        //val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val image = File.createTempFile(
-            imageFileName, /* prefix */
-            ".jpg" /* suffix */
-        )
+        val imageFileName = "JPEG_" + SimpleDateFormat("yyyyMMdd_HHmmss").format(Date()) + "_"
+        val image = File.createTempFile(imageFileName,".jpg")
         this.imagePath= image.absolutePath
         return image
     }
@@ -382,8 +375,22 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         if(savedImagePath == null && imagePath != null){
             savedImagePath = imagePath
         } else if (savedImagePath != null && imagePath != savedImagePath && imagePath != null){
-            File(savedImagePath).delete()
+            File(savedImagePath!!).delete()
             savedImagePath = imagePath
+        }
+
+        var dataInserted : Boolean = true
+
+        if (item_title.text.isNullOrBlank()){
+            item_title.error = "Insert Title"
+            dataInserted = false
+        }
+        if (item_price.text.isNullOrBlank()){
+            item_price.error = "Insert Price"
+            dataInserted = false
+        }
+        if (!dataInserted){
+            return
         }
 
         localItem.title = item_title.text.toString()
@@ -400,6 +407,11 @@ class ItemEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         itemViewModel.saveItem(localItem, arguments?.getInt("ItemPosition")!!)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
+                    val item = itemViewModel.item.value as Item
+                    if (item.status == "Sold") {
+                        sendNotification("Questo prodotto è stato venduto: ${item.title}", "${item.user}/${item.id}")
+                    }
+                    itemViewModel.itemPhoto.value = (item_photo.drawable as BitmapDrawable).bitmap
                     findNavController().popBackStack()
                 } else {
                     Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()

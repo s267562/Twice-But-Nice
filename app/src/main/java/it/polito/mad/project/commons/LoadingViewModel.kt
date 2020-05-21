@@ -3,7 +3,7 @@ package it.polito.mad.project.commons
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-open class CommonViewModel: ViewModel() {
+open class LoadingViewModel: ViewModel() {
     val loader = MutableLiveData(0)
     var error: Boolean = false
 

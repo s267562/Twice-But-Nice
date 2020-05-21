@@ -166,7 +166,7 @@
     <fragment
         android:id="@+id/usersInterestedFragment"
         android:name="it.polito.mad.project.fragments.advertisements.UsersInterestedFragment"
-        android:label="fragment_users_interested"
+        android:label="Interested users"
         tools:layout="@layout/fragment_users_interested" >
         <action
             android:id="@+id/action_usersInterestedFragment_to_showProfileFragment"

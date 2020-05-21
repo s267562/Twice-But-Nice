@@ -8,9 +8,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.Volley
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.messaging.FirebaseMessaging
 
 import it.polito.mad.project.R
+import it.polito.mad.project.commons.NotificationFragment
+import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.android.synthetic.main.fragment_item_details.item_descr
 import kotlinx.android.synthetic.main.fragment_item_details.item_exp
@@ -20,13 +25,15 @@ import kotlinx.android.synthetic.main.fragment_item_details.item_price
 import kotlinx.android.synthetic.main.fragment_item_details.item_title
 import kotlinx.android.synthetic.main.fragment_item_details.loadingLayout
 
-class ItemDetailsFragment : Fragment() {
+class ItemDetailsFragment : NotificationFragment() {
 
     private lateinit var itemViewModel: ItemViewModel
 
     private var isMyItem: Boolean = false
 
     private var listenerRegistration: ListenerRegistration? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,6 +129,19 @@ class ItemDetailsFragment : Fragment() {
     private fun setFabButton() {
         interestFab.setOnClickListener {
             itemViewModel.updateItemInterest()
+                .addOnSuccessListener {
+                    val item = itemViewModel.item.value as Item
+                    val userTopic = item.user
+                    val itemTopic = "$userTopic/${item.id}"
+                    if (itemViewModel.itemInterest.interest) {
+                        FirebaseMessaging.getInstance().subscribeToTopic(itemTopic)
+                        sendNotification("Mi interessa questo prodotto: ${item.title}", userTopic)
+                    }
+                    else {
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic(itemTopic)
+                        sendNotification("Questo prodotto non mi interessa più: ${item.title}", userTopic)
+                    }
+                }
         }
         interestedUsersFab.setOnClickListener{
             itemViewModel.loadInterestedUsers()

@@ -27,13 +27,13 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/full_name"
+                android:id="@+id/nickname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="6dp"
                 android:gravity="bottom"
                 android:minHeight="40dp"
-                android:text="@string/full_name"
+                android:text="@string/Nickname"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
             <TextView
@@ -43,7 +43,7 @@
                 android:layout_marginBottom="8dp"
                 android:drawableLeft="@drawable/ic_location_24dp"
                 android:drawableTint="@color/colorPrimaryDark"
-                android:text="@string/location"
+                android:text="@string/Unknown"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/colorPrimaryDark" />
 
