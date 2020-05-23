@@ -19,7 +19,6 @@ import java.io.File
 class ItemViewModel : LoadingViewModel() {
 
     private val itemRepository = ItemRepository()
-    private val messagingService =  MessageService()
 
     // User items
     var items: MutableList<Item> = mutableListOf()
@@ -42,7 +41,7 @@ class ItemViewModel : LoadingViewModel() {
         loadItems()
     }
 
-    fun loadItems() {
+    private fun loadItems() {
         pushLoader()
         val userId = itemRepository.getAuthUserId()
         itemRepository.getItemsByUserId(userId)
@@ -79,7 +78,7 @@ class ItemViewModel : LoadingViewModel() {
     /**
      * Method for insert/update single item
      */
-    fun saveItem(item: Item, position: Int): Task<Void> {
+    fun saveItem(item: Item): Task<Void> {
         val isNewItem = item.id == null
         if (isNewItem) {
             item.user = itemRepository.getAuthUserId()
@@ -92,7 +91,9 @@ class ItemViewModel : LoadingViewModel() {
                 if (isNewItem) {
                     items.add(item)
                 } else {
-                    items[position] = item
+                    var pos = -1
+                    items.forEachIndexed {index, i -> if (i.id == item.id) pos = index}
+                    items[pos] = item
                 }
                 popLoader()
                 error = false
