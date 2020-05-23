@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
+import it.polito.mad.project.fragments.advertisements.stringGlobal.Companion.globalFilter
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.item.view.*
 import java.util.*
@@ -90,9 +91,36 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
                     val descri = i.description.toLowerCase(Locale.ROOT)
                     val price = i.price.toLowerCase(Locale.ROOT)
                     val loc = i.location.toLowerCase(Locale.ROOT)
-                    if(title.contains(line) || category.contains(line) || sub.contains(line)
-                        || descri.contains(line) || price.contains(line) || loc.contains(line)) {
-                        filteredList.add(i)
+
+                    if(globalFilter.toLowerCase().equals("title")){
+                        if(title.contains(line)){
+                            filteredList.add(i)
+                        }
+                    }
+                    if(globalFilter.toLowerCase().equals("category")){
+                        if(category.contains(line)){
+                            filteredList.add(i)
+                        }
+                    }
+                    if(globalFilter.toLowerCase().equals("subcategory")){
+                        if(sub.contains(line)){
+                            filteredList.add(i)
+                        }
+                    }
+                    if(globalFilter.toLowerCase().equals("description")){
+                        if(descri.contains(line)){
+                            filteredList.add(i)
+                        }
+                    }
+                    if(globalFilter.toLowerCase().equals("price")){
+                        if(price.contains(line)){
+                            filteredList.add(i)
+                        }
+                    }
+                    if(globalFilter.toLowerCase().equals("location")){
+                        if(loc.contains(line)){
+                            filteredList.add(i)
+                        }
                     }
                 }
             }
