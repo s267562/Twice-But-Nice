@@ -354,7 +354,6 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                     localItem.status = status
                     localItem.statusPos = position
                 }
-
             }
         }
     }
