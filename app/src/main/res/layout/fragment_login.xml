@@ -90,13 +90,20 @@
             android:text="Or"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-        <com.google.android.gms.common.SignInButton
+        <Button
             android:id="@+id/signInGoogleBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/white"
+            android:drawableStart="@drawable/ic_google_18dp"
+            android:paddingStart="20dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:paddingEnd="38dp"
+            android:text="Sign in"
+            android:textColor="@android:color/secondary_text_light"
             android:textAlignment="center"
-            >
-        </com.google.android.gms.common.SignInButton>
+            android:textAllCaps="false" />
 
         <TextView
             android:layout_width="match_parent"

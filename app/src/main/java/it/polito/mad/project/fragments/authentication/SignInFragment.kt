@@ -67,6 +67,7 @@ class SignInFragment : Fragment() {
             startActivityForResult(googleSignInClient.signInIntent, rcSignIn)
         }
 
+
         signInBtn.setOnClickListener {
             authViewModel.loginWithEmailPassword(log_email.text.toString(), log_password.text.toString())
         }
