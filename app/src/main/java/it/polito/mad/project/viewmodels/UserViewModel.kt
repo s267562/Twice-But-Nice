@@ -15,7 +15,7 @@ class UserViewModel : LoadingViewModel() {
 
     private val userRepository = UserRepository()
     private lateinit var authUser: User
-    private lateinit var authPhotoProfile: Bitmap
+    private var authPhotoProfile: Bitmap? = null
 
     init {
         loadUser()
@@ -75,8 +75,6 @@ class UserViewModel : LoadingViewModel() {
                     }
                 }
             }
-
-
         }
     }
 
@@ -86,7 +84,8 @@ class UserViewModel : LoadingViewModel() {
 
     fun resetUser() {
         user.value = authUser
-        userPhotoProfile.value = authPhotoProfile
+        if (authPhotoProfile != null)
+            userPhotoProfile.value = authPhotoProfile
     }
 
 }
