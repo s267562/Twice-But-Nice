@@ -6,7 +6,7 @@ apply plugin: 'com.google.gms.google-services'
 android {
     signingConfigs {
         debug {
-            storeFile file('/home/simone/Workspaces/AndroidStudioProjects/mad-projects/mad-project/app/debug.keystore')
+            storeFile file('debug.keystore')
             storePassword 'android'
         }
     }
