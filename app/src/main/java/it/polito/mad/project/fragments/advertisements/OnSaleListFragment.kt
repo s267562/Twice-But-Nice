@@ -110,7 +110,6 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        //Toast.makeText(requireActivity(), newText, Toast.LENGTH_SHORT).show()
         itemViewModel.adapterOnSale.filter.filter(newText)
         return true
     }

@@ -135,6 +135,5 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
             // To refresh the adapter:
             notifyDataSetChanged()
         }
-
     }
 }

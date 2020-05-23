@@ -39,7 +39,7 @@ class DialogViewFragment : DialogFragment() {
                     DialogInterface.OnClickListener { dialog, id ->
                         // set up the spinner and pass the filter string
                         globalFilter = spinner.selectedItem.toString().toLowerCase()
-                        Toast.makeText(requireContext(), globalFilter, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "You set the filter to: " + globalFilter, Toast.LENGTH_SHORT).show()
                         dialog.cancel()
                     })
                 .setNegativeButton("Cancel",
