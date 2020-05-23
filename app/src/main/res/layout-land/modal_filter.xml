@@ -59,22 +59,4 @@
                 android:hint="Max Value"></EditText>
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/filterBtn"
-            android:layout_width="277dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="Set"></Button>
-
-        <Button
-            android:id="@+id/dismissBtn"
-            android:layout_width="278dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="Dismiss"></Button>
     </LinearLayout></androidx.constraintlayout.widget.ConstraintLayout>

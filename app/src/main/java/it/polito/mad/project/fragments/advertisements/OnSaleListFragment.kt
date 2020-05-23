@@ -1,5 +1,7 @@
 package it.polito.mad.project.fragments.advertisements
 
+import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -13,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,13 +23,12 @@ import it.polito.mad.project.R
 import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_on_sale_list.*
 import kotlinx.android.synthetic.main.modal_filter.*
-import kotlinx.android.synthetic.main.modal_filter.view.*
-import kotlinx.android.synthetic.main.modal_filter.view.filter_spinner
 
 class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private lateinit var itemViewModel: ItemViewModel
     lateinit var searchView: SearchView
+    lateinit var supFragmentManager : FragmentManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +38,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         setHasOptionsMenu(true)
+        supFragmentManager = this!!.requireFragmentManager()
         return inflater.inflate(R.layout.fragment_on_sale_list, container, false)
     }
 
@@ -98,20 +101,11 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         }
     }
 
-    private fun openModal(){
-        setFilter()
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.modal_filter, null)
-        val builder = AlertDialog.Builder(requireContext()).setView(dialogView)
-            .setTitle("Choose the filter")
-        val alertDialog = builder.show()
 
-        dialogView.filterBtn.setOnClickListener{
-            // salvare il parametro di ricerca e passarlo al filtro
-            alertDialog.dismiss()
-        }
-        dialogView.dismissBtn.setOnClickListener{
-            alertDialog.dismiss()
-        }
+
+    private fun openModal(){
+        val newFragment = DialogViewFragment()
+        newFragment.show(supFragmentManager, "dialog")
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
@@ -123,6 +117,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         itemViewModel.adapterOnSale.filter.filter(newText)
         return true
     }
+
     private fun setFilter(){
         context?.let {
             ArrayAdapter.createFromResource(it, R.array.params, android.R.layout.simple_spinner_item)
