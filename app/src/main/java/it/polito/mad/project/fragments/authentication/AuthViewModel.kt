@@ -8,8 +8,9 @@ import it.polito.mad.project.models.User
 import it.polito.mad.project.repositories.AuthRepository
 
 class AuthViewModel : LoadingViewModel() {
-    var loggedIn = MutableLiveData<Boolean>(false)
-    var registeredIn = MutableLiveData<Boolean>(false)
+    var loggedIn = MutableLiveData(false)
+    var loggedOut = MutableLiveData(false)
+    var registeredIn = MutableLiveData(false)
 
     var errorMessage = ""
     private var user = User("")
@@ -19,7 +20,8 @@ class AuthViewModel : LoadingViewModel() {
     init {
         error = false
         loggedIn.value = authRepository.getFirebaseUser() != null
-        registeredIn.value = authRepository.getFirebaseUser() != null
+        registeredIn.value = false
+        loggedOut.value = false
     }
 
     fun registerUser(registerUser: User) {
@@ -111,6 +113,7 @@ class AuthViewModel : LoadingViewModel() {
     fun logout() {
         loggedIn.value = false
         registeredIn.value = false
+        loggedOut.value = true
         return authRepository.signOut()
     }
 

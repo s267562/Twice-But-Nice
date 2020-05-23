@@ -38,7 +38,17 @@ class MainActivity : AppCompatActivity() {
 
         authViewModel.loggedIn.observe(this, Observer {
             if (it) {
+                userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
                 bindUserWithNavView()
+            }
+        })
+
+        authViewModel.loggedOut.observe(this, Observer {
+            if (it) {
+                authViewModel.loggedOut.value = false
+                finish();
+                startActivity(intent)
+                FirebaseMessaging.getInstance().subscribeToTopic("/topics/${userViewModel.user.value!!.id}")
             }
         })
 
@@ -76,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         val headerView = navView.getHeaderView(0)
         val fullName = headerView.findViewById<TextView>(R.id.full_name)
         val userPhoto = headerView.findViewById<ImageView>(R.id.user_photo)
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+
         userViewModel.user.observe(this, Observer{
             if (it != null) {
                 FirebaseMessaging.getInstance().subscribeToTopic("/topics/${it.id}")

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.core.app.ActivityCompat.recreate
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -109,7 +110,7 @@ class UserDetailsFragment : Fragment() {
     private fun setFabButton() {
         logoutFab.setOnClickListener {
             authViewModel.logout()
-            this.findNavController().popBackStack()
+            findNavController().popBackStack()
         }
     }
 
