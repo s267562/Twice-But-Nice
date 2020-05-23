@@ -46,7 +46,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/log_email"
@@ -75,10 +75,13 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/white"
             android:layout_marginTop="20dp"
-            android:padding="15dp"
+            android:padding="16dp"
             android:id="@+id/signInBtn"
-            android:hint="Log in"
+            android:text="Log in"
+            android:textAllCaps="false"
+            android:textColor="@android:color/secondary_text_light"
             />
 
         <TextView
@@ -90,16 +93,16 @@
             android:text="Or"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-        <Button
+        <android.widget.Button
             android:id="@+id/signInGoogleBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@android:color/white"
             android:drawableStart="@drawable/ic_google_18dp"
-            android:paddingStart="20dp"
+            android:paddingStart="16dp"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
-            android:paddingEnd="38dp"
+            android:paddingEnd="34dp"
             android:text="Sign in"
             android:textColor="@android:color/secondary_text_light"
             android:textAlignment="center"

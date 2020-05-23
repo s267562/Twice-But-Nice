@@ -4,6 +4,12 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services'
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('/home/simone/Workspaces/AndroidStudioProjects/mad-projects/mad-project/app/debug.keystore')
+            storePassword 'android'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
