@@ -110,7 +110,7 @@ class ItemDetailsFragment : NotificationFragment() {
         // Handle item selection
         return when (option.itemId) {
             R.id.pencil_option -> {
-                var bundle = bundleOf("ItemId" to itemViewModel.item.value?.id, "ItemPosition" to arguments?.getInt("ItemPosition"))
+                var bundle = bundleOf("ItemId" to itemViewModel.item.value?.id)
                 this.findNavController().navigate(R.id.action_showItemFragment_to_itemEditFragment, bundle)
                 true
             }

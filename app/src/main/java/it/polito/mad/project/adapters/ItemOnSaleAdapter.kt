@@ -32,7 +32,7 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
         holder.itemView.item_edit_button.visibility = GONE
         holder.bind(items[position]
         ) {
-            val bundle = bundleOf("ItemId" to items[position].id, "ItemPosition" to position)
+            val bundle = bundleOf("ItemId" to items[position].id)
             holder.itemView.findNavController().navigate(R.id.action_onSaleListFragment_to_showItemFragment, bundle)
         }
     }
