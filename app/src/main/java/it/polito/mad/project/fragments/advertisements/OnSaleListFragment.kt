@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.R
 import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_on_sale_list.*
-import kotlinx.android.synthetic.main.modal_filter.*
 
 class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
 
@@ -101,8 +100,6 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         }
     }
 
-
-
     private fun openModal(){
         val newFragment = DialogViewFragment()
         newFragment.show(supFragmentManager, "dialog")
@@ -113,31 +110,8 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        Toast.makeText(requireActivity(), newText, Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireActivity(), newText, Toast.LENGTH_SHORT).show()
         itemViewModel.adapterOnSale.filter.filter(newText)
         return true
-    }
-
-    private fun setFilter(){
-        context?.let {
-            ArrayAdapter.createFromResource(it, R.array.params, android.R.layout.simple_spinner_item)
-                .also {
-                        adapter ->
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    filter_spinner.adapter = adapter
-                }
-        }
-        filter_spinner.onItemSelectedListener = object :
-            AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val filterElement: String = parent?.getItemAtPosition(position) as String
-
-            }
-
-        }
     }
 }
