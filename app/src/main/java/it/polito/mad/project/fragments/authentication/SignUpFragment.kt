@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
 import it.polito.mad.project.models.User
+import it.polito.mad.project.viewmodels.AuthViewModel
 import kotlinx.android.synthetic.main.fragment_signup.*
 
 class SignUpFragment: Fragment() {

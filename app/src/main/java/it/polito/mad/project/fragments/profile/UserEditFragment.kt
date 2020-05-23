@@ -27,6 +27,7 @@ import androidx.lifecycle.Observer
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.User
+import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import java.io.File
 import java.io.FileOutputStream

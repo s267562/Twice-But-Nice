@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
-import androidx.core.app.ActivityCompat.recreate
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
 import androidx.fragment.app.Fragment
-import it.polito.mad.project.fragments.authentication.AuthViewModel
+import it.polito.mad.project.viewmodels.AuthViewModel
+import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 
 
@@ -104,7 +104,8 @@ class UserDetailsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("ShowProf - onDestroy", userViewModel.user.value.toString())
+        if (!isAuthUser)
+            userViewModel.resetUser()
     }
 
     private fun setFabButton() {
