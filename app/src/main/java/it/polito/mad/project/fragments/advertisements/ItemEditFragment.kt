@@ -23,12 +23,11 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.enums.IntentRequest
-import it.polito.mad.project.fragments.profile.UserViewModel
 import it.polito.mad.project.models.Item
+import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_item_edit.*
 import org.json.JSONObject
 import java.io.File
@@ -428,7 +427,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 if (it.isSuccessful) {
                     if (localItem.id != null && localItem.status == "Sold") {
                         val body = JSONObject().put("ItemId", localItem.id!!).put("IsMyItem", false)
-                        sendNotification(localItem.id!!, localItem.title, "Il prodotto è stato venduto", body)
+                        sendNotification(localItem.id!!, localItem.title, "The item was sold", body)
                     }
                     if (localItem.imagePath.isNotBlank())
                         itemViewModel.itemPhoto.value = (item_photo.drawable as BitmapDrawable).bitmap

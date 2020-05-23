@@ -13,8 +13,9 @@ import com.google.firebase.messaging.FirebaseMessaging
 
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
-import it.polito.mad.project.fragments.profile.UserViewModel
+import it.polito.mad.project.viewmodels.UserViewModel
 import it.polito.mad.project.models.Item
+import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.android.synthetic.main.fragment_item_details.item_descr
 import kotlinx.android.synthetic.main.fragment_item_details.item_exp
@@ -33,8 +34,6 @@ class ItemDetailsFragment : NotificationFragment() {
     private var isMyItem: Boolean = false
 
     private var listenerRegistration: ListenerRegistration? = null
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,15 +137,15 @@ class ItemDetailsFragment : NotificationFragment() {
             itemViewModel.updateItemInterest()
                 .addOnSuccessListener {
                     val item = itemViewModel.item.value as Item
-                    val name = userViewModel.user.value!!.name
+                    val nickname = userViewModel.user.value!!.nickname
                     val body = JSONObject().put("ItemId", item.id).put("IsMyItem", true)
                     if (itemViewModel.itemInterest.interest) {
                         FirebaseMessaging.getInstance().subscribeToTopic(item.id!!)
-                        sendNotification(item.user, item.title, "$name è interessato al tuo prodotto", body)
+                        sendNotification(item.user, item.title, "$nickname is interested in your item", body)
                     }
                     else {
                         FirebaseMessaging.getInstance().unsubscribeFromTopic(item.id!!)
-                        sendNotification(item.user, item.title, "$name non è più interessato al tuo prodotto", body)
+                        sendNotification(item.user, item.title, "$nickname is not more interested in your item", body)
                     }
                 }
         }

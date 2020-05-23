@@ -1,4 +1,4 @@
-package it.polito.mad.project.fragments.authentication
+package it.polito.mad.project.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.AuthCredential
@@ -13,7 +13,7 @@ class AuthViewModel : LoadingViewModel() {
     var registeredIn = MutableLiveData(false)
 
     var errorMessage = ""
-    private var user = User("")
+    private var authUserId: String = ""
 
     private var authRepository = AuthRepository()
 
@@ -26,18 +26,18 @@ class AuthViewModel : LoadingViewModel() {
 
     fun registerUser(registerUser: User) {
         pushLoader()
-        user = registerUser
         errorMessage = ""
-        authRepository.signUpWithEmailPassword(user.email, user.password)
+        authRepository.signUpWithEmailPassword(registerUser.email, registerUser.password)
             .addOnSuccessListener { authResult ->
-                user.id = authResult.user!!.uid
+                registerUser.id = authResult.user!!.uid
                 authRepository.getNotificationId()
                     .addOnCompleteListener { instanceResult ->
                         if (instanceResult.isSuccessful) {
-                            user.notificationId = instanceResult.result?.token ?: ""
+                            registerUser.notificationId = instanceResult.result?.token ?: ""
                         }
-                        authRepository.updateUser(user)
+                        authRepository.updateUser(registerUser)
                             .addOnCompleteListener {
+                                authUserId = registerUser.id
                                 error = !it.isSuccessful
                                 errorMessage = it.exception?.message ?: ""
                                 popLoader()
@@ -67,7 +67,7 @@ class AuthViewModel : LoadingViewModel() {
                         }
                         authRepository.getLoggedUser()
                             .addOnCompleteListener {
-                                user = User(firebaseUser.displayName?:"")
+                                var user = User(firebaseUser.displayName?:"")
                                 user.id = firebaseUser.uid
                                 user.email = firebaseUser.email?:""
                                 user.nickname = user.email.split("@")[0]
@@ -78,6 +78,7 @@ class AuthViewModel : LoadingViewModel() {
                                 user.notificationId = notificationId
                                 authRepository.updateUser(user)
                                     .addOnCompleteListener {
+                                        authUserId = user.id
                                         popLoader()
                                         error = false
                                         loggedIn.value = true
@@ -98,6 +99,7 @@ class AuthViewModel : LoadingViewModel() {
         errorMessage = ""
         authRepository.signInWithEmailPassword(email, password)
             .addOnSuccessListener {
+                authUserId = it.user!!.uid
                 popLoader()
                 error = false
                 loggedIn.value = true
@@ -117,4 +119,7 @@ class AuthViewModel : LoadingViewModel() {
         return authRepository.signOut()
     }
 
+    fun getAuthUserId(): String {
+        return authRepository.getFirebaseUser()?.uid?:authUserId
+    }
 }

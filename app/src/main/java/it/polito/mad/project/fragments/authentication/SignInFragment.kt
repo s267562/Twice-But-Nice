@@ -19,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import it.polito.mad.project.R
+import it.polito.mad.project.viewmodels.AuthViewModel
 import kotlinx.android.synthetic.main.fragment_login.*
 
 class SignInFragment : Fragment() {

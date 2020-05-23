@@ -4,20 +4,18 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.messaging.FirebaseMessaging
-import it.polito.mad.project.fragments.authentication.AuthViewModel
+import it.polito.mad.project.viewmodels.AuthViewModel
 
-import it.polito.mad.project.fragments.profile.UserViewModel
+import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -38,6 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         authViewModel.loggedIn.observe(this, Observer {
             if (it) {
+                FirebaseMessaging.getInstance().subscribeToTopic("/topics/${authViewModel.getAuthUserId()}")
                 userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
                 bindUserWithNavView()
             }
@@ -48,7 +47,7 @@ class MainActivity : AppCompatActivity() {
                 authViewModel.loggedOut.value = false
                 finish();
                 startActivity(intent)
-                FirebaseMessaging.getInstance().subscribeToTopic("/topics/${userViewModel.user.value!!.id}")
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("/topics/${authViewModel.getAuthUserId()}")
             }
         })
 
@@ -88,15 +87,13 @@ class MainActivity : AppCompatActivity() {
         val userPhoto = headerView.findViewById<ImageView>(R.id.user_photo)
 
         userViewModel.user.observe(this, Observer{
-            if (it != null) {
-                FirebaseMessaging.getInstance().subscribeToTopic("/topics/${it.id}")
-
+            if (it != null && authViewModel.getAuthUserId() == it.id) {
                 if (it.name.isNotEmpty())
                     fullName.text = it.name
             }
         })
         userViewModel.userPhotoProfile.observe(this, Observer {
-            if (it != null) {
+            if (it != null && authViewModel.getAuthUserId() == userViewModel.getUserId()) {
                 userPhoto.setImageBitmap(it)
             }
         })

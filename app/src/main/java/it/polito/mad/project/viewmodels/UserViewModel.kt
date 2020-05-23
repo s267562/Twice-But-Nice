@@ -1,4 +1,4 @@
-package it.polito.mad.project.fragments.profile
+package it.polito.mad.project.viewmodels
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,6 +14,8 @@ class UserViewModel : LoadingViewModel() {
     val userPhotoProfile = MutableLiveData<Bitmap>()
 
     private val userRepository = UserRepository()
+    private lateinit var authUser: User
+    private lateinit var authPhotoProfile: Bitmap
 
     init {
         loadUser()
@@ -35,13 +37,15 @@ class UserViewModel : LoadingViewModel() {
     }
 
     fun loadUser(id: String? = null) {
-        val verifiedId = id ?: userRepository.getAuthUserId()
+        val verifiedId = id ?: userRepository.getFirebaseUser()!!.uid
         if (verifiedId != user.value?.id) {
             pushLoader()
             userPhotoProfile.value = null
             userRepository.getUserById(verifiedId)
                 ?.addOnSuccessListener {
                     user.value = it.toObject(User::class.java)
+                    if (id == null)
+                        authUser = user.value!!
                     popLoader()
                     loadUserPhotoProfile(user.value!!.id, user.value!!.photoProfilePath)
                     error = false
@@ -58,18 +62,31 @@ class UserViewModel : LoadingViewModel() {
             val image = BitmapFactory.decodeFile(photoProfilePath)
             if (image != null) {
                 userPhotoProfile.value = image
+                if (id == authUser.id) {
+                    authPhotoProfile = image
+                }
             } else {
                 val localFile = File.createTempFile(id,".jpg")
                 userRepository.getUserPhoto(id, localFile).addOnSuccessListener {
                     userPhotoProfile.value =  BitmapFactory.decodeFile(localFile.path)
                     user.value!!.photoProfilePath = localFile.path
+                    if (id == authUser.id) {
+                        authPhotoProfile = userPhotoProfile.value!!
+                    }
                 }
             }
+
+
         }
     }
 
-    fun isAuthUser(): Boolean {
-        return (userRepository.getAuthUserId() == user.value?.id ?: "")
+    fun getUserId(): String {
+        return user.value!!.id
+    }
+
+    fun resetUser() {
+        user.value = authUser
+        userPhotoProfile.value = authPhotoProfile
     }
 
 }

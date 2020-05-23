@@ -1,4 +1,4 @@
-package it.polito.mad.project.fragments.advertisements
+package it.polito.mad.project.viewmodels
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -13,7 +13,6 @@ import it.polito.mad.project.models.Item
 import it.polito.mad.project.models.User
 import it.polito.mad.project.models.ItemInterest
 import it.polito.mad.project.repositories.ItemRepository
-import it.polito.mad.project.services.MessageService
 import java.io.File
 
 class ItemViewModel : LoadingViewModel() {
