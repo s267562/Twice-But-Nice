@@ -1,6 +1,6 @@
 package it.polito.mad.project.services
 
-import android.R
+import it.polito.mad.project.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -12,6 +12,8 @@ import android.media.RingtoneManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.os.bundleOf
+import androidx.navigation.NavDeepLinkBuilder
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import it.polito.mad.project.MainActivity
@@ -22,8 +24,8 @@ class MessageService : FirebaseMessagingService() {
 
     private val adminChannelId = "admin_channel"
 
-    override fun onMessageReceived(p0: RemoteMessage) {
-        super.onMessageReceived(p0)
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        super.onMessageReceived(remoteMessage)
 
         val intent = Intent(this, MainActivity::class.java)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -35,29 +37,31 @@ class MessageService : FirebaseMessagingService() {
         }
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0, intent,
-            PendingIntent.FLAG_ONE_SHOT
-        )
+
+        val pendingIntent = NavDeepLinkBuilder(this)
+            .setGraph(R.navigation.mobile_navigation)
+            .setDestination(R.id.showItemFragment)
+            .setArguments(bundleOf("ItemId" to remoteMessage.data["ItemId"], "IsMyItem" to (remoteMessage.data["IsMyItem"] == "true")))
+            .createPendingIntent()
 
         val largeIcon = BitmapFactory.decodeResource(
             resources,
-            R.drawable.ic_dialog_email
+            R.drawable.ic_notifications_black_24dp
         )
 
         val notificationSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, adminChannelId)
-            .setSmallIcon(R.drawable.ic_dialog_email)
+            .setSmallIcon(R.drawable.ic_notifications_black_24dp)
             .setLargeIcon(largeIcon)
-            .setContentTitle(p0?.data?.get("title"))
-            .setContentText(p0?.data?.get("message"))
+            .setContentTitle(remoteMessage.data["title"])
+            .setContentText(remoteMessage.data["message"])
             .setAutoCancel(true)
             .setSound(notificationSoundUri)
             .setContentIntent(pendingIntent)
 
         //Set notification color to match your app color template
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            notificationBuilder.color = resources.getColor(R.color.background_dark)
+            notificationBuilder.color = resources.getColor(R.color.colorPrimaryDark)
         }
         notificationManager.notify(notificationID, notificationBuilder.build())
     }

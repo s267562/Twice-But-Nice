@@ -42,6 +42,9 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_close_enter"
             app:popExitAnim="@anim/fragment_close_exit" />
+        <action
+            android:id="@+id/action_navHome_to_showItemFragment"
+            app:destination="@id/showItemFragment" />
 
     </fragment>
 
@@ -117,10 +120,6 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_close_enter"
             app:popExitAnim="@anim/fragment_close_exit" />
-        <argument
-            android:name="ItemPosition"
-            app:argType="integer"
-            android:defaultValue="-1" />
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"
@@ -132,10 +131,6 @@
             android:name="ItemId"
             app:argType="string"
             app:nullable="true" />
-        <argument
-            android:name="ItemPosition"
-            app:argType="integer"
-            android:defaultValue="-1" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"

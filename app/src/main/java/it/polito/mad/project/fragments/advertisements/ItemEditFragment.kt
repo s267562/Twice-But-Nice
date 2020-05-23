@@ -23,11 +23,14 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.enums.IntentRequest
+import it.polito.mad.project.fragments.profile.UserViewModel
 import it.polito.mad.project.models.Item
 import kotlinx.android.synthetic.main.fragment_item_edit.*
+import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -36,6 +39,7 @@ import java.util.*
 class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var itemViewModel: ItemViewModel
+
     private var localItem: Item = Item(null)
     private var imageFile: File? = null
     private var imagePath: String? = null
@@ -47,7 +51,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
     private val selectImage = 2
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        itemViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
+        itemViewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
     }
 
     override fun onStart() {
@@ -419,14 +423,14 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         localItem.categoryPos = localItem.categoryPos
         localItem.status = statusContent
 
-        itemViewModel.saveItem(localItem, arguments?.getInt("ItemPosition")!!)
+        itemViewModel.saveItem(localItem)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    val item = itemViewModel.item.value as Item
-                    if (item.status == "Sold") {
-                        sendNotification("Questo prodotto è stato venduto: ${item.title}", "${item.user}/${item.id}")
+                    if (localItem.id != null && localItem.status == "Sold") {
+                        val body = JSONObject().put("ItemId", localItem.id!!).put("IsMyItem", false)
+                        sendNotification(localItem.id!!, localItem.title, "Il prodotto è stato venduto", body)
                     }
-                    if (item.imagePath.isNotBlank())
+                    if (localItem.imagePath.isNotBlank())
                         itemViewModel.itemPhoto.value = (item_photo.drawable as BitmapDrawable).bitmap
                     findNavController().popBackStack()
                 } else {

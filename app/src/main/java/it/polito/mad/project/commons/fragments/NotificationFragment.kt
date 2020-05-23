@@ -18,12 +18,11 @@ open class NotificationFragment : Fragment() {
         Volley.newRequestQueue(requireActivity().applicationContext)
     }
 
-    fun sendNotification(message: String, topic: String) {
+    fun sendNotification(topic: String, title: String, message: String, notificationBody: JSONObject = JSONObject()) {
         val notification = JSONObject()
-        val notificationBody = JSONObject()
 
         try {
-            notificationBody.put("title", "Twice but nice")
+            notificationBody.put("title", title)
             notificationBody.put("message", message)
             notification.put("to", "/topics/$topic")
             notification.put("data", notificationBody)

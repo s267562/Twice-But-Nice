@@ -18,21 +18,21 @@ import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class ItemListFragment : Fragment() {
 
-    private lateinit var adsViewModel: ItemViewModel
+    private lateinit var itemViewModel: ItemViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adsViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
+        itemViewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
     }
 
     override fun onStart() {
         super.onStart()
         (activity as AppCompatActivity?)?.supportActionBar?.show()
-        adsViewModel.loader.observe(viewLifecycleOwner, Observer {
-            if (adsViewModel.isNotLoading()) {
+        itemViewModel.loader.observe(viewLifecycleOwner, Observer {
+            if (itemViewModel.isNotLoading()) {
                 // loader ended
-                adsViewModel.adapter.setItems(adsViewModel.items)
-                if(adsViewModel.items.size == 0) {
+                itemViewModel.adapter.setItems(itemViewModel.items)
+                if(itemViewModel.items.size == 0) {
                     emptyListLayout.visibility = View.VISIBLE
                     itemRecyclerView.visibility = View.GONE
                 } else {
@@ -54,13 +54,13 @@ class ItemListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         itemRecyclerView.layoutManager = LinearLayoutManager(this.activity)
-        itemRecyclerView.adapter = adsViewModel.adapter
+        itemRecyclerView.adapter = itemViewModel.adapter
         setFabButton()
     }
 
     private fun setFabButton() {
         saleFab.setOnClickListener {
-            var bundle = bundleOf("ItemId" to null, "ItemPosition" to adsViewModel.items.size)
+            val bundle = bundleOf("ItemId" to null)
             this.findNavController().navigate(R.id.action_itemListFragment_to_itemEditFragment, bundle)
         }
     }
