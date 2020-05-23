@@ -4,6 +4,8 @@ import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.view.View.GONE
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -17,7 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.R
 import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_on_sale_list.*
+import kotlinx.android.synthetic.main.modal_filter.*
 import kotlinx.android.synthetic.main.modal_filter.view.*
+import kotlinx.android.synthetic.main.modal_filter.view.filter_spinner
 
 class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
 
@@ -95,12 +99,14 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun openModal(){
+        setFilter()
         val dialogView = LayoutInflater.from(context).inflate(R.layout.modal_filter, null)
         val builder = AlertDialog.Builder(requireContext()).setView(dialogView)
             .setTitle("Choose the filter")
         val alertDialog = builder.show()
 
         dialogView.filterBtn.setOnClickListener{
+            // salvare il parametro di ricerca e passarlo al filtro
             alertDialog.dismiss()
         }
         dialogView.dismissBtn.setOnClickListener{
@@ -116,5 +122,27 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         Toast.makeText(requireActivity(), newText, Toast.LENGTH_SHORT).show()
         itemViewModel.adapterOnSale.filter.filter(newText)
         return true
+    }
+    private fun setFilter(){
+        context?.let {
+            ArrayAdapter.createFromResource(it, R.array.params, android.R.layout.simple_spinner_item)
+                .also {
+                        adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    filter_spinner.adapter = adapter
+                }
+        }
+        filter_spinner.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val filterElement: String = parent?.getItemAtPosition(position) as String
+
+            }
+
+        }
     }
 }
