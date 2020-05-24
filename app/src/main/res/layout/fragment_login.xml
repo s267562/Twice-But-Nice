@@ -43,7 +43,7 @@
                 app:boxStrokeWidth="1dp"
                 app:boxStrokeWidthFocused="1dp"
                 android:textColorHint="@android:color/tertiary_text_dark"
-                android:hint="E-mail" >
+                android:hint="E-mail">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/log_email"
@@ -160,7 +160,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Don't have an account?"
-                    android:textColor="@android:color/primary_text_light"/>
+                    android:textColor="@android:color/primary_text_light" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

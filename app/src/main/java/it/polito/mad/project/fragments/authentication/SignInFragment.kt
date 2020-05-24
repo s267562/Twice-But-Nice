@@ -2,14 +2,18 @@ package it.polito.mad.project.fragments.authentication
 
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -26,6 +30,10 @@ import kotlinx.android.synthetic.main.fragment_login.*
 class SignInFragment : Fragment() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var authViewModel: AuthViewModel
+
+    private var signiInEnable: BooleanArray = booleanArrayOf(false, false)
+    private val EMAIL = 0
+    private val PASSWORD = 1
 
     private val rcSignIn: Int = 1
 
@@ -65,6 +73,38 @@ class SignInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        log_email.doOnTextChanged { text, start, count, after ->
+            if(!text.isNullOrBlank()) {
+                /* email not blank */
+                if(!signiInEnable[EMAIL]) signiInEnable[EMAIL] = true
+                if(signiInEnable[PASSWORD] && !signInBtn.isEnabled) {
+                    /*, pass not blank and button not enabled */
+                    enableButton(signInBtn)
+                }
+            } else {
+                if(signiInEnable[EMAIL]) {
+                    signiInEnable[EMAIL] = false
+                    disableButton(signInBtn)
+                }
+            }
+        }
+
+        log_password.doOnTextChanged { text, start, count, after ->
+            if(!text.isNullOrBlank()) {
+                /* password not blank */
+                if(!signiInEnable[PASSWORD]) signiInEnable[PASSWORD] = true
+                if(signiInEnable[EMAIL] && !signInBtn.isEnabled) {
+                    /*, email not blank and button not enabled */
+                    enableButton(signInBtn)
+                }
+            } else {
+                if(signiInEnable[PASSWORD]) {
+                    signiInEnable[PASSWORD] = false
+                    disableButton(signInBtn)
+                }
+            }
+        }
+
         signInGoogleBtn.setOnClickListener {
             startActivityForResult(googleSignInClient.signInIntent, rcSignIn)
         }
@@ -77,6 +117,16 @@ class SignInFragment : Fragment() {
         signup_button.setOnClickListener {
             findNavController().navigate(R.id.action_navHome_to_signUpFragment)
         }
+    }
+
+    private fun enableButton(button: Button) {
+        button.isEnabled = true
+        button.background.setTint(ContextCompat.getColor(requireContext(), R.color.colorAccent))
+    }
+
+    private fun disableButton(button: Button) {
+        button.isEnabled = false
+        button.background.setTint(ContextCompat.getColor(requireContext(), R.color.colorAccentLight))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
