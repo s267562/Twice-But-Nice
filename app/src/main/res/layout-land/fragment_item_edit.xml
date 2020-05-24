@@ -46,7 +46,10 @@
     <ScrollView
         android:id="@+id/info_container"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,24 +64,19 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/item_photo_cardView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_weight="0.6"
-                android:paddingLeft="64dp"
-                android:paddingTop="32dp"
-                android:paddingRight="64dp"
-                android:paddingBottom="16dp"
+                android:layout_height="wrap_content"
+                app:cardElevation="2dp"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="2dp">
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingLeft="16dp"
+                    android:layout_height="wrap_content"
                     android:paddingTop="16dp"
+                    android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:paddingBottom="8dp">
 
@@ -86,61 +84,62 @@
                         android:id="@+id/item_photo_label"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:gravity="bottom"
-                        android:text="Add photo"
-                        android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                        app:layout_constraintBottom_toTopOf="@+id/item_photo"
+                        app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintBottom_toTopOf="@+id/item_photo"
+                        android:text="Add photo"
+                        android:layout_marginBottom="8dp"
+                        android:gravity="bottom"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
                     <ImageView
                         android:id="@+id/item_photo"
                         android:layout_width="192dp"
                         android:layout_height="192dp"
                         android:layout_marginBottom="8dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_add_photo"
+                        app:layout_constraintTop_toBottomOf="@id/item_photo_label"
                         app:layout_constraintBottom_toTopOf="@+id/button_container"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/item_photo_label" />
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_add_photo" />
 
                     <LinearLayout
                         android:id="@+id/button_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/item_photo">
+                        app:layout_constraintTop_toBottomOf="@+id/item_photo"
+                        app:layout_constraintBottom_toBottomOf="parent">
 
                         <Button
                             android:id="@+id/item_photo_add"
-                            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:text="Add"
+                            android:backgroundTint="@android:color/transparent"
+                            android:textColor="@color/colorAccent"
                             android:drawableLeft="@drawable/ic_add_24dp"
                             android:drawableTint="@color/colorAccent"
-                            android:text="Add"
-                            android:textColor="@color/colorAccent" />
+                            style="?android:attr/borderlessButtonStyle"/>
 
                         <Button
                             android:id="@+id/item_photo_rotate"
-                            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:text="Rotate"
+                            android:backgroundTint="@android:color/transparent"
+                            android:visibility="gone"
+                            android:textColor="@color/colorAccent"
                             android:drawableLeft="@drawable/ic_rotate_right_24dp"
                             android:drawableTint="@color/colorAccent"
-                            android:text="Rotate"
-                            android:textColor="@color/colorAccent"
-                            android:visibility="gone" />
+                            style="?android:attr/borderlessButtonStyle" />
 
                     </LinearLayout>
-
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -150,81 +149,89 @@
                 android:id="@+id/item_details_cardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
+                app:cardElevation="2dp"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="2dp">
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingLeft="16dp"
                     android:paddingTop="16dp"
+                    android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:paddingBottom="8dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="bottom"
                         android:text="Title"
+                        android:gravity="bottom"
+                        android:layout_marginBottom="8dp"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/item_title_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        app:hintEnabled="false">
+                        app:hintEnabled="false"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeWidth="1dp"
+                        app:boxStrokeWidthFocused="1dp"
+                        android:textColorHint="@android:color/tertiary_text_dark" >
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/item_title"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
-                            android:hint="What do you want to sell?"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            android:hint="What do you want to sell?" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="bottom"
                         android:text="Description"
+                        android:gravity="bottom"
+                        android:layout_marginBottom="8dp"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        app:hintEnabled="false">
+                        app:hintEnabled="false"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeWidth="1dp"
+                        app:boxStrokeWidthFocused="1dp"
+                        android:textColorHint="@android:color/tertiary_text_dark" >
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/item_descr"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
                             android:hint="Add information about your product"
                             android:imeOptions="actionNext"
                             android:inputType="textLongMessage"
-                            android:maxLines="2" />
+                            android:maxLines="2"
+                            android:layout_marginBottom="16dp"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:gravity="bottom"
                         android:text="Category"
+                        android:gravity="bottom"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+                        android:layout_marginBottom="8dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
                     <Spinner
                         android:id="@+id/item_category_spinner"
@@ -237,11 +244,11 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:gravity="bottom"
                         android:text="Subcategory"
+                        android:gravity="bottom"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+                        android:layout_marginBottom="8dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
                     <Spinner
                         android:id="@+id/item_subcategory_spinner"
@@ -271,41 +278,35 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="bottom"
                         android:text="Price"
+                        android:gravity="bottom"
+                        android:layout_marginBottom="8dp"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
-                    <LinearLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:layout_marginBottom="16dp"
-                        android:orientation="horizontal">
+                        app:hintEnabled="false"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeWidth="1dp"
+                        app:boxStrokeWidthFocused="1dp"
+                        android:textColorHint="@android:color/tertiary_text_dark"
+                        android:hint="0.0">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/item_price"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
-                            android:layout_weight="1"
-                            app:hintEnabled="false">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/item_price"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="0.0"
-                                android:imeOptions="actionNext"
-                                android:inputType="numberDecimal"
-                                android:maxLines="1" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="€" />
-
-                    </LinearLayout>
+                            android:inputType="numberDecimal"
+                            android:hint="0.0"
+                            android:imeOptions="actionNext"
+                            android:maxLines="1"
+                            android:drawableEnd="@drawable/ic_euro_symbol_black_18dp"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
@@ -315,66 +316,71 @@
                 android:id="@+id/item_info_cardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
+                app:cardElevation="2dp"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="2dp">
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingLeft="16dp"
                     android:paddingTop="16dp"
+                    android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:paddingBottom="8dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="bottom"
                         android:text="Location"
+                        android:gravity="bottom"
+                        android:layout_marginBottom="8dp"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        app:hintEnabled="false">
+                        app:hintEnabled="false"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeWidth="1dp"
+                        app:boxStrokeWidthFocused="1dp"
+                        android:textColorHint="@android:color/tertiary_text_dark">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/item_location"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
                             android:hint="Enter your location"
                             android:imeOptions="actionNext"
                             android:inputType="textCapWords"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            android:layout_marginBottom="16dp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="Expiring date"
                         android:layout_marginBottom="8dp"
                         android:gravity="bottom"
-                        android:text="Expiring date"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
                     <TextView
                         android:id="@+id/item_exp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        android:drawableRight="@drawable/ic_date_range_black_24dp"
-                        android:drawableTint="@color/colorAccent"
+                        android:textColor="@android:color/primary_text_light"
                         android:hint="DD/MM/YYYY"
                         android:maxLines="1"
-                        android:textColor="@android:color/primary_text_light" />
+                        android:drawableRight="@drawable/ic_date_range_black_24dp"
+                        android:drawableTint="@color/colorAccent" />
 
                 </LinearLayout>
 

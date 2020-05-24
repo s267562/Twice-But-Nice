@@ -52,7 +52,8 @@ class ItemDetailsFragment : NotificationFragment() {
                 item_title.text = it.title
                 item_descr.text = it.description
                 item_location.text = it.location
-                item_category.text = "${it.category} - ${it.subcategory}"
+                item_category.text = it.category
+                item_subcategory.text = it.subcategory
                 item_price.text = "${it.price} €"
                 item_exp.text = it.expiryDate
                 if (listenerRegistration == null)
