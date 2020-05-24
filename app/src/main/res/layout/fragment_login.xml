@@ -70,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:backgroundTint="@color/lightBlue"
+            android:backgroundTint="@color/colorAccentLight"
             android:enabled="false"
             android:padding="12dp"
             android:text="Log in"
@@ -113,7 +113,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:backgroundTint="@color/blue"
+            android:backgroundTint="@color/colorAccent"
             android:drawableLeft="@drawable/ic_google_18dp"
             android:drawableTint="@android:color/white"
             android:paddingStart="12dp"
@@ -156,7 +156,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Sign up."
-            android:textColor="@color/blue"/>
+            android:textColor="@color/colorAccent"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

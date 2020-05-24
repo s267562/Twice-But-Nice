@@ -176,7 +176,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        app:hintEnabled="false">
+                        app:hintEnabled="false"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeWidth="1dp"
+                        app:boxStrokeWidthFocused="1dp"
+                        android:textColorHint="@android:color/tertiary_text_dark"
+                        android:hint="What do you want to sell?" >
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/item_title"
