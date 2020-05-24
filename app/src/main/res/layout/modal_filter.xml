@@ -26,8 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:prompt="@string/param_def"
-        android:spinnerMode="dropdown"
-        android:entries="@string/param_def"/>
+        android:spinnerMode="dropdown"/>
 
     <LinearLayout
         android:id="@+id/price_range"
