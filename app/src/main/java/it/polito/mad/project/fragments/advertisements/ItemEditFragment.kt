@@ -86,7 +86,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
         itemViewModel.itemPhoto.observe(viewLifecycleOwner, Observer {
             if (it == null){
-                item_photo_rotate.visibility = View.GONE
+         //       item_photo_rotate.visibility = View.GONE
             } else {
                 item_photo_rotate.visibility = View.VISIBLE
                 item_photo.setImageBitmap(it)
