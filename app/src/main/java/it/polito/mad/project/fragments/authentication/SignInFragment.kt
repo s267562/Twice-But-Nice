@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -73,7 +74,7 @@ class SignInFragment : Fragment() {
             authViewModel.loginWithEmailPassword(log_email.text.toString(), log_password.text.toString())
         }
 
-        logToReg.setOnClickListener {
+        signup_button.setOnClickListener {
             findNavController().navigate(R.id.action_navHome_to_signUpFragment)
         }
     }
