@@ -161,8 +161,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Category:"
-                        android:minLines="2"
-                        android:maxLines="2"
+                        android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Subcategory:"
+                        android:maxLines="1"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:layout_marginBottom="8dp"/>
 
@@ -206,8 +213,16 @@
                         android:text="Category"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:layout_marginBottom="8dp"
-                        android:minLines="2"
-                        android:maxLines="2" />
+                        android:maxLines="1" />
+
+                    <TextView
+                        android:id="@+id/item_subcategory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Subcategory"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:layout_marginBottom="8dp"
+                        android:maxLines="1" />
 
                     <TextView
                         android:id="@+id/item_price"
