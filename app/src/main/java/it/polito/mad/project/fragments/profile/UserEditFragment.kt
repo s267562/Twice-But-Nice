@@ -275,7 +275,7 @@ class UserEditFragment : Fragment() {
             File(savedImagePath!!).delete()
             savedImagePath = imagePath
         }
-        var dataInserted : Boolean = true
+        var dataInserted = true
 
         if (nickname.text.isNullOrBlank()){
             nickname.error = "Insert Nickname"
@@ -300,8 +300,6 @@ class UserEditFragment : Fragment() {
             return
         }
 
-
-
         val name = full_name.text.toString()
         val nickname = nickname.text.toString()
         val email = email.text.toString()
@@ -309,11 +307,19 @@ class UserEditFragment : Fragment() {
         val path = savedImagePath
 
         val user = User(name, name, nickname, email, location, path)
+
+        var localImage: Bitmap? = null
+        if (user.photoProfilePath.isNotBlank())
+            localImage = (user_photo.drawable as BitmapDrawable).bitmap
+
         // Save file in the Cloud DB
         userViewModel.saveUser(user)
             .addOnCompleteListener {
                 if (!it.isSuccessful) {
                     Toast.makeText(mContext, "Error during user update info", Toast.LENGTH_SHORT).show()
+                } else {
+                    if (localImage != null)
+                        userViewModel.userPhotoProfile.value = localImage
                 }
                 findNavController().popBackStack()
             }
