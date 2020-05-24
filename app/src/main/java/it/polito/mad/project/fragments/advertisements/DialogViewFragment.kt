@@ -3,16 +3,16 @@ package it.polito.mad.project.fragments.advertisements
 import android.app.Application
 import android.app.Dialog
 import android.content.DialogInterface
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import it.polito.mad.project.R
-import it.polito.mad.project.fragments.advertisements.stringGlobal.Companion.globalFilter
+import it.polito.mad.project.fragments.advertisements.StringGlobal.Companion.globalFilter
 
 class DialogViewFragment : DialogFragment() {
-
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
@@ -60,8 +60,9 @@ class DialogViewFragment : DialogFragment() {
     }
 }
 
-class stringGlobal: Application() {
+class StringGlobal: Application() {
+
     companion object {
-        lateinit var globalFilter: String
+        var globalFilter: String = "Title"
     }
 }
