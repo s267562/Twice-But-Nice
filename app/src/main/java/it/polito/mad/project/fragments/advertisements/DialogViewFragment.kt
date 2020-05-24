@@ -3,7 +3,6 @@ package it.polito.mad.project.fragments.advertisements
 import android.app.Application
 import android.app.Dialog
 import android.content.DialogInterface
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.View
 import android.widget.*
@@ -61,7 +60,6 @@ class DialogViewFragment : DialogFragment() {
 }
 
 class StringGlobal: Application() {
-
     companion object {
         var globalFilter: String = "Title"
     }

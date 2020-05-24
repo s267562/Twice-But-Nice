@@ -277,13 +277,14 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             true
         }
 
-        item_photo_rotate.setOnClickListener{
-            var itemImage = item_photo.getDrawingCache(true).copy(Bitmap.Config.ARGB_8888, false)
-            val rotateBitmap = rotateImage(itemImage)
-            itemImage = rotateBitmap
+        item_photo_rotate.setOnClickListener {
             item_photo.isDrawingCacheEnabled = true
+            var itemImage = item_photo.getDrawingCache(true).copy(Bitmap.Config.ARGB_8888, false)
             item_photo.destroyDrawingCache()
+            val rotateBitmap = rotateImage(itemImage!!)
+            itemImage = rotateBitmap
             item_photo.setImageBitmap(itemImage)
+            itemViewModel.itemPhoto.value = itemImage
         }
     }
 

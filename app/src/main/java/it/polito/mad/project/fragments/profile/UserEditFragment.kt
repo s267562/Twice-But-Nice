@@ -120,7 +120,7 @@ class UserEditFragment : Fragment() {
             true
         }
 
-        rotation_button.setOnClickListener{
+        rotation_button.setOnClickListener {
             user_photo.isDrawingCacheEnabled = true
             image = user_photo.getDrawingCache(true).copy(Bitmap.Config.ARGB_8888, false)
             user_photo.destroyDrawingCache()
