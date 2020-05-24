@@ -39,7 +39,6 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     private lateinit var itemViewModel: ItemViewModel
 
-    private var localItem: Item = Item(null)
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
@@ -66,30 +65,31 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         }
 
         itemViewModel.item.observe(viewLifecycleOwner, Observer {
-            if (it != null) {
-                localItem = it
-                item_title.setText(it.title)
+            if (it != null && itemViewModel.localItem == null) {
+                itemViewModel.localItem = it
+                val localIt = itemViewModel.localItem!!
+                item_title.setText(localIt.title)
                 if (it.categoryPos >= 0)
-                    item_category_spinner.setSelection(it.categoryPos)
-                item_descr.setText(it.description)
-                item_location.setText(it.location)
-                item_price.setText(it.price)
-                item_exp.text = it.expiryDate
-                if(it.statusPos >= 0){
-                    item_status_spinner.setSelection(it.statusPos)
+                    item_category_spinner.setSelection(localIt.categoryPos)
+                item_descr.setText(localIt.description)
+                item_location.setText(localIt.location)
+                item_price.setText(localIt.price)
+                item_exp.text = localIt.expiryDate
+                if(localIt.statusPos >= 0){
+                    item_status_spinner.setSelection(localIt.statusPos)
                 }
-                if (it.imagePath.isNotEmpty()) {
+                if (localIt.imagePath.isNotEmpty()) {
                     savedImagePath = it.imagePath
                 }
             }
         })
 
         itemViewModel.itemPhoto.observe(viewLifecycleOwner, Observer {
-            if (it == null){
-         //       item_photo_rotate.visibility = View.GONE
+            if (it == null && itemViewModel.localItemImage == null){
+                item_photo_rotate.visibility = View.GONE
             } else {
                 item_photo_rotate.visibility = View.VISIBLE
-                item_photo.setImageBitmap(it)
+                item_photo.setImageBitmap(itemViewModel.localItemImage?:it)
             }
         })
 
@@ -126,8 +126,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         }
 
         if (this.imagePath != null){
-            val image = BitmapFactory.decodeFile(imagePath)
-            item_photo.setImageBitmap(image)
+            itemViewModel.localItemImage = BitmapFactory.decodeFile(imagePath)
+            item_photo.setImageBitmap(itemViewModel.localItemImage)
             item_photo_rotate.visibility = View.VISIBLE
         }
         if (this.dateValue != null){
@@ -183,6 +183,12 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        itemViewModel.localItem = null
+        itemViewModel.localItemImage = null
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         if (activity?.isFinishing!! && imagePath != null && imagePath != savedImagePath){
@@ -197,8 +203,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
         val category: String = parent?.getItemAtPosition(pos) as String
-        localItem.category = category
-        localItem.categoryPos = pos
+        itemViewModel.localItem?.category = category
+        itemViewModel.localItem?.categoryPos = pos
 
         if(pos >= 0 && pos < subCategoriesResArray.size)
             setSubcategory(subCategoriesResArray[pos])
@@ -248,10 +254,12 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             val file = File(imagePath!!)
             val uri: Uri = Uri.fromFile(file)
             item_photo.setImageURI(uri)
+            itemViewModel.localItemImage = (item_photo.drawable as BitmapDrawable).bitmap
         } else if (requestCode == selectImage && resultCode == Activity.RESULT_OK) {
             // Open Gallery
             val uriPic = data?.data
             item_photo.setImageURI(uriPic)
+            itemViewModel.localItemImage = (item_photo.drawable as BitmapDrawable).bitmap
             if (uriPic != null) {
                 val file: File = createImageFile()
                 val fOut = FileOutputStream(file)
@@ -284,7 +292,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             val rotateBitmap = rotateImage(itemImage!!)
             itemImage = rotateBitmap
             item_photo.setImageBitmap(itemImage)
-            itemViewModel.itemPhoto.value = itemImage
+            itemViewModel.localItemImage = itemImage
         }
     }
 
@@ -352,8 +360,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     val status: String = parent?.getItemAtPosition(position) as String
-                    localItem.status = status
-                    localItem.statusPos = position
+                    itemViewModel.localItem?.status = status
+                    itemViewModel.localItem?.statusPos = position
                 }
             }
         }
@@ -397,7 +405,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             savedImagePath = imagePath
         }
 
-        var dataInserted : Boolean = true
+        var dataInserted = true
 
         if (item_title.text.isNullOrBlank()){
             item_title.error = "Insert Title"
@@ -410,32 +418,36 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         if (!dataInserted){
             return
         }
+        val updateItem = itemViewModel.localItem!!
 
-        localItem.title = item_title.text.toString()
-        localItem.location = item_location.text.toString()
-        localItem.description = item_descr.text.toString()
-        localItem.expiryDate = item_exp.text.toString()
-        localItem.price = item_price.text.toString()
-        localItem.imagePath = savedImagePath?:""
-        localItem.category = localItem.category
-        localItem.subcategory = subcategoryContent
-        localItem.categoryPos = localItem.categoryPos
-        localItem.status = statusContent
+        updateItem.title = item_title.text.toString()
+        updateItem.location = item_location.text.toString()
+        updateItem.description = item_descr.text.toString()
+        updateItem.expiryDate = item_exp.text.toString()
+        updateItem.price = item_price.text.toString()
+        updateItem.imagePath = savedImagePath?:""
+        updateItem.category = updateItem.category
+        updateItem.subcategory = subcategoryContent
+        updateItem.categoryPos = updateItem.categoryPos
+        updateItem.status = statusContent
 
-        itemViewModel.saveItem(localItem)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    if (localItem.id != null && localItem.status == "Sold") {
-                        val body = JSONObject().put("ItemId", localItem.id!!).put("IsMyItem", false)
-                        sendNotification(localItem.id!!, localItem.title, "The item was sold", body)
-                    }
-                    if (localItem.imagePath.isNotBlank())
-                        itemViewModel.itemPhoto.value = (item_photo.drawable as BitmapDrawable).bitmap
+        itemViewModel.saveItem(updateItem)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                    if (updateItem.id != null && updateItem.status == "Sold") {
+                            val body = JSONObject().put("ItemId", updateItem.id!!).put("IsMyItem", false)
+                            sendNotification(updateItem.id!!, updateItem.title, "The item was sold", body)
+                        }
+                    if (itemViewModel.localItemImage != null)
+                        itemViewModel.itemPhoto.value = itemViewModel.localItemImage
+
+                    itemViewModel.localItemImage = null
+                    itemViewModel.localItem = null
                     findNavController().popBackStack()
-                } else {
-                    Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            }
     }
 
     private fun openGallery(){

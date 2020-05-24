@@ -31,6 +31,8 @@ class ItemViewModel : LoadingViewModel() {
     var item = MutableLiveData<Item>()
     var itemPhoto = MutableLiveData<Bitmap>()
     var itemInterest = ItemInterest(false)
+    var localItem: Item? = null
+    var localItemImage: Bitmap? = null
 
     //user interested to item
     var users: MutableList<User> = mutableListOf()
