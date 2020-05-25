@@ -15,8 +15,6 @@ import it.polito.mad.project.R
 import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
-// POINT 5: Implement ItemListFragment
-
 class ItemListFragment : Fragment() {
 
     private lateinit var itemViewModel: ItemViewModel

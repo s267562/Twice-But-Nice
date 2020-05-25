@@ -17,6 +17,8 @@
     <string name="menu_advertisements">My Advertisements</string>
     <string name="menu_show_advertisement">Details</string>
     <string name="menu_edit_advertisement">Edit Item</string>
+    <string name="items_of_interest_list">List of Interested Items</string>
+    <string name="bought_items_list">List of Bought Items</string>
 
     <string name="category_def">Category</string>
     <string name="subcategory_def">Subcategory</string>
@@ -33,7 +35,10 @@
         <item>Description</item>
         <item>Price</item>
     </string-array>
+
     <string name="no_users_interested">No users interested</string>
+    <string name="no_items_interested">No interested items</string>
+    <string name="no_bough_items">No bought items</string>
     <string name="no_items_found">No items found</string>
     <string name="mad_message_title">Twice but nice</string>
     <string name="default_notification_channel_id">mad_default_channel_id</string>
@@ -49,7 +54,6 @@
         <item>Sold</item>
         <item>Blocked</item>
     </string-array>
-
 
     <string-array name="item_categories">
         <item>Arts &amp; Crafts</item>

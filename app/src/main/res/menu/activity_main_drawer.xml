@@ -16,5 +16,13 @@
             android:id="@+id/onSaleListFragment"
             android:icon="@drawable/ic_menu_sale"
             android:title="@string/menu_on_sale"/>
+        <item
+            android:id="@+id/itemsOfInterestLisFragment"
+            android:icon="@drawable/ic_menu_sale"
+            android:title="@string/items_of_interest_list"/>
+        <item
+            android:id="@+id/boughtItemsListFragment"
+            android:icon="@drawable/ic_menu_sale"
+            android:title="@string/bought_items_list"/>
     </group>
 </menu>
