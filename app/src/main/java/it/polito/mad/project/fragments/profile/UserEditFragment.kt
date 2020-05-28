@@ -24,6 +24,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.Observer
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.OnMapReadyCallback
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.User
@@ -35,8 +39,9 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
+// CHIAVE Google Maps AIzaSyCO1c1zV2KftTDLB1Jb3gBwRiMXFRfdAdk
 
-class UserEditFragment : Fragment() {
+class UserEditFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var mContext: Context
     private lateinit var userViewModel: UserViewModel
@@ -45,6 +50,9 @@ class UserEditFragment : Fragment() {
     private var imagePath: String? = null
     private var savedImagePath: String? =null
     private val selectImage = 2
+
+    private lateinit var map: GoogleMap
+    private lateinit var mapView: MapView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,6 +136,15 @@ class UserEditFragment : Fragment() {
             image = rotateBitmap
             user_photo.setImageBitmap(image)
             userViewModel.userPhotoProfile.value = image
+        }
+
+        // set the Map View
+        mapView = view.findViewById(R.id.mapEditProfile)
+
+        if(mapView != null) {
+            mapView.onCreate(null)
+            mapView.onResume()
+            mapView.getMapAsync(this)
         }
     }
 
@@ -346,6 +363,11 @@ class UserEditFragment : Fragment() {
         galleryIntent.type = "image/*"
         galleryIntent.action = Intent.ACTION_GET_CONTENT
         startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), selectImage)
+    }
+
+    override fun onMapReady(p0: GoogleMap?) {
+        MapsInitializer.initialize(context)
+        map = p0!!
     }
 
 }

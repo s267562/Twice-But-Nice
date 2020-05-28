@@ -204,6 +204,14 @@
                 android:maxLines="1"
                 android:inputType="textAutoCorrect"
                 android:imeOptions="actionDone" />
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/mapEditProfile"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:padding="16dp"
+                android:layout_marginTop="16dp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>

@@ -23,6 +23,10 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.OnMapReadyCallback
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.enums.IntentRequest
@@ -35,9 +39,12 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListener {
+class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListener, OnMapReadyCallback {
 
     private lateinit var itemViewModel: ItemViewModel
+
+    private lateinit var map: GoogleMap
+    private lateinit var mapView: MapView
 
     private var imageFile: File? = null
     private var imagePath: String? = null
@@ -132,6 +139,15 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         }
         if (this.dateValue != null){
             item_exp.text= this.dateValue
+        }
+
+        // set the Map View
+        mapView = view.findViewById(R.id.mapEditItem)
+
+        if(mapView != null) {
+            mapView.onCreate(null)
+            mapView.onResume()
+            mapView.getMapAsync(this)
         }
     }
 
@@ -455,5 +471,10 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         galleryIntent.type = "image/*"
         galleryIntent.action = Intent.ACTION_GET_CONTENT
         startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), selectImage)
+    }
+
+    override fun onMapReady(p0: GoogleMap?) {
+        MapsInitializer.initialize(context)
+        map = p0!!
     }
 }
