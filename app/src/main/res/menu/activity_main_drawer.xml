@@ -10,16 +10,16 @@
             android:title="@string/menu_profile" />
         <item
             android:id="@+id/itemListFragment"
-            android:icon="@drawable/ic_menu_sale"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_advertisements"/>
         <item
             android:id="@+id/onSaleListFragment"
-            android:icon="@drawable/ic_menu_sale"
+            android:icon="@drawable/ic_event_available_24dp"
             android:title="@string/menu_on_sale"/>
         <item
             android:id="@+id/itemsOfInterestLisFragment"
-            android:icon="@drawable/ic_menu_sale"
-            android:title="@string/items_of_interest_list"/>
+            android:icon="@drawable/ic_favorite_border_white_24dp"
+            android:title="@string/items_of_interest_list" />
         <item
             android:id="@+id/boughtItemsListFragment"
             android:icon="@drawable/ic_menu_sale"
