@@ -23,7 +23,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCO1c1zV2KftTDLB1Jb3gBwRiMXFRfdAdk"/>
+            android:value="@string/google_maps_key"/>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
