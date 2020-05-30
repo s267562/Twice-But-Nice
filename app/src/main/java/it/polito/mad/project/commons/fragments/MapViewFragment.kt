@@ -6,16 +6,17 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import it.polito.mad.project.R
-import kotlinx.android.synthetic.main.map.*
 
 class MapViewFragment : DialogFragment(), OnMapReadyCallback {
 
     private lateinit var googleMap: GoogleMap
-    private lateinit var mapView: MapView
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
@@ -49,5 +50,15 @@ class MapViewFragment : DialogFragment(), OnMapReadyCallback {
             googleMap = it
 
         }
+
+        gMap?.setOnMapClickListener (object : GoogleMap.OnMapClickListener {
+            override fun onMapClick(latLng: LatLng?) {
+                val markerOpt = MarkerOptions()
+                markerOpt.position(latLng!!)
+                gMap.clear()
+                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7.2F))
+                gMap.addMarker(markerOpt)
+            }
+        })
     }
 }
