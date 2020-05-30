@@ -21,6 +21,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.Observer
@@ -29,10 +30,14 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
 import it.polito.mad.project.R
+import it.polito.mad.project.commons.fragments.MapViewFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.User
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
+import kotlinx.android.synthetic.main.fragment_edit_profile.loadingLayout
+import kotlinx.android.synthetic.main.fragment_item_edit.*
+import kotlinx.android.synthetic.main.fragment_signup.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -41,7 +46,9 @@ import java.util.*
 
 // CHIAVE Google Maps AIzaSyCO1c1zV2KftTDLB1Jb3gBwRiMXFRfdAdk
 
-class UserEditFragment : Fragment(), OnMapReadyCallback {
+class UserEditFragment : Fragment() {
+
+    lateinit var supFragmentManager : FragmentManager
 
     private lateinit var mContext: Context
     private lateinit var userViewModel: UserViewModel
@@ -51,8 +58,8 @@ class UserEditFragment : Fragment(), OnMapReadyCallback {
     private var savedImagePath: String? =null
     private val selectImage = 2
 
-    private lateinit var map: GoogleMap
-    private lateinit var mapView: MapView
+    //private lateinit var map: GoogleMap
+    //private lateinit var mapView: MapView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +87,7 @@ class UserEditFragment : Fragment(), OnMapReadyCallback {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
+        supFragmentManager = this!!.requireFragmentManager()
         return inflater.inflate(R.layout.fragment_edit_profile, container, false)
     }
 
@@ -138,14 +146,23 @@ class UserEditFragment : Fragment(), OnMapReadyCallback {
             userViewModel.userPhotoProfile.value = image
         }
 
+        btnMapOpen.setOnClickListener {
+            openMap()
+        }
+
         // set the Map View
-        mapView = view.findViewById(R.id.mapEditProfile)
+        /*mapView = view.findViewById(R.id.mapEditProfile)
 
         if(mapView != null) {
             mapView.onCreate(null)
             mapView.onResume()
             mapView.getMapAsync(this)
-        }
+        }*/
+    }
+
+    private fun openMap(){
+        val newFragment = MapViewFragment()
+        newFragment.show(supFragmentManager, "dialog")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -365,9 +382,9 @@ class UserEditFragment : Fragment(), OnMapReadyCallback {
         startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), selectImage)
     }
 
-    override fun onMapReady(p0: GoogleMap?) {
+    /*override fun onMapReady(p0: GoogleMap?) {
         MapsInitializer.initialize(context)
         map = p0!!
-    }
+    }*/
 
 }

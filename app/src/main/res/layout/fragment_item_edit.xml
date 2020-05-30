@@ -360,12 +360,11 @@
                             android:maxLines="1"
                             android:layout_marginBottom="16dp" />
 
-                        <com.google.android.gms.maps.MapView
-                            android:id="@+id/mapEditItem"
-                            android:name="com.google.android.gms.maps.SupportMapFragment"
+                        <Button
+                            android:id="@+id/btnOpenMap"
                             android:layout_width="match_parent"
-                            android:layout_height="500dp"
-                            android:layout_marginTop="16dp"/>
+                            android:layout_height="match_parent"
+                            android:text="Open Map"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView

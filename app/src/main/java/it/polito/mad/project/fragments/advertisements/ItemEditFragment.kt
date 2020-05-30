@@ -20,6 +20,7 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -28,6 +29,7 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
 import it.polito.mad.project.R
+import it.polito.mad.project.commons.fragments.MapViewFragment
 import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.Item
@@ -39,12 +41,11 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListener, OnMapReadyCallback {
+class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var itemViewModel: ItemViewModel
 
-    private lateinit var map: GoogleMap
-    private lateinit var mapView: MapView
+    lateinit var supFragmentManager : FragmentManager
 
     private var imageFile: File? = null
     private var imagePath: String? = null
@@ -115,6 +116,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
+        supFragmentManager = this!!.requireFragmentManager()
         return inflater.inflate(R.layout.fragment_item_edit, container, false)
     }
 
@@ -126,6 +128,10 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         setDatePicker()
         setCategory()
         setStatusSpinner()
+
+        btnOpenMap.setOnClickListener {
+            openMap()
+        }
 
         if (savedInstanceState != null) {
             imagePath = savedInstanceState.getString("ImagePath")
@@ -140,15 +146,11 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         if (this.dateValue != null){
             item_exp.text= this.dateValue
         }
+    }
 
-        // set the Map View
-        mapView = view.findViewById(R.id.mapEditItem)
-
-        if(mapView != null) {
-            mapView.onCreate(null)
-            mapView.onResume()
-            mapView.getMapAsync(this)
-        }
+    private fun openMap(){
+        val newFragment = MapViewFragment()
+        newFragment.show(supFragmentManager, "dialog")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -473,8 +475,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), selectImage)
     }
 
-    override fun onMapReady(p0: GoogleMap?) {
+    /*override fun onMapReady(p0: GoogleMap?) {
         MapsInitializer.initialize(context)
         map = p0!!
-    }
+    }*/
 }
