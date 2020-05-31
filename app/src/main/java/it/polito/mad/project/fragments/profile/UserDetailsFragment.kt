@@ -30,7 +30,7 @@ class UserDetailsFragment : Fragment() {
         super.onStart()
         isAuthUser = arguments?.getBoolean("IsAuthUser")?:isAuthUser
 
-        userViewModel.user.observe(viewLifecycleOwner, Observer{
+        userViewModel.user.data.observe(viewLifecycleOwner, Observer{
             if (it != null) {
                 if (it.name.isNotEmpty())
                     full_name.text = it.name
@@ -43,7 +43,7 @@ class UserDetailsFragment : Fragment() {
             }
         })
 
-        userViewModel.userPhotoProfile.observe(this, Observer {
+        userViewModel.user.image.observe(this, Observer {
             if (it != null) {
                 user_photo.setImageBitmap(it)
             }

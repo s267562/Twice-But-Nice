@@ -9,7 +9,7 @@ import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
-import it.polito.mad.project.models.User
+import it.polito.mad.project.models.user.User
 
 class UserAdapter(private var users: MutableList<User>): RecyclerView.Adapter<UserAdapter.ViewHolder>() {
 

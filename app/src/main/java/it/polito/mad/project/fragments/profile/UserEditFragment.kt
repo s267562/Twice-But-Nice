@@ -25,19 +25,13 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.Observer
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.OnMapReadyCallback
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.MapViewFragment
 import it.polito.mad.project.enums.IntentRequest
-import it.polito.mad.project.models.User
+import it.polito.mad.project.models.user.User
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.loadingLayout
-import kotlinx.android.synthetic.main.fragment_item_edit.*
-import kotlinx.android.synthetic.main.fragment_signup.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -87,7 +81,7 @@ class UserEditFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        supFragmentManager = this!!.requireFragmentManager()
+        supFragmentManager = this.requireFragmentManager()
         return inflater.inflate(R.layout.fragment_edit_profile, container, false)
     }
 
@@ -101,7 +95,7 @@ class UserEditFragment : Fragment() {
         }
 
         var image: Bitmap?
-        val user = userViewModel.user.value as User
+        val user = userViewModel.user.data.value as User
         if (user.name.isNotEmpty())
             full_name.setText(user.name)
         if (user.nickname.isNotEmpty())
@@ -112,7 +106,7 @@ class UserEditFragment : Fragment() {
             location.setText(user.location)
         if (user.photoProfilePath.isNotEmpty()) {
             savedImagePath = user.photoProfilePath
-            image = userViewModel.userPhotoProfile.value
+            image = userViewModel.user.image.value
             if (image != null) {
                 user_photo.setImageBitmap(image)
                 rotation_button.visibility=View.VISIBLE
@@ -143,7 +137,7 @@ class UserEditFragment : Fragment() {
             val rotateBitmap = rotateImage(image!!)
             image = rotateBitmap
             user_photo.setImageBitmap(image)
-            userViewModel.userPhotoProfile.value = image
+            userViewModel.user.image.value = image
         }
 
         btnMapOpen.setOnClickListener {
@@ -268,7 +262,7 @@ class UserEditFragment : Fragment() {
         } else {
             Toast.makeText(mContext, "Something wrong", Toast.LENGTH_SHORT).show()
         }
-        userViewModel.userPhotoProfile.value = (user_photo.drawable as BitmapDrawable).bitmap
+        userViewModel.user.image.value = (user_photo.drawable as BitmapDrawable).bitmap
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -286,7 +280,7 @@ class UserEditFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("DEBUG", userViewModel.user.value.toString())
+        Log.d("DEBUG", userViewModel.user.data.value.toString())
     }
 
     private fun rotateImage(img:Bitmap, degree: Int = 90):Bitmap {
@@ -340,7 +334,14 @@ class UserEditFragment : Fragment() {
         val location = location.text.toString()
         val path = savedImagePath
 
-        val user = User(name, name, nickname, email, location, path)
+        val user = User(
+            name,
+            name,
+            nickname,
+            email,
+            location,
+            path
+        )
 
         var localImage: Bitmap? = null
         if (user.photoProfilePath.isNotBlank())
@@ -353,7 +354,7 @@ class UserEditFragment : Fragment() {
                     Toast.makeText(mContext, "Error during user update info", Toast.LENGTH_SHORT).show()
                 } else {
                     if (localImage != null)
-                        userViewModel.userPhotoProfile.value = localImage
+                        userViewModel.user.image.value = localImage
                 }
                 findNavController().popBackStack()
             }
