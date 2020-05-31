@@ -24,15 +24,11 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.OnMapReadyCallback
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.MapViewFragment
 import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.enums.IntentRequest
-import it.polito.mad.project.models.Item
+import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_item_edit.*
 import org.json.JSONObject
@@ -44,8 +40,7 @@ import java.util.*
 class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var itemViewModel: ItemViewModel
-
-    lateinit var supFragmentManager : FragmentManager
+    private lateinit var supFragmentManager : FragmentManager
 
     private var imageFile: File? = null
     private var imagePath: String? = null
@@ -64,18 +59,18 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         super.onStart()
         val itemId = arguments?.getString("ItemId")
         if (itemId != null) {
-            // Item esistente
+            // Item already exist
             itemViewModel.loadItem(itemId)
         } else {
             // New Item
-            itemViewModel.item.value = Item(itemId)
-            itemViewModel.itemPhoto.value = null
+            itemViewModel.item.data.value = Item(itemId)
+            itemViewModel.item.image.value = null
         }
 
-        itemViewModel.item.observe(viewLifecycleOwner, Observer {
-            if (it != null && itemViewModel.localItem == null) {
-                itemViewModel.localItem = it
-                val localIt = itemViewModel.localItem!!
+        itemViewModel.item.data.observe(viewLifecycleOwner, Observer {
+            if (it != null && itemViewModel.item.localData == null) {
+                itemViewModel.item.localData = it
+                val localIt = itemViewModel.item.localData!!
                 item_title.setText(localIt.title)
                 if (it.categoryPos >= 0)
                     item_category_spinner.setSelection(localIt.categoryPos)
@@ -92,12 +87,12 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             }
         })
 
-        itemViewModel.itemPhoto.observe(viewLifecycleOwner, Observer {
-            if (it == null && itemViewModel.localItemImage == null){
+        itemViewModel.item.image.observe(viewLifecycleOwner, Observer {
+            if (it == null && itemViewModel.item.localImage == null){
                 item_photo_rotate.visibility = View.GONE
             } else {
                 item_photo_rotate.visibility = View.VISIBLE
-                item_photo.setImageBitmap(itemViewModel.localItemImage?:it)
+                item_photo.setImageBitmap(itemViewModel.item.localImage?:it)
             }
         })
 
@@ -116,7 +111,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        supFragmentManager = this!!.requireFragmentManager()
+        supFragmentManager = this.requireFragmentManager()
         return inflater.inflate(R.layout.fragment_item_edit, container, false)
     }
 
@@ -139,8 +134,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         }
 
         if (this.imagePath != null){
-            itemViewModel.localItemImage = BitmapFactory.decodeFile(imagePath)
-            item_photo.setImageBitmap(itemViewModel.localItemImage)
+            itemViewModel.item.localImage = BitmapFactory.decodeFile(imagePath)
+            item_photo.setImageBitmap(itemViewModel.item.localImage)
             item_photo_rotate.visibility = View.VISIBLE
         }
         if (this.dateValue != null){
@@ -203,8 +198,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     override fun onDestroyView() {
         super.onDestroyView()
-        itemViewModel.localItem = null
-        itemViewModel.localItemImage = null
+        itemViewModel.item.localData = null
+        itemViewModel.item.localData = null
     }
 
     override fun onDestroy() {
@@ -221,8 +216,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
         val category: String = parent?.getItemAtPosition(pos) as String
-        itemViewModel.localItem?.category = category
-        itemViewModel.localItem?.categoryPos = pos
+        itemViewModel.item.localData?.category = category
+        itemViewModel.item.localData?.categoryPos = pos
 
         if(pos >= 0 && pos < subCategoriesResArray.size)
             setSubcategory(subCategoriesResArray[pos])
@@ -272,12 +267,12 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             val file = File(imagePath!!)
             val uri: Uri = Uri.fromFile(file)
             item_photo.setImageURI(uri)
-            itemViewModel.localItemImage = (item_photo.drawable as BitmapDrawable).bitmap
+            itemViewModel.item.localImage = (item_photo.drawable as BitmapDrawable).bitmap
         } else if (requestCode == selectImage && resultCode == Activity.RESULT_OK) {
             // Open Gallery
             val uriPic = data?.data
             item_photo.setImageURI(uriPic)
-            itemViewModel.localItemImage = (item_photo.drawable as BitmapDrawable).bitmap
+            itemViewModel.item.localImage = (item_photo.drawable as BitmapDrawable).bitmap
             if (uriPic != null) {
                 val file: File = createImageFile()
                 val fOut = FileOutputStream(file)
@@ -310,7 +305,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             val rotateBitmap = rotateImage(itemImage!!)
             itemImage = rotateBitmap
             item_photo.setImageBitmap(itemImage)
-            itemViewModel.localItemImage = itemImage
+            itemViewModel.item.localImage = itemImage
         }
     }
 
@@ -378,8 +373,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     val status: String = parent?.getItemAtPosition(position) as String
-                    itemViewModel.localItem?.status = status
-                    itemViewModel.localItem?.statusPos = position
+                    itemViewModel.item.localData?.status = status
+                    itemViewModel.item.localData?.statusPos = position
                 }
             }
         }
@@ -436,7 +431,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         if (!dataInserted){
             return
         }
-        val updateItem = itemViewModel.localItem!!
+        val updateItem = itemViewModel.item.localData!!
 
         updateItem.title = item_title.text.toString()
         updateItem.location = item_location.text.toString()
@@ -456,11 +451,12 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                             val body = JSONObject().put("ItemId", updateItem.id!!).put("IsMyItem", false)
                             sendNotification(updateItem.id!!, updateItem.title, "The item was sold", body)
                         }
-                    if (itemViewModel.localItemImage != null)
-                        itemViewModel.itemPhoto.value = itemViewModel.localItemImage
+                    if (itemViewModel.item.localImage != null)
+                        itemViewModel.item.image.value = itemViewModel.item.localImage
 
-                    itemViewModel.localItemImage = null
-                    itemViewModel.localItem = null
+                    itemViewModel.item.localImage = null
+                    itemViewModel.item.localImage = null
+
                     findNavController().popBackStack()
                     } else {
                         Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()

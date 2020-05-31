@@ -14,7 +14,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.viewmodels.UserViewModel
-import it.polito.mad.project.models.Item
+import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.android.synthetic.main.fragment_item_details.item_descr
@@ -47,7 +47,7 @@ class ItemDetailsFragment : NotificationFragment() {
         (activity as AppCompatActivity?)?.supportActionBar?.show()
 
         isMyItem = arguments?.getBoolean("IsMyItem")?:false
-        itemViewModel.item.observe(viewLifecycleOwner, Observer {
+        itemViewModel.item.data.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 item_title.text = it.title
                 item_descr.text = it.description
@@ -61,7 +61,7 @@ class ItemDetailsFragment : NotificationFragment() {
             }
         })
 
-        itemViewModel.itemPhoto.observe(viewLifecycleOwner, Observer {
+        itemViewModel.item.image.observe(viewLifecycleOwner, Observer {
             if (it != null){
                 item_photo.setImageBitmap(it)
             }
@@ -74,9 +74,9 @@ class ItemDetailsFragment : NotificationFragment() {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                 }
                 if (!isMyItem) {
-                    if (itemViewModel.item.value!!.status == "Available") {
+                    if (itemViewModel.item.data.value!!.status == "Available") {
                         var interestFabDrawableId: Int = R.drawable.ic_favorite_border_white_24dp
-                        if (itemViewModel.itemInterest.interest)
+                        if (itemViewModel.item.interest.value)
                             interestFabDrawableId = R.drawable.ic_favorite_white_24dp
                         interestFab.setImageResource(interestFabDrawableId)
                         interestFab.show()
@@ -120,7 +120,7 @@ class ItemDetailsFragment : NotificationFragment() {
         // Handle item selection
         return when (option.itemId) {
             R.id.pencil_option -> {
-                var bundle = bundleOf("ItemId" to itemViewModel.item.value?.id)
+                val bundle = bundleOf("ItemId" to itemViewModel.item.data.value?.id)
                 this.findNavController().navigate(R.id.action_showItemFragment_to_itemEditFragment, bundle)
                 true
             }
@@ -137,10 +137,10 @@ class ItemDetailsFragment : NotificationFragment() {
         interestFab.setOnClickListener {
             itemViewModel.updateItemInterest()
                 .addOnSuccessListener {
-                    val item = itemViewModel.item.value as Item
-                    val nickname = userViewModel.user.value!!.nickname
+                    val item = itemViewModel.item.data.value as Item
+                    val nickname = userViewModel.user.data.value!!.nickname
                     val body = JSONObject().put("ItemId", item.id).put("IsMyItem", true)
-                    if (itemViewModel.itemInterest.interest) {
+                    if (itemViewModel.item.interest.value) {
                         FirebaseMessaging.getInstance().subscribeToTopic(item.id!!)
                         sendNotification(item.user, item.title, "$nickname is interested in your item", body)
                     }

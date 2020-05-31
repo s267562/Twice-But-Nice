@@ -30,8 +30,8 @@ class ItemListFragment : Fragment() {
         itemViewModel.loader.observe(viewLifecycleOwner, Observer {
             if (itemViewModel.isNotLoading()) {
                 // loader ended
-                itemViewModel.adapter.setItems(itemViewModel.items)
-                if(itemViewModel.items.size == 0) {
+                itemViewModel.myItems.adapter.setItems(itemViewModel.myItems.items)
+                if(itemViewModel.myItems.items.size == 0) {
                     emptyListLayout.visibility = View.VISIBLE
                     itemRecyclerView.visibility = View.GONE
                 } else {
@@ -53,7 +53,7 @@ class ItemListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         itemRecyclerView.layoutManager = LinearLayoutManager(this.activity)
-        itemRecyclerView.adapter = itemViewModel.adapter
+        itemRecyclerView.adapter = itemViewModel.myItems.adapter
         setFabButton()
     }
 

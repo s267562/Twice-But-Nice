@@ -31,7 +31,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         setHasOptionsMenu(true)
-        supFragmentManager = this!!.requireFragmentManager()
+        supFragmentManager = this.requireFragmentManager()
         return inflater.inflate(R.layout.fragment_on_sale_list, container, false)
     }
 
@@ -41,8 +41,8 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         itemViewModel.loader.observe(viewLifecycleOwner, Observer {
             if (itemViewModel.isNotLoading()) {
                 // loader ended
-                itemViewModel.adapterOnSale.setItems(itemViewModel.itemsOnSale)
-                if(itemViewModel.itemsOnSale.size == 0) {
+                itemViewModel.onSaleItems.adapter.setItems(itemViewModel.onSaleItems.items)
+                if(itemViewModel.onSaleItems.items.size == 0) {
                     emptyListLayout.visibility = View.VISIBLE
                     itemRecyclerView.visibility = GONE
                 } else {
@@ -60,7 +60,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         super.onViewCreated(view, savedInstanceState)
         itemRecyclerView.setHasFixedSize(true)
         itemRecyclerView.layoutManager = LinearLayoutManager(this.activity)
-        itemRecyclerView.adapter = itemViewModel.adapterOnSale
+        itemRecyclerView.adapter = itemViewModel.onSaleItems.adapter
         itemViewModel.loadItemsOnSale()
     }
 
@@ -69,18 +69,14 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.search_menu, menu)
 
-        var itemMenu: MenuItem = menu!!.findItem(R.id.menu_search)
+        val itemMenu: MenuItem = menu.findItem(R.id.menu_search)
 
-        if(itemMenu != null){
-            searchView = itemMenu.actionView as SearchView
+        searchView = itemMenu.actionView as SearchView
 
-            val editText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
-            editText.hint = "Type any kind of info"
+        val editText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+        editText.hint = "Type any kind of info"
 
-            searchView.setOnQueryTextListener(this)
-        } else {
-            //Toast.makeText(activity, "WRONG", Toast.LENGTH_LONG).show()
-        }
+        searchView.setOnQueryTextListener(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -104,7 +100,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        itemViewModel.adapterOnSale.filter.filter(newText)
+        itemViewModel.onSaleItems.adapter.filter.filter(newText)
         return true
     }
 }

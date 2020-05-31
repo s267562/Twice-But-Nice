@@ -32,8 +32,8 @@ class UsersInterestedFragment : Fragment() {
         itemViewModel.loader.observe(viewLifecycleOwner, Observer {
             if (itemViewModel.isNotLoading()) {
                 // loader ended
-                itemViewModel.adapterUser.setUsers(itemViewModel.users)
-                if(itemViewModel.users.size == 0) {
+                itemViewModel.interestedUsers.adapter.setUsers(itemViewModel.interestedUsers.users)
+                if(itemViewModel.interestedUsers.users.size == 0) {
                     emptyListLayout.visibility = View.VISIBLE
                     itemRecyclerView.visibility = View.GONE
                 } else {
@@ -50,6 +50,6 @@ class UsersInterestedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         itemRecyclerView.layoutManager = LinearLayoutManager(this.activity)
-        itemRecyclerView.adapter =  this.itemViewModel.adapterUser
+        itemRecyclerView.adapter =  itemViewModel.interestedUsers.adapter
     }
 }
