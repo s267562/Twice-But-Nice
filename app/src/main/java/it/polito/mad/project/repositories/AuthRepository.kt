@@ -9,7 +9,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.iid.InstanceIdResult
-import it.polito.mad.project.models.User
+import it.polito.mad.project.models.user.User
 
 class AuthRepository {
 

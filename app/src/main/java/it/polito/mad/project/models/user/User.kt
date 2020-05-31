@@ -1,4 +1,4 @@
-package it.polito.mad.project.models
+package it.polito.mad.project.models.user
 
 import com.google.firebase.firestore.Exclude
 import java.io.Serializable

@@ -10,8 +10,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import it.polito.mad.project.models.User
+import it.polito.mad.project.models.user.User
 import java.io.File
 import java.io.FileOutputStream
 
@@ -34,7 +33,7 @@ class UserRepository {
         return database.collection("users").document(userId).get()
     }
     
-    private fun saveUserPhoto(user:User) {
+    private fun saveUserPhoto(user: User) {
         if(user.photoProfilePath.isNotBlank() && File(user.photoProfilePath).isFile ) {
             val userId = auth.currentUser!!.uid
             val photoRef = storage.reference.child("user/$userId")

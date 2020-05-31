@@ -4,13 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseUser
 import it.polito.mad.project.commons.viewmodels.LoadingViewModel
-import it.polito.mad.project.models.User
+import it.polito.mad.project.models.user.User
 import it.polito.mad.project.repositories.AuthRepository
 
 class AuthViewModel : LoadingViewModel() {
-    var loggedIn = MutableLiveData(false)
-    var loggedOut = MutableLiveData(false)
-    var registeredIn = MutableLiveData(false)
+    val loggedIn = MutableLiveData(false)
+    val loggedOut = MutableLiveData(false)
+    val registeredIn = MutableLiveData(false)
 
     var errorMessage = ""
     private var authUserId: String = ""
