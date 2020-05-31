@@ -73,7 +73,7 @@ class SignInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        log_email.doOnTextChanged { text, start, count, after ->
+        log_email.doOnTextChanged { text, _, _, _ ->
             if(!text.isNullOrBlank()) {
                 /* email not blank */
                 if(!signiInEnable[EMAIL]) signiInEnable[EMAIL] = true
@@ -89,7 +89,7 @@ class SignInFragment : Fragment() {
             }
         }
 
-        log_password.doOnTextChanged { text, start, count, after ->
+        log_password.doOnTextChanged { text, _, _, _ ->
             if(!text.isNullOrBlank()) {
                 /* password not blank */
                 if(!signiInEnable[PASSWORD]) signiInEnable[PASSWORD] = true

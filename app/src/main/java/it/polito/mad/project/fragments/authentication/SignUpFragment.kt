@@ -7,14 +7,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.text.HtmlCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
-import it.polito.mad.project.models.User
+import it.polito.mad.project.models.user.User
 import it.polito.mad.project.viewmodels.AuthViewModel
 import kotlinx.android.synthetic.main.fragment_signup.*
 
@@ -54,7 +53,7 @@ class SignUpFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        au_fullname.doOnTextChanged { text, start, count, after ->
+        au_fullname.doOnTextChanged { text, _, _, _ ->
             if(!text.isNullOrBlank()) {
                 /* full name not blank */
                 if(!registerEnable[FULL_NAME]) registerEnable[FULL_NAME] = true
@@ -74,7 +73,7 @@ class SignUpFragment: Fragment() {
             }
         }
 
-        au_nickname.doOnTextChanged { text, start, count, after ->
+        au_nickname.doOnTextChanged { text, _, _, _ ->
             if(!text.isNullOrBlank()) {
                 /* nickname not blank */
                 if(!registerEnable[NICKNAME]) registerEnable[NICKNAME] = true
@@ -94,7 +93,7 @@ class SignUpFragment: Fragment() {
             }
         }
 
-        au_email.doOnTextChanged { text, start, count, after ->
+        au_email.doOnTextChanged { text,  _, _, _ ->
             if(!text.isNullOrBlank()) {
                 /* email not blank */
                 if(!registerEnable[EMAIL]) registerEnable[EMAIL] = true
@@ -114,7 +113,7 @@ class SignUpFragment: Fragment() {
             }
         }
 
-        au_location.doOnTextChanged { text, start, count, after ->
+        au_location.doOnTextChanged { text,  _, _, _ ->
             if(!text.isNullOrBlank()) {
                 /* location not blank */
                 if(!registerEnable[LOCATION]) registerEnable[LOCATION] = true
@@ -134,7 +133,7 @@ class SignUpFragment: Fragment() {
             }
         }
 
-        au_password.doOnTextChanged { text, start, count, after ->
+        au_password.doOnTextChanged { text, _, _, _ ->
             if(!text.isNullOrBlank()) {
                 /* full name not blank */
                 if(!registerEnable[PASSWORD]) registerEnable[PASSWORD] = true
