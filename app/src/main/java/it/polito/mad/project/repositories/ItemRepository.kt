@@ -11,9 +11,8 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import it.polito.mad.project.models.Item
-import it.polito.mad.project.models.ItemInterest
+import it.polito.mad.project.models.item.Item
+import it.polito.mad.project.models.item.ItemInterest
 import java.io.File
 import java.io.FileOutputStream
 
