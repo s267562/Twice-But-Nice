@@ -1,17 +1,18 @@
 package it.polito.mad.project.viewmodels
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.project.adapters.ItemAdapter
 import it.polito.mad.project.adapters.ItemOnSaleAdapter
 import it.polito.mad.project.adapters.UserAdapter
 import it.polito.mad.project.commons.viewmodels.LoadingViewModel
-import it.polito.mad.project.models.Item
-import it.polito.mad.project.models.User
-import it.polito.mad.project.models.ItemInterest
+import it.polito.mad.project.models.item.Item
+import it.polito.mad.project.models.item.ItemDetail
+import it.polito.mad.project.models.item.ItemInterest
+import it.polito.mad.project.models.item.ItemList
+import it.polito.mad.project.models.user.User
+import it.polito.mad.project.models.user.UserList
 import it.polito.mad.project.repositories.ItemRepository
 import java.io.File
 
@@ -20,23 +21,16 @@ class ItemViewModel : LoadingViewModel() {
     private val itemRepository = ItemRepository()
 
     // User items
-    var items: MutableList<Item> = mutableListOf()
-    var adapter: ItemAdapter = ItemAdapter(items)
+    val myItems = ItemList(ItemAdapter(mutableListOf()))
 
-    // All items
-    var itemsOnSale: MutableList<Item> = mutableListOf()
-    var adapterOnSale: ItemOnSaleAdapter = ItemOnSaleAdapter(itemsOnSale)
+    // On Sale items
+    val onSaleItems = ItemList(ItemOnSaleAdapter(mutableListOf()))
 
-    // Single item detail
-    var item = MutableLiveData<Item>()
-    var itemPhoto = MutableLiveData<Bitmap>()
-    var itemInterest = ItemInterest(false)
-    var localItem: Item? = null
-    var localItemImage: Bitmap? = null
+    // Interested users
+    val interestedUsers = UserList(UserAdapter(mutableListOf()))
 
-    //user interested to item
-    var users: MutableList<User> = mutableListOf()
-    var adapterUser: UserAdapter = UserAdapter(users)
+    // Single item detail loaded
+    val item = ItemDetail()
 
     init {
         loadItems()
@@ -47,8 +41,9 @@ class ItemViewModel : LoadingViewModel() {
         val userId = itemRepository.getAuthUserId()
         itemRepository.getItemsByUserId(userId)
             .addOnSuccessListener { it1 ->
-                items.clear()
-                items.addAll(it1.toObjects(Item::class.java))
+                myItems.items.clear()
+                myItems.items.addAll(it1.toObjects(Item::class.java))
+                myItems
                 loadItemsOnSale()
                 popLoader()
                 error = false
@@ -64,8 +59,8 @@ class ItemViewModel : LoadingViewModel() {
         itemRepository.getAvailableItems()
             .addOnSuccessListener {
                 // Items on sale are all items sub user items
-                itemsOnSale.clear()
-                itemsOnSale.addAll(it.toObjects(Item::class.java).subtract(items.toList()))
+                onSaleItems.items.clear()
+                onSaleItems.items.addAll(it.toObjects(Item::class.java).subtract(myItems.items.toList()))
                 popLoader()
                 error = false
             }.addOnFailureListener {
@@ -83,18 +78,18 @@ class ItemViewModel : LoadingViewModel() {
         val isNewItem = item.id == null
         if (isNewItem) {
             item.user = itemRepository.getAuthUserId()
-            item.id = "${item.user}-${items.size}"
+            item.id = "${item.user}-${myItems.items.size}"
         }
         pushLoader()
         return itemRepository.saveItem(item)
             .addOnSuccessListener {
-                this.item.value = item
+                this.item.data.value = item
                 if (isNewItem) {
-                    items.add(item)
+                    myItems.items.add(item)
                 } else {
                     var pos = -1
-                    items.forEachIndexed {index, i -> if (i.id == item.id) pos = index}
-                    items[pos] = item
+                    myItems.items.forEachIndexed {index, i -> if (i.id == item.id) pos = index}
+                    myItems.items[pos] = item
                 }
                 popLoader()
                 error = false
@@ -105,15 +100,13 @@ class ItemViewModel : LoadingViewModel() {
     }
 
     fun loadItem(id: String) {
-        if (id != item.value?.id) {
-            item.value = null
-            itemPhoto.value = null
-            itemInterest = ItemInterest(false)
+        if (id != item.data.value?.id) {
+            item.data.value = null
             pushLoader()
             itemRepository.getItem(id)
                 .addOnSuccessListener { it ->
                     val localItem = it.toObject(Item::class.java) as Item
-                    item.value = localItem
+                    item.data.value = localItem
                     loadItemInterest(localItem.id!!)
                     popLoader()
 
@@ -131,7 +124,11 @@ class ItemViewModel : LoadingViewModel() {
         itemRepository.getItemInterest(itemRepository.getAuthUserId(), itemId)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    itemInterest = it.result?.toObject(ItemInterest::class.java)?:itemInterest
+                    val interest = it.result?.toObject(ItemInterest::class.java)
+                    if (interest != null) {
+                        item.interest.value = interest.value
+                        item.interest.userId = interest.userId
+                    }
                 }
                 popLoader()
             }
@@ -141,12 +138,12 @@ class ItemViewModel : LoadingViewModel() {
         if (imagePath.isNotBlank()) {
             val image = BitmapFactory.decodeFile(imagePath)
             if (image != null) {
-                itemPhoto.value = image
+                item.image.value = image
             } else {
                 val localFile = File.createTempFile(id,".jpg")
                 itemRepository.getItemImage(id, localFile).addOnSuccessListener {
-                    itemPhoto.value =  BitmapFactory.decodeFile(localFile.path)
-                    item.value!!.imagePath = localFile.path
+                    item.image.value =  BitmapFactory.decodeFile(localFile.path)
+                    item.data.value!!.imagePath = localFile.path
                 }
             }
 
@@ -155,7 +152,7 @@ class ItemViewModel : LoadingViewModel() {
 
     /** Add listener to the current item docuement **/
     fun listenToChanges(): ListenerRegistration {
-        return itemRepository.getItemDocument(item.value!!.id!!)
+        return itemRepository.getItemDocument(item.data.value!!.id!!)
             .addSnapshotListener { itemSnapshot, e ->
                 // if there's an exception, we have to skip
                 if (e != null) {
@@ -163,16 +160,17 @@ class ItemViewModel : LoadingViewModel() {
                 }
                 // if we are here, this means we didn't meet any exception
                 if (itemSnapshot != null) {
-                    item.value = itemSnapshot.toObject(Item::class.java)
+                    item.data.value = itemSnapshot.toObject(Item::class.java)!!
                 }
             }
     }
 
     fun updateItemInterest():Task<Void> {
         pushLoader()
-        itemInterest.interest = !itemInterest.interest
-        itemInterest.userId = itemRepository.getAuthUserId()
-        return itemRepository.saveItemInterest(itemInterest.userId, item.value!!.id!!, itemInterest)
+        val interest =  item.interest
+        interest.value = !interest.value
+        interest.userId = itemRepository.getAuthUserId()
+        return itemRepository.saveItemInterest(interest.userId, item.data.value!!.id!!, interest)
             .addOnSuccessListener {
                 popLoader()
                 error = false
@@ -185,12 +183,12 @@ class ItemViewModel : LoadingViewModel() {
 
     fun loadInterestedUsers() {
         pushLoader()
-        users.clear()
-        itemRepository.getInterestedUserIds(item.value!!.id!!).addOnSuccessListener { userIdsSnap ->
+        interestedUsers.users.clear()
+        itemRepository.getInterestedUserIds(item.data.value!!.id!!).addOnSuccessListener { userIdsSnap ->
             val userIds = userIdsSnap.toObjects(ItemInterest::class.java).map { interest -> interest.userId }
             if (userIds.isNotEmpty()) {
                 itemRepository.getUsersByUserIds(userIds).addOnSuccessListener {
-                    users.addAll(it.toObjects(User::class.java))
+                    interestedUsers.users.addAll(it.toObjects(User::class.java))
                     popLoader()
                     error = false
                 }.addOnFailureListener{
