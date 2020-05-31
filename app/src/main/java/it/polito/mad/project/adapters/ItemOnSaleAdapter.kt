@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
 import it.polito.mad.project.fragments.advertisements.StringGlobal.Companion.globalFilter
-import it.polito.mad.project.models.Item
+import it.polito.mad.project.models.item.Item
 import kotlinx.android.synthetic.main.item.view.*
 import java.util.*
 

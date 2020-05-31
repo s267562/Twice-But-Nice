@@ -10,7 +10,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
-import it.polito.mad.project.models.Item
+import it.polito.mad.project.models.item.Item
 
 class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>(){
 
@@ -40,7 +40,8 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
 
     fun setItems(newItems: MutableList<Item>) {
         val diffs = DiffUtil.calculateDiff(ItemDiffCallback(items, newItems))
-        items = newItems //update data
+        items.clear()
+        items.addAll(newItems)
         diffs.dispatchUpdatesTo(this) //animate UI
     }
 

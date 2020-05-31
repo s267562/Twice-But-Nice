@@ -1,7 +1,7 @@
 package it.polito.mad.project.adapters
 
 import androidx.recyclerview.widget.DiffUtil
-import it.polito.mad.project.models.Item
+import it.polito.mad.project.models.item.Item
 
 class ItemDiffCallback(private val items: MutableList<Item>,
                        private val newItems: MutableList<Item>): DiffUtil.Callback() {
