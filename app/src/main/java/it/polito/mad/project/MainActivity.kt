@@ -86,13 +86,13 @@ class MainActivity : AppCompatActivity() {
         val fullName = headerView.findViewById<TextView>(R.id.full_name)
         val userPhoto = headerView.findViewById<ImageView>(R.id.user_photo)
 
-        userViewModel.user.observe(this, Observer{
+        userViewModel.user.data.observe(this, Observer{
             if (it != null && authViewModel.getAuthUserId() == it.id) {
                 if (it.name.isNotEmpty())
                     fullName.text = it.name
             }
         })
-        userViewModel.userPhotoProfile.observe(this, Observer {
+        userViewModel.user.image.observe(this, Observer {
             if (it != null && authViewModel.getAuthUserId() == userViewModel.getUserId()) {
                 userPhoto.setImageBitmap(it)
             }
