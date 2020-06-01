@@ -11,11 +11,12 @@
     <string name="action_edit">Edit</string>
     <string name="action_save">Save</string>
     <string name="menu_home">Home</string>
-    <string name="menu_profile">Profile</string>
+    <string name="menu_profile">Profile Details</string>
+    <string name="profile">Profile</string>
     <string name="menu_edit_profile">Edit Profile</string>
     <string name="menu_on_sale">On Sale</string>
     <string name="menu_advertisements">My Advertisements</string>
-    <string name="menu_show_advertisement">Details</string>
+    <string name="menu_show_advertisement">Item Details</string>
     <string name="menu_edit_advertisement">Edit Item</string>
     <string name="items_of_interest_list">List of Interested Items</string>
     <string name="bought_items_list">List of Bought Items</string>

@@ -1,5 +1,9 @@
 package it.polito.mad.project.fragments.advertisements
 
+import android.app.AlertDialog
+import android.content.DialogInterface
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -8,25 +12,24 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.messaging.FirebaseMessaging
-
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
-import it.polito.mad.project.viewmodels.UserViewModel
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.viewmodels.ItemViewModel
+import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_item_details.*
-import kotlinx.android.synthetic.main.fragment_item_details.item_descr
-import kotlinx.android.synthetic.main.fragment_item_details.item_exp
-import kotlinx.android.synthetic.main.fragment_item_details.item_location
-import kotlinx.android.synthetic.main.fragment_item_details.item_photo
-import kotlinx.android.synthetic.main.fragment_item_details.item_price
-import kotlinx.android.synthetic.main.fragment_item_details.item_title
-import kotlinx.android.synthetic.main.fragment_item_details.loadingLayout
 import org.json.JSONObject
+import java.io.IOException
+import java.util.*
 
-class ItemDetailsFragment : NotificationFragment() {
+class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
 
     private lateinit var itemViewModel: ItemViewModel
     private lateinit var userViewModel: UserViewModel
@@ -34,6 +37,9 @@ class ItemDetailsFragment : NotificationFragment() {
     private var isMyItem: Boolean = false
 
     private var listenerRegistration: ListenerRegistration? = null
+
+    private lateinit var googleMap: GoogleMap
+    private lateinit var geocode : Geocoder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,6 +113,26 @@ class ItemDetailsFragment : NotificationFragment() {
         setFabButton()
         itemViewModel.loadItem(arguments?.getString("ItemId")!!)
 
+        item_location.setOnClickListener {
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
+
+            val mapView = dialogView.findViewById<MapView>(R.id.map)
+
+            Toast.makeText(context, item_location.text.toString(), Toast.LENGTH_SHORT).show()
+
+            if(mapView != null) {
+                mapView.onCreate(null)
+                mapView.onResume()
+                mapView.getMapAsync(this)
+            }
+
+            val builder = AlertDialog.Builder(context).setView(dialogView)
+                .setNegativeButton("Close Map",
+                    DialogInterface.OnClickListener { dialog, id ->
+                        dialog.cancel()
+                    })
+            val alertDialog = builder.show()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -153,6 +179,33 @@ class ItemDetailsFragment : NotificationFragment() {
         interestedUsersFab.setOnClickListener{
             itemViewModel.loadInterestedUsers()
             this.findNavController().navigate(R.id.action_showItemFragment_to_usersInterestedFragment)
+        }
+    }
+
+    override fun onMapReady(gMap: GoogleMap?) {
+        gMap?.let {
+            googleMap = it
+        }
+
+        geocode = Geocoder(context?.applicationContext, Locale.getDefault())
+
+        gMap?.uiSettings?.isZoomControlsEnabled = true
+        gMap?.uiSettings?.isMapToolbarEnabled = true
+        gMap?.uiSettings?.isMyLocationButtonEnabled = true
+        gMap?.uiSettings?.isCompassEnabled = true
+
+        try {
+            var addr = geocode.getFromLocationName(item_location.text.toString(), 1)
+            if(addr.size > 0){
+                var address : Address = addr.get(0)
+                gMap?.addMarker(
+                    MarkerOptions()
+                        .position(LatLng(address.latitude, address.longitude))
+                        .title("Item Current Location")
+                )
+            }
+        } catch (e: IOException){
+            e.printStackTrace()
         }
     }
 }

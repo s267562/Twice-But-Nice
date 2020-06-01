@@ -14,7 +14,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import it.polito.mad.project.R
 
-class MapViewFragment : DialogFragment(), OnMapReadyCallback {
+class MapEditFragment : DialogFragment(), OnMapReadyCallback {
 
     private lateinit var googleMap: GoogleMap
 
@@ -37,6 +37,10 @@ class MapViewFragment : DialogFragment(), OnMapReadyCallback {
 
             builder.setView(viewToInflate)
                 // Add action buttons
+                .setPositiveButton("Set Location",
+                    DialogInterface.OnClickListener{ dialog, id ->
+                        dialog.cancel()
+                    })
                 .setNegativeButton("Close Map",
                     DialogInterface.OnClickListener { dialog, id ->
                         dialog.cancel()
@@ -50,6 +54,11 @@ class MapViewFragment : DialogFragment(), OnMapReadyCallback {
             googleMap = it
 
         }
+
+        gMap?.uiSettings?.isZoomControlsEnabled = true
+        gMap?.uiSettings?.isMapToolbarEnabled = true
+        gMap?.uiSettings?.isMyLocationButtonEnabled = true
+        gMap?.uiSettings?.isCompassEnabled = true
 
         gMap?.setOnMapClickListener (object : GoogleMap.OnMapClickListener {
             override fun onMapClick(latLng: LatLng?) {

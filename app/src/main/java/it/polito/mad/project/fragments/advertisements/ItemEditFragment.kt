@@ -25,7 +25,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
-import it.polito.mad.project.commons.fragments.MapViewFragment
+import it.polito.mad.project.commons.fragments.MapEditFragment
 import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.item.Item
@@ -144,7 +144,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
     }
 
     private fun openMap(){
-        val newFragment = MapViewFragment()
+        val newFragment = MapEditFragment()
         newFragment.show(supFragmentManager, "dialog")
     }
 
@@ -470,9 +470,4 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         galleryIntent.action = Intent.ACTION_GET_CONTENT
         startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), selectImage)
     }
-
-    /*override fun onMapReady(p0: GoogleMap?) {
-        MapsInitializer.initialize(context)
-        map = p0!!
-    }*/
 }

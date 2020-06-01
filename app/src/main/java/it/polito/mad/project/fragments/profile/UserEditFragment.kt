@@ -9,6 +9,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
+import android.location.Geocoder
+import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -25,8 +27,9 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.Observer
+import com.google.android.gms.location.LocationServices
 import it.polito.mad.project.R
-import it.polito.mad.project.commons.fragments.MapViewFragment
+import it.polito.mad.project.commons.fragments.MapEditFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.user.User
 import it.polito.mad.project.viewmodels.UserViewModel
@@ -51,9 +54,6 @@ class UserEditFragment : Fragment() {
     private var imagePath: String? = null
     private var savedImagePath: String? =null
     private val selectImage = 2
-
-    //private lateinit var map: GoogleMap
-    //private lateinit var mapView: MapView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -141,21 +141,36 @@ class UserEditFragment : Fragment() {
         }
 
         btnMapOpen.setOnClickListener {
-            openMap()
+            if(ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED){
+                // Permission in granted
+                val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext)
+
+                fusedLocationProviderClient.lastLocation.addOnCompleteListener {
+                    var location : Location = it.result!!
+                    if(location != null) {
+                        try {
+                            var geoCoder = Geocoder(mContext, Locale.getDefault())
+                            var addr = geoCoder.getFromLocation(location.latitude, location.longitude, 1)
+                            Toast.makeText(mContext, addr.get(0).locality, Toast.LENGTH_SHORT).show()
+
+
+                        } catch (e: IOException){
+                            e.printStackTrace()
+                        }
+
+                    }
+                }
+                openMap()
+            } else {
+                // Permission is denied
+                requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 44)
+            }
         }
-
-        // set the Map View
-        /*mapView = view.findViewById(R.id.mapEditProfile)
-
-        if(mapView != null) {
-            mapView.onCreate(null)
-            mapView.onResume()
-            mapView.getMapAsync(this)
-        }*/
     }
 
     private fun openMap(){
-        val newFragment = MapViewFragment()
+        val newFragment = MapEditFragment()
         newFragment.show(supFragmentManager, "dialog")
     }
 
@@ -233,6 +248,14 @@ class UserEditFragment : Fragment() {
                 openCamera()
             } else {
                 Toast.makeText(mContext, "Camera permission has been denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+        if(requestCode == 44){
+            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                openMap()
+            } else {
+                Toast.makeText(mContext, "Map unopenable", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -382,10 +405,4 @@ class UserEditFragment : Fragment() {
         galleryIntent.action = Intent.ACTION_GET_CONTENT
         startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), selectImage)
     }
-
-    /*override fun onMapReady(p0: GoogleMap?) {
-        MapsInitializer.initialize(context)
-        map = p0!!
-    }*/
-
 }
