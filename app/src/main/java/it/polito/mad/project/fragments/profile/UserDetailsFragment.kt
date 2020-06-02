@@ -7,22 +7,17 @@ import android.location.Geocoder
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import it.polito.mad.project.R
-import androidx.fragment.app.Fragment
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import it.polito.mad.project.R
 import it.polito.mad.project.viewmodels.AuthViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
-import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
-import kotlinx.android.synthetic.main.fragment_show_profile.loadingLayout
 import java.io.IOException
 import java.util.*
 
@@ -155,7 +150,7 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
             googleMap = it
         }
 
-        var geocode = Geocoder(context?.applicationContext, Locale.getDefault())
+        var geocode = Geocoder(requireContext(), Locale.getDefault())
 
         gMap?.uiSettings?.isZoomControlsEnabled = true
         gMap?.uiSettings?.isMapToolbarEnabled = true
@@ -163,17 +158,21 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
         gMap?.uiSettings?.isCompassEnabled = true
 
         try {
-            var addr = geocode.getFromLocationName(location.text.toString(), 1)
+            var addr : List<Address> = geocode.getFromLocationName(location.text.toString(), 1)
             if(addr.size > 0){
                 var address : Address = addr.get(0)
+                val cameraPos = LatLng(address.latitude, address.longitude)
                 gMap?.addMarker(
                     MarkerOptions()
                         .position(LatLng(address.latitude, address.longitude))
-                        .title("Item Current Location")
+                        .title("User Current Location")
                 )
+                gMap?.moveCamera(CameraUpdateFactory.newLatLng(cameraPos))
+                gMap?.animateCamera(CameraUpdateFactory.zoomTo(7.5F))
             }
         } catch (e: IOException){
             e.printStackTrace()
         }
     }
+
 }

@@ -12,6 +12,7 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -198,11 +199,14 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
             var addr = geocode.getFromLocationName(item_location.text.toString(), 1)
             if(addr.size > 0){
                 var address : Address = addr.get(0)
+                val cameraPos = LatLng(address.latitude, address.longitude)
                 gMap?.addMarker(
                     MarkerOptions()
                         .position(LatLng(address.latitude, address.longitude))
                         .title("Item Current Location")
                 )
+                gMap?.moveCamera(CameraUpdateFactory.newLatLng(cameraPos))
+                gMap?.animateCamera(CameraUpdateFactory.zoomTo(7.5F))
             }
         } catch (e: IOException){
             e.printStackTrace()
