@@ -103,7 +103,7 @@ class UserEditFragment : Fragment() {
         if (user.email.isNotEmpty())
             email.setText(user.email)
         if (user.location.isNotEmpty())
-            location.setText(user.location)
+            //location.setText(user.location)
         if (user.photoProfilePath.isNotEmpty()) {
             savedImagePath = user.photoProfilePath
             image = userViewModel.user.image.value
@@ -140,7 +140,7 @@ class UserEditFragment : Fragment() {
             userViewModel.user.image.value = image
         }
 
-        btnMapOpen.setOnClickListener {
+        location.setOnClickListener {
             if(ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED){
                 // Permission in granted
@@ -342,9 +342,9 @@ class UserEditFragment : Fragment() {
             dataInserted = false
 
         }
-        if (location.text.isNullOrBlank()){
-            location.error = "Insert full name"
-            dataInserted = false
+        if (location.toString().isNullOrBlank()){
+            //location.toString() = "Insert location name"
+            //dataInserted = false
         }
 
         if (!dataInserted){
@@ -354,7 +354,7 @@ class UserEditFragment : Fragment() {
         val name = full_name.text.toString()
         val nickname = nickname.text.toString()
         val email = email.text.toString()
-        val location = location.text.toString()
+        val location = location.toString()
         val path = savedImagePath
 
         val user = User(
@@ -398,7 +398,6 @@ class UserEditFragment : Fragment() {
         }
     }
 
-    // Methods to manage the camera
     private fun openGallery(){
         val galleryIntent = Intent()
         galleryIntent.type = "image/*"

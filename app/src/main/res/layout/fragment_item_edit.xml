@@ -340,32 +340,16 @@
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
-                    <com.google.android.material.textfield.TextInputLayout
+                    <TextView
+                        android:id="@+id/item_location"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        app:hintEnabled="false"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeWidth="1dp"
-                        app:boxStrokeWidthFocused="1dp"
-                        android:textColorHint="@android:color/tertiary_text_dark">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/item_location"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Enter your location"
-                            android:imeOptions="actionNext"
-                            android:inputType="textCapWords"
-                            android:maxLines="1"
-                            android:layout_marginBottom="16dp" />
-
-                        <Button
-                            android:id="@+id/btnOpenMap"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:text="Open Map"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+                        android:textColor="@android:color/primary_text_light"
+                        android:hint="Location"
+                        android:maxLines="1"
+                        android:drawableRight="@drawable/ic_location_24dp"
+                        android:drawableTint="@color/colorAccent" />
 
                     <TextView
                         android:layout_width="wrap_content"

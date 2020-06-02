@@ -21,7 +21,6 @@ import kotlinx.android.synthetic.main.fragment_show_profile.*
 import java.io.IOException
 import java.util.*
 
-
 class UserDetailsFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var userViewModel: UserViewModel
@@ -174,5 +173,6 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
             e.printStackTrace()
         }
     }
+    // Background thread
 
 }

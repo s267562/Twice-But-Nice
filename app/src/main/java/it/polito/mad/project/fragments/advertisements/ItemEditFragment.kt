@@ -75,7 +75,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 if (it.categoryPos >= 0)
                     item_category_spinner.setSelection(localIt.categoryPos)
                 item_descr.setText(localIt.description)
-                item_location.setText(localIt.location)
+                //item_location.setText(localIt.location)
                 item_price.setText(localIt.price)
                 item_exp.text = localIt.expiryDate
                 if(localIt.statusPos >= 0){
@@ -124,7 +124,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         setCategory()
         setStatusSpinner()
 
-        btnOpenMap.setOnClickListener {
+        item_location.setOnClickListener {
             openMap()
         }
 
@@ -434,7 +434,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         val updateItem = itemViewModel.item.localData!!
 
         updateItem.title = item_title.text.toString()
-        updateItem.location = item_location.text.toString()
+        //updateItem.location = item_location.text.toString()
         updateItem.description = item_descr.text.toString()
         updateItem.expiryDate = item_exp.text.toString()
         updateItem.price = item_price.text.toString()
