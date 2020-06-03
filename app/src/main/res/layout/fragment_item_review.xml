@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
-        android:id="@+id/itemTitle"
+        android:id="@+id/reviewTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/itemTitle"
+        app:layout_constraintTop_toBottomOf="@id/reviewTitle"
         app:layout_constraintEnd_toEndOf="parent"
         android:numStars="5"
         android:stepSize="1"
@@ -49,7 +49,7 @@
         app:hintEnabled="false">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/full_name"
+            android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
