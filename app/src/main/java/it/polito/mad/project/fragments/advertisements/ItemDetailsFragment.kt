@@ -83,7 +83,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
                 if (!isMyItem) {
                     if (itemViewModel.item.data.value!!.status == "Available") {
                         var interestFabDrawableId: Int = R.drawable.ic_favorite_border_white_24dp
-                        if (itemViewModel.item.interest.value)
+                        if (itemViewModel.item.interest.interested)
                             interestFabDrawableId = R.drawable.ic_favorite_white_24dp
                         interestFab.setImageResource(interestFabDrawableId)
                         interestFab.show()
@@ -170,7 +170,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
                     val item = itemViewModel.item.data.value as Item
                     val nickname = userViewModel.user.data.value!!.nickname
                     val body = JSONObject().put("ItemId", item.id).put("IsMyItem", true)
-                    if (itemViewModel.item.interest.value) {
+                    if (itemViewModel.item.interest.interested) {
                         FirebaseMessaging.getInstance().subscribeToTopic(item.id!!)
                         sendNotification(item.user, item.title, "$nickname is interested in your item", body)
                     }
