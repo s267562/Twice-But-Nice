@@ -190,5 +190,12 @@
         <action
             android:id="@+id/action_boughtItemsListFragment_to_showItemFragment"
             app:destination="@id/showItemFragment" />
+        <action
+            android:id="@+id/action_boughtItemsListFragment_to_itemReviewFragment"
+            app:destination="@id/itemReviewFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/itemReviewFragment"
+        android:name="it.polito.mad.project.fragments.advertisements.ItemReviewFragment"
+        android:label="ItemReviewFragment" />
 </navigation>

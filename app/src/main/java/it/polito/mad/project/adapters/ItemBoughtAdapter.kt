@@ -35,7 +35,7 @@ class ItemBoughtAdapter (private var itemsBought: MutableList<Item>) : RecyclerV
             },
             {
                 val bundle = bundleOf("ItemId" to itemsBought[position].id)
-                holder.itemView.findNavController().navigate(R.id.action_boughtItemsListFragment_to_showItemFragment, bundle)
+                holder.itemView.findNavController().navigate(R.id.action_boughtItemsListFragment_to_itemReviewFragment, bundle)
             })
     }
 
