@@ -14,14 +14,19 @@ import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.models.item.ItemDetail
 import it.polito.mad.project.models.item.ItemInterest
 import it.polito.mad.project.models.item.ItemList
+import it.polito.mad.project.models.review.Review
+import it.polito.mad.project.models.review.ReviewDetail
 import it.polito.mad.project.models.user.User
 import it.polito.mad.project.models.user.UserList
 import it.polito.mad.project.repositories.ItemRepository
+import it.polito.mad.project.repositories.ReviewRepository
 import java.io.File
 
 class ItemViewModel : LoadingViewModel() {
 
     private val itemRepository = ItemRepository()
+
+    private val reviewRepository = ReviewRepository()
 
     // User items
     val myItems = ItemList(ItemAdapter(mutableListOf()))
@@ -33,10 +38,13 @@ class ItemViewModel : LoadingViewModel() {
     val interestedUsers = UserList(UserAdapter(this, mutableListOf()))
 
     //Bought Items
-    val boughtItems = ItemList(ItemBoughtAdapter(mutableListOf()))
+    val boughtItems = ItemList(ItemBoughtAdapter(this, mutableListOf()))
 
     // Single item detail loaded
     val item = ItemDetail()
+
+    // Single item detail loaded
+    val review = ReviewDetail()
 
     init {
         loadItems()
@@ -229,7 +237,29 @@ class ItemViewModel : LoadingViewModel() {
         }
     }
 
-    fun setItemSold() {
 
+    fun saveReview(review: Review): Task<Void> {
+        pushLoader()
+        return reviewRepository.saveReview(review).addOnSuccessListener {
+            popLoader()
+        }
     }
+
+    fun getReviewById(reviewId: String) {
+        pushLoader()
+        reviewRepository.getReviewById(reviewId)
+            .addOnSuccessListener { it ->
+                if(it.toObject(Review::class.java) != null) {
+                    review.data.value = it.toObject(Review::class.java) as Review
+                } else {
+                    review.data.value = null
+                }
+                popLoader()
+                error = false
+            }.addOnFailureListener {
+                popLoader()
+                error = true
+            }
+    }
+
 }
