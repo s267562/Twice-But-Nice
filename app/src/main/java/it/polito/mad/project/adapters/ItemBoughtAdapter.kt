@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.RatingBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.os.bundleOf
@@ -52,6 +53,7 @@ class ItemBoughtAdapter (private var itemsBought: MutableList<Item>) : RecyclerV
         private val price: TextView = view.findViewById(R.id.item_price)
         private val container: CardView = view.findViewById(R.id.item_container)
         private val button: Button = view.findViewById(R.id.item_review_button)
+        private val ratingBar: RatingBar = view.findViewById(R.id.item_rating)
 
         fun bind(item: Item, callback: (Int) -> Unit, callbackReview: (Int) -> Unit ) {
             val priceStr = "${item.price} €"
@@ -61,7 +63,16 @@ class ItemBoughtAdapter (private var itemsBought: MutableList<Item>) : RecyclerV
             price.text = priceStr
 
             container.setOnClickListener { callback(adapterPosition) }
-            button.setOnClickListener{callbackReview(adapterPosition)}
+            if(/*item.rating != null*/ adapterPosition%2 == 1 ) {
+                button.visibility = View.GONE
+                ratingBar.visibility = View.VISIBLE
+                // TODO ratingBar.rating = item.rating
+                ratingBar.rating = 3.7F
+            } else {
+                ratingBar.visibility = View.GONE
+                button.visibility = View.VISIBLE
+                button.setOnClickListener{callbackReview(adapterPosition)}
+            }
         }
 
         fun unbind() {
