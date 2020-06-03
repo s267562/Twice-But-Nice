@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
 import it.polito.mad.project.models.item.Item
+import it.polito.mad.project.models.review.Review
 import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_item_details.*
 
@@ -43,6 +44,10 @@ class ItemBoughtAdapter (private var itemViewModel: ItemViewModel, private var i
             })
     }
 
+    override fun onViewRecycled(holder: ItemBoughtAdapter.ViewHolder) {
+        holder.unbind()
+    }
+
     fun setItems(newItems: MutableList<Item>) {
         val diffs = DiffUtil.calculateDiff(ItemDiffCallback(itemsBought, newItems))
         itemsBought.clear()
@@ -66,20 +71,22 @@ class ItemBoughtAdapter (private var itemViewModel: ItemViewModel, private var i
             title.text = item.title
             price.text = priceStr
 
-            itemViewModel.getReviewById(item.id!!)
+            itemViewModel.getReviewById(item.id!!).addOnSuccessListener {
+                if (itemViewModel.review.data.value != null) {
+                    val rating = itemViewModel.review.data.value!!.rating
 
-            if(itemViewModel.review.data.value != null) {
-                val rating = itemViewModel.review.data.value!!.rating
+                    button.visibility = View.GONE
+                    ratingBar.visibility = View.VISIBLE
+                    ratingBar.rating = rating
 
-                button.visibility = View.GONE
-                ratingBar.visibility = View.VISIBLE
-                ratingBar.rating = rating
-
-            } else {
-                ratingBar.visibility = View.GONE
-                button.visibility = View.VISIBLE
-                button.setOnClickListener{callbackReview(adapterPosition)}
+                } else {
+                    ratingBar.visibility = View.GONE
+                    button.visibility = View.VISIBLE
+                    button.setOnClickListener{callbackReview(adapterPosition)}
+                }
             }
+
+            container.setOnClickListener{callback(adapterPosition)}
         }
 
         fun unbind() {

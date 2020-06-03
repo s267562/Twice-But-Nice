@@ -4,6 +4,7 @@ import android.app.Application
 import android.graphics.BitmapFactory
 import androidx.lifecycle.AndroidViewModel
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.project.adapters.ItemAdapter
 import it.polito.mad.project.adapters.ItemBoughtAdapter
@@ -245,21 +246,21 @@ class ItemViewModel : LoadingViewModel() {
         }
     }
 
-    fun getReviewById(reviewId: String) {
+    fun getReviewById(reviewId: String): Task<DocumentSnapshot> {
         pushLoader()
-        reviewRepository.getReviewById(reviewId)
-            .addOnSuccessListener { it ->
-                if(it.toObject(Review::class.java) != null) {
-                    review.data.value = it.toObject(Review::class.java) as Review
-                } else {
-                    review.data.value = null
-                }
-                popLoader()
-                error = false
-            }.addOnFailureListener {
-                popLoader()
-                error = true
-            }
+        return reviewRepository.getReviewById(reviewId)
+                    .addOnSuccessListener { it ->
+                        if(it.toObject(Review::class.java) != null) {
+                            review.data.value = it.toObject(Review::class.java) as Review
+                        } else {
+                            review.data.value = null
+                        }
+                        popLoader()
+                        error = false
+                    }.addOnFailureListener {
+                        popLoader()
+                        error = true
+                    }
     }
 
 }
