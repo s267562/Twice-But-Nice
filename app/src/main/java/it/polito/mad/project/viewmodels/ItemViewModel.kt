@@ -1,6 +1,8 @@
 package it.polito.mad.project.viewmodels
 
+import android.app.Application
 import android.graphics.BitmapFactory
+import androidx.lifecycle.AndroidViewModel
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.project.adapters.ItemAdapter
@@ -28,7 +30,7 @@ class ItemViewModel : LoadingViewModel() {
     val onSaleItems = ItemList(ItemOnSaleAdapter(mutableListOf()))
 
     // Interested users
-    val interestedUsers = UserList(UserAdapter(mutableListOf()))
+    val interestedUsers = UserList(UserAdapter(this, mutableListOf()))
 
     //Bought Items
     val boughtItems = ItemList(ItemBoughtAdapter(mutableListOf()))
@@ -225,5 +227,9 @@ class ItemViewModel : LoadingViewModel() {
             popLoader()
             error=true
         }
+    }
+
+    fun setItemSold() {
+
     }
 }
