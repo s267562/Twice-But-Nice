@@ -149,6 +149,8 @@ class ItemViewModel : LoadingViewModel() {
                     if (interest != null) {
                         item.interest.interested = interest.interested
                         item.interest.userId = interest.userId
+                    } else {
+                        item.interest.interested = false
                     }
                 }
                 popLoader()
