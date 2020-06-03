@@ -69,7 +69,7 @@ class ItemRepository {
 
     // get interested user ids list by item id
     fun getInterestedUserIds(id: String): Task<QuerySnapshot> {
-        return database.collection("items").document(id).collection("users").whereEqualTo("interest", true).get()
+        return database.collection("items").document(id).collection("users").whereEqualTo("interested", true).get()
     }
 
     // get user list from userIds list
@@ -90,5 +90,9 @@ class ItemRepository {
     // get the authenticated user id
     fun getAuthUserId(): String {
         return auth.currentUser?.uid!!
+    }
+
+    fun getBoughtItems(userId: String): Task<QuerySnapshot> {
+        return database.collection("items").whereEqualTo("status", "Sold").whereEqualTo("buyer",userId).get()
     }
 }

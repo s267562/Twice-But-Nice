@@ -65,6 +65,7 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
 
         fun unbind() {
             container.setOnClickListener(null)
+            button.setOnClickListener(null)
         }
     }
 }

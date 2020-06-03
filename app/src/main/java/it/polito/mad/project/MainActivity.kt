@@ -74,7 +74,9 @@ class MainActivity : AppCompatActivity() {
             setOf(
                 R.id.showProfileFragment,
                 R.id.itemListFragment,
-                R.id.onSaleListFragment
+                R.id.onSaleListFragment,
+                R.id.itemsOfInterestListFragment,
+                R.id.boughtItemsListFragment
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
