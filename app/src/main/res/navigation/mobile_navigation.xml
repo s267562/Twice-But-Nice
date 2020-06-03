@@ -45,6 +45,12 @@
         <action
             android:id="@+id/action_navHome_to_showItemFragment"
             app:destination="@id/showItemFragment" />
+        <action
+            android:id="@+id/action_navHome_to_itemsOfInterestListFragment"
+            app:destination="@id/itemsOfInterestListFragment" />
+        <action
+            android:id="@+id/action_navHome_to_boughtItemsListFragment"
+            app:destination="@id/boughtItemsListFragment" />
 
     </fragment>
 
@@ -170,5 +176,19 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_close_enter"
             app:popExitAnim="@anim/fragment_close_exit" />
+    </fragment>
+    <fragment
+        android:id="@+id/itemsOfInterestListFragment"
+        android:name="it.polito.mad.project.fragments.profile.ItemsOfInterestListFragment"
+        android:label="fragment_items_of_interest"
+        tools:layout="@layout/fragment_items_of_interest" />
+    <fragment
+        android:id="@+id/boughtItemsListFragment"
+        android:name="it.polito.mad.project.fragments.profile.BoughtItemsListFragment"
+        android:label="fragment_bought_items_list"
+        tools:layout="@layout/fragment_bought_items_list" >
+        <action
+            android:id="@+id/action_boughtItemsListFragment_to_showItemFragment"
+            app:destination="@id/showItemFragment" />
     </fragment>
 </navigation>
