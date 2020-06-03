@@ -91,4 +91,9 @@ class ItemRepository {
     fun getAuthUserId(): String {
         return auth.currentUser?.uid!!
     }
+
+    fun getBoughtItems(): Task<QuerySnapshot> {
+        //TODO solo fittizia
+        return database.collection("items").whereEqualTo("status", "Available").get()
+    }
 }

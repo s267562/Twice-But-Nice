@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.project.adapters.ItemAdapter
+import it.polito.mad.project.adapters.ItemBoughtAdapter
 import it.polito.mad.project.adapters.ItemOnSaleAdapter
 import it.polito.mad.project.adapters.UserAdapter
 import it.polito.mad.project.commons.viewmodels.LoadingViewModel
@@ -29,6 +30,9 @@ class ItemViewModel : LoadingViewModel() {
     // Interested users
     val interestedUsers = UserList(UserAdapter(mutableListOf()))
 
+    //Bought Items
+    val boughtItems = ItemList(ItemBoughtAdapter(mutableListOf()))
+
     // Single item detail loaded
     val item = ItemDetail()
 
@@ -45,6 +49,7 @@ class ItemViewModel : LoadingViewModel() {
                 myItems.items.addAll(it1.toObjects(Item::class.java))
                 myItems
                 loadItemsOnSale()
+                loadItemsBought()
                 popLoader()
                 error = false
             }.addOnFailureListener {
@@ -61,6 +66,22 @@ class ItemViewModel : LoadingViewModel() {
                 // Items on sale are all items sub user items
                 onSaleItems.items.clear()
                 onSaleItems.items.addAll(it.toObjects(Item::class.java).subtract(myItems.items.toList()))
+                popLoader()
+                error = false
+            }.addOnFailureListener {
+                popLoader()
+                error = true
+            }
+    }
+
+    fun loadItemsBought(){
+        pushLoader()
+
+        itemRepository.getBoughtItems()
+            .addOnSuccessListener {
+                // Items on sale are all items sub user items
+                boughtItems.items.clear()
+                boughtItems.items.addAll(it.toObjects(Item::class.java).subtract(myItems.items.toList()))
                 popLoader()
                 error = false
             }.addOnFailureListener {

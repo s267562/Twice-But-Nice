@@ -17,7 +17,7 @@
             android:icon="@drawable/ic_event_available_24dp"
             android:title="@string/menu_on_sale"/>
         <item
-            android:id="@+id/itemsOfInterestLisFragment"
+            android:id="@+id/itemsOfInterestListFragment"
             android:icon="@drawable/ic_favorite_border_white_24dp"
             android:title="@string/items_of_interest_list" />
         <item
