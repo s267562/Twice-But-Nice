@@ -180,13 +180,13 @@
     <fragment
         android:id="@+id/itemsOfInterestListFragment"
         android:name="it.polito.mad.project.fragments.profile.ItemsOfInterestListFragment"
-        android:label="fragment_items_of_interest"
+        android:label="@string/items_of_interest_list"
         tools:layout="@layout/fragment_items_of_interest" />
     <fragment
         android:id="@+id/boughtItemsListFragment"
         android:name="it.polito.mad.project.fragments.profile.BoughtItemsListFragment"
-        android:label="fragment_bought_items_list"
-        tools:layout="@layout/fragment_bought_items_list" >
+        android:label="@string/bought_items_list"
+        tools:layout="@layout/fragment_bought_items_list">
         <action
             android:id="@+id/action_boughtItemsListFragment_to_showItemFragment"
             app:destination="@id/showItemFragment" />
