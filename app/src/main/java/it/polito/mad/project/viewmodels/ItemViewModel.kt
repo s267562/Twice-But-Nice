@@ -76,8 +76,8 @@ class ItemViewModel : LoadingViewModel() {
 
     fun loadItemsBought(){
         pushLoader()
-
-        itemRepository.getBoughtItems()
+        val userId = itemRepository.getAuthUserId()
+        itemRepository.getBoughtItems(userId)
             .addOnSuccessListener {
                 // Items on sale are all items sub user items
                 boughtItems.items.clear()
@@ -147,7 +147,7 @@ class ItemViewModel : LoadingViewModel() {
                 if (it.isSuccessful) {
                     val interest = it.result?.toObject(ItemInterest::class.java)
                     if (interest != null) {
-                        item.interest.value = interest.value
+                        item.interest.interested = interest.interested
                         item.interest.userId = interest.userId
                     }
                 }
@@ -189,7 +189,7 @@ class ItemViewModel : LoadingViewModel() {
     fun updateItemInterest():Task<Void> {
         pushLoader()
         val interest =  item.interest
-        interest.value = !interest.value
+        interest.interested = !interest.interested
         interest.userId = itemRepository.getAuthUserId()
         return itemRepository.saveItemInterest(interest.userId, item.data.value!!.id!!, interest)
             .addOnSuccessListener {
