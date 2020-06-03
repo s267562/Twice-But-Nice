@@ -6,6 +6,7 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.view.*
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -40,7 +41,6 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
     private var listenerRegistration: ListenerRegistration? = null
 
     private lateinit var googleMap: GoogleMap
-    private lateinit var geocode : Geocoder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,6 +117,9 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
         item_location.setOnClickListener {
             val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
 
+            val relLayout = dialogView.findViewById<RelativeLayout>(R.id.searchRelLayout)
+            relLayout.visibility = View.GONE
+
             val mapView = dialogView.findViewById<MapView>(R.id.map)
 
             Toast.makeText(context, item_location.text.toString(), Toast.LENGTH_SHORT).show()
@@ -188,7 +191,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
             googleMap = it
         }
 
-        geocode = Geocoder(context?.applicationContext, Locale.getDefault())
+        var geocode = Geocoder(context?.applicationContext, Locale.getDefault())
 
         gMap?.uiSettings?.isZoomControlsEnabled = true
         gMap?.uiSettings?.isMapToolbarEnabled = true
@@ -205,8 +208,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
                         .position(LatLng(address.latitude, address.longitude))
                         .title("Item Current Location")
                 )
-                gMap?.moveCamera(CameraUpdateFactory.newLatLng(cameraPos))
-                gMap?.animateCamera(CameraUpdateFactory.zoomTo(7.5F))
+                    gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 7.5F))
             }
         } catch (e: IOException){
             e.printStackTrace()

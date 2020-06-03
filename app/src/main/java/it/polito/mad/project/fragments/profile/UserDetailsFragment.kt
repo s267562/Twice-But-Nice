@@ -18,6 +18,7 @@ import it.polito.mad.project.R
 import it.polito.mad.project.viewmodels.AuthViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_show_profile.*
+import kotlinx.android.synthetic.main.fragment_show_profile.loadingLayout
 import java.io.IOException
 import java.util.*
 
@@ -85,23 +86,13 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setFabButton()
-        location.setOnClickListener {
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
 
-            val mapView = dialogView.findViewById<MapView>(R.id.map)
+        val mapView = activity?.findViewById<MapView>(R.id.mapViewProfile)
 
-            if(mapView != null) {
-                mapView.onCreate(null)
-                mapView.onResume()
-                mapView.getMapAsync(this)
-            }
-
-            val builder = AlertDialog.Builder(context).setView(dialogView)
-                .setNegativeButton("Close Map",
-                    DialogInterface.OnClickListener { dialog, id ->
-                        dialog.cancel()
-                    })
-            val alertDialog = builder.show()
+        if(mapView != null) {
+            mapView.onCreate(null)
+            mapView.onResume()
+            mapView.getMapAsync(this)
         }
 
         userViewModel.loadUser(arguments?.getString("UserId"))
@@ -149,7 +140,7 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
             googleMap = it
         }
 
-        var geocode = Geocoder(requireContext(), Locale.getDefault())
+        var geocode = Geocoder(context?.applicationContext, Locale.getDefault())
 
         gMap?.uiSettings?.isZoomControlsEnabled = true
         gMap?.uiSettings?.isMapToolbarEnabled = true
@@ -157,22 +148,19 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
         gMap?.uiSettings?.isCompassEnabled = true
 
         try {
-            var addr : List<Address> = geocode.getFromLocationName(location.text.toString(), 1)
+            var addr = geocode.getFromLocationName(location.text.toString(), 1)
             if(addr.size > 0){
                 var address : Address = addr.get(0)
                 val cameraPos = LatLng(address.latitude, address.longitude)
                 gMap?.addMarker(
                     MarkerOptions()
                         .position(LatLng(address.latitude, address.longitude))
-                        .title("User Current Location")
+                        .title("Item Current Location")
                 )
-                gMap?.moveCamera(CameraUpdateFactory.newLatLng(cameraPos))
-                gMap?.animateCamera(CameraUpdateFactory.zoomTo(7.5F))
+                gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 7.5F))
             }
         } catch (e: IOException){
             e.printStackTrace()
         }
     }
-    // Background thread
-
 }
