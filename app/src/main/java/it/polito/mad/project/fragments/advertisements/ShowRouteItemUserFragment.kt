@@ -13,13 +13,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 
 import it.polito.mad.project.R
+import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.viewmodels.ItemViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
 import java.io.IOException
@@ -61,7 +61,7 @@ class ShowRouteItemUserFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val mapRoute = activity?.findViewById<MapView>(R.id.mapRoute)
+        val mapRoute = activity?.findViewById<CustomMapView>(R.id.mapRoute)
 
         if(mapRoute != null) {
             mapRoute.onCreate(null)

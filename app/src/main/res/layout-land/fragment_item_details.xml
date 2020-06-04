@@ -316,7 +316,7 @@
                         android:maxLines="1"
                         android:visibility="gone"/>
 
-                    <com.google.android.gms.maps.MapView
+                    <it.polito.mad.project.customViews.CustomMapView
                         android:id="@+id/mapViewItem"
                         android:layout_width="480dp"
                         android:layout_height="150dp"

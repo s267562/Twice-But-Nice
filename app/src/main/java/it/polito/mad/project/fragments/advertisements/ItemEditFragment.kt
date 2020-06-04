@@ -33,7 +33,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -41,6 +40,7 @@ import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
+import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.viewmodels.ItemViewModel
@@ -501,7 +501,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
     private fun openMap(){
 
         val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
-        val mapView = dialogView.findViewById<MapView>(R.id.map)
+        val mapView = dialogView.findViewById<CustomMapView>(R.id.map)
 
         val task: Task<Location> = LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation
 
