@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Camera
 import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.location.Address
@@ -37,13 +38,17 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.gms.tasks.Task
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.user.User
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.loadingLayout
+import kotlinx.android.synthetic.main.map.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -52,7 +57,7 @@ import java.util.*
 
 // CHIAVE Google Maps AIzaSyCO1c1zV2KftTDLB1Jb3gBwRiMXFRfdAdk
 
-class UserEditFragment : Fragment(), OnMapReadyCallback {
+class UserEditFragment : Fragment() {
 
     lateinit var supFragmentManager : FragmentManager
 
@@ -64,7 +69,6 @@ class UserEditFragment : Fragment(), OnMapReadyCallback {
 
     lateinit var geocode: Geocoder
     lateinit var address: Address
-    lateinit var currentLocation: Location
 
     private var imageFile: File? = null
     private var imagePath: String? = null
@@ -159,24 +163,7 @@ class UserEditFragment : Fragment(), OnMapReadyCallback {
         location.setOnClickListener {
             if(ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED){
-                // Permission granted
-                val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext)
-
-                fusedLocationProviderClient.lastLocation.addOnCompleteListener {
-                    currentLocation = it.result!!
-
-                    if(location != null) {
-                        try {
-                            var geoCoder = Geocoder(mContext, Locale.getDefault())
-                            var addr = geoCoder.getFromLocation(currentLocation.latitude, currentLocation.longitude, 1)
-                            Toast.makeText(mContext, "Eccoci qui " + addr.get(0).locality, Toast.LENGTH_SHORT).show()
-
-                        } catch (e: IOException){
-                            e.printStackTrace()
-                        }
-
-                    }
-                }
+                // Permission granted --> get current location
                 openMap()
             } else {
                 // Permission is denied
@@ -422,13 +409,78 @@ class UserEditFragment : Fragment(), OnMapReadyCallback {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
         val mapView = dialogView.findViewById<MapView>(R.id.map)
 
-        if(mapView != null) {
-            mapView.onCreate(null)
-            mapView.onResume()
-            mapView.getMapAsync(this)
-        }
+        val task: Task<Location> = LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation
+
+        task.addOnSuccessListener(object : OnSuccessListener<Location>{
+            override fun onSuccess(locationSuccess: Location?) {
+                if(locationSuccess != null && mapView != null){
+                    mapView.onCreate(null)
+                    mapView.onResume()
+                    mapView.getMapAsync(object : OnMapReadyCallback{
+
+                        override fun onMapReady(gMap: GoogleMap?) {
+
+                            gMap?.let {
+                                googleMap = it
+                            }
+
+                            gMap?.uiSettings?.isZoomControlsEnabled = true
+                            gMap?.uiSettings?.isMapToolbarEnabled = true
+                            gMap?.uiSettings?.isMyLocationButtonEnabled = true
+                            gMap?.uiSettings?.isCompassEnabled = true
+
+                            var position = LatLng(locationSuccess.latitude, locationSuccess.longitude)
+                            gMap?.moveCamera(CameraUpdateFactory.newLatLng(position))
+                            gMap?.animateCamera(CameraUpdateFactory.zoomTo(4.8F))
+                            gMap?.addMarker(
+                                MarkerOptions().position(position).title("Your Current Position")
+                            )
+
+                            geocode = Geocoder(context?.applicationContext, Locale.getDefault())
+
+                            try {
+                                var addr = geocode.getFromLocationName(
+                                    location.text.toString(), 1)
+                                if(addr.size > 0){
+                                    var address : Address = addr.get(0)
+                                    val cameraPos = LatLng(address.latitude, address.longitude)
+                                    gMap?.addMarker(
+                                        MarkerOptions()
+                                            .position(LatLng(address.latitude, address.longitude))
+                                            .title("User Last Location")
+                                    )
+                                }
+                            } catch (e: IOException){
+                                e.printStackTrace()
+                            }
+
+                            searchEditText.setOnEditorActionListener { v, actionId, event ->
+                                if(actionId == EditorInfo.IME_ACTION_SEARCH || event?.action == KeyEvent.ACTION_DOWN ||
+                                    event?.action == KeyEvent.KEYCODE_ENTER){
+                                    Toast.makeText(context, "Giusto così", Toast.LENGTH_SHORT).show()
+                                    geoLocate()
+                                }
+                                false
+                            }
+
+                            gMap?.setOnMapClickListener {
+                                var clickPosition = LatLng(it.latitude, it.longitude)
+                                val markerOpt = MarkerOptions()
+                                markerOpt.position(clickPosition!!)
+                                gMap.clear()
+                                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
+                                gMap.addMarker(markerOpt)
+                            }
+                        }
+
+                    })
+                }
+            }
+
+        })
 
         searchEditText = dialogView.findViewById(R.id.search_loc)
+
         val builder= AlertDialog.Builder(context).setView(dialogView)
             .setPositiveButton("Set Location",
                 DialogInterface.OnClickListener{ dialog, id ->
@@ -439,37 +491,6 @@ class UserEditFragment : Fragment(), OnMapReadyCallback {
                     dialog.cancel()
                 })
         builder.show()
-    }
-
-    override fun onMapReady(gMap: GoogleMap?) {
-        gMap?.let {
-            googleMap = it
-        }
-
-        gMap?.uiSettings?.isZoomControlsEnabled = true
-        gMap?.uiSettings?.isMapToolbarEnabled = true
-        gMap?.uiSettings?.isMyLocationButtonEnabled = true
-        gMap?.uiSettings?.isCompassEnabled = true
-
-        searchEditText.setOnEditorActionListener { v, actionId, event ->
-            if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH
-                || event?.action == KeyEvent.ACTION_DOWN || event?.action == KeyEvent.KEYCODE_ENTER){
-                geoLocate()
-            }
-            false
-        }
-
-        /*gMap?.addMarker(
-            MarkerOptions().position(LatLng(currentLocation.latitude, currentLocation.longitude))
-        )*/
-
-        gMap?.setOnMapClickListener {
-            val markerOpt = MarkerOptions()
-            markerOpt.position(it!!)
-            gMap.clear()
-            gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
-            gMap.addMarker(markerOpt)
-        }
     }
 
     private fun geoLocate(){

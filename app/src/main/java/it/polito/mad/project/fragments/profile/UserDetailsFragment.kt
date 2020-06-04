@@ -155,7 +155,7 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
                 gMap?.addMarker(
                     MarkerOptions()
                         .position(LatLng(address.latitude, address.longitude))
-                        .title("Item Current Location")
+                        .title("User Current Location")
                 )
                 gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 7.5F))
             }

@@ -35,7 +35,10 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.gms.tasks.Task
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.enums.IntentRequest
@@ -50,8 +53,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListener,
-    OnMapReadyCallback {
+class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var itemViewModel: ItemViewModel
     private lateinit var supFragmentManager : FragmentManager
@@ -61,12 +63,12 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     lateinit var geocode: Geocoder
     lateinit var address: Address
-    lateinit var currentLocation: Location
 
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
     private var dateValue: String? = null
+
     private var subCategoriesResArray: IntArray = intArrayOf(R.array.item_sub_art, R.array.item_sub_sports, R.array.item_sub_baby,
         R.array.item_sub_women, R.array.item_sub_men, R.array.item_sub_electo, R.array.item_sub_games, R.array.item_sub_auto)
 
@@ -96,7 +98,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 if (it.categoryPos >= 0)
                     item_category_spinner.setSelection(localIt.categoryPos)
                 item_descr.setText(localIt.description)
-                //item_location.setText(localIt.location)
+                item_location.setText(localIt.location)
                 item_price.setText(localIt.price)
                 item_exp.text = localIt.expiryDate
                 if(localIt.statusPos >= 0){
@@ -149,23 +151,6 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             if(ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED){
                 // Permission granted
-                val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
-
-                fusedLocationProviderClient.lastLocation.addOnCompleteListener {
-                    currentLocation = it.result!!
-
-                    if(item_location != null) {
-                        try {
-                            var geoCoder = Geocoder(requireContext(), Locale.getDefault())
-                            var addr = geoCoder.getFromLocation(currentLocation.latitude, currentLocation.longitude, 1)
-                            Toast.makeText(requireContext(), "Eccoci qui " + addr.get(0).locality, Toast.LENGTH_SHORT).show()
-
-                        } catch (e: IOException){
-                            e.printStackTrace()
-                        }
-
-                    }
-                }
                 openMap()
             } else {
                 // Permission is denied
@@ -518,11 +503,74 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
         val mapView = dialogView.findViewById<MapView>(R.id.map)
 
-        if(mapView != null) {
-            mapView.onCreate(null)
-            mapView.onResume()
-            mapView.getMapAsync(this)
-        }
+        val task: Task<Location> = LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation
+
+        task.addOnSuccessListener(object : OnSuccessListener<Location> {
+            override fun onSuccess(location: Location?) {
+                if(location != null && mapView != null){
+                    mapView.onCreate(null)
+                    mapView.onResume()
+                    mapView.getMapAsync(object : OnMapReadyCallback{
+
+                        override fun onMapReady(gMap: GoogleMap?) {
+
+                            gMap?.let {
+                                googleMap = it
+                            }
+
+                            gMap?.uiSettings?.isZoomControlsEnabled = true
+                            gMap?.uiSettings?.isMapToolbarEnabled = true
+                            gMap?.uiSettings?.isMyLocationButtonEnabled = true
+                            gMap?.uiSettings?.isCompassEnabled = true
+
+                            var position = LatLng(location.latitude, location.longitude)
+                            gMap?.moveCamera(CameraUpdateFactory.newLatLng(position))
+                            gMap?.animateCamera(CameraUpdateFactory.zoomTo(4.8F))
+                            gMap?.addMarker(
+                                MarkerOptions().position(position).title("Your Current Position")
+                            )
+
+                            geocode = Geocoder(context?.applicationContext, Locale.getDefault())
+
+                            try {
+                                var addr = geocode.getFromLocationName(
+                                    item_location.text.toString(), 1)
+                                if(addr.size > 0){
+                                    var address : Address = addr.get(0)
+                                    val cameraPos = LatLng(address.latitude, address.longitude)
+                                    gMap?.addMarker(
+                                        MarkerOptions()
+                                            .position(LatLng(address.latitude, address.longitude))
+                                            .title("Item Last Location")
+                                    )
+                                }
+                            } catch (e: IOException){
+                                e.printStackTrace()
+                            }
+
+                            searchEditText.setOnEditorActionListener { v, actionId, event ->
+                                if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH
+                                    || event?.action == KeyEvent.ACTION_DOWN || event?.action == KeyEvent.KEYCODE_ENTER){
+                                    geoLocate()
+                                }
+                                false
+                            }
+
+                            gMap?.setOnMapClickListener {
+                                var clickPosition = LatLng(it.latitude, it.longitude)
+                                val markerOpt = MarkerOptions()
+                                markerOpt.position(clickPosition!!)
+                                gMap.clear()
+                                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
+                                gMap.addMarker(markerOpt)
+                            }
+                        }
+
+                    })
+                }
+            }
+
+        })
 
         searchEditText = dialogView.findViewById(R.id.search_loc)
         val builder= AlertDialog.Builder(context).setView(dialogView)
@@ -536,38 +584,6 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 })
         builder.show()
     }
-
-    override fun onMapReady(gMap: GoogleMap?) {
-        gMap?.let {
-            googleMap = it
-        }
-
-        gMap?.uiSettings?.isZoomControlsEnabled = true
-        gMap?.uiSettings?.isMapToolbarEnabled = true
-        gMap?.uiSettings?.isMyLocationButtonEnabled = true
-        gMap?.uiSettings?.isCompassEnabled = true
-
-        searchEditText.setOnEditorActionListener { v, actionId, event ->
-            if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH
-                || event?.action == KeyEvent.ACTION_DOWN || event?.action == KeyEvent.KEYCODE_ENTER){
-                geoLocate()
-            }
-            false
-        }
-
-        /*gMap?.addMarker(
-            MarkerOptions().position(LatLng(currentLocation.latitude, currentLocation.longitude))
-        )*/
-
-        gMap?.setOnMapClickListener {
-            val markerOpt = MarkerOptions()
-            markerOpt.position(it!!)
-            gMap.clear()
-            gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
-            gMap.addMarker(markerOpt)
-        }
-    }
-
     private fun geoLocate(){
         // This to manage the search of location from the upper bar
         val searchString = searchEditText.text.toString()

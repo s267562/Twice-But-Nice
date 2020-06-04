@@ -44,6 +44,16 @@
             android:imeOptions="actionDone"
             />
 
+        <!--<ImageButton
+            android:id="@+id/searchLocStringBtn"
+            android:layout_width="55dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/ic_search_black"
+            android:background="#fff"
+            />-->
+
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
