@@ -2,19 +2,27 @@ package it.polito.mad.project.fragments.profile
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Camera
 import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -25,13 +33,23 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.Observer
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.gms.tasks.Task
 import it.polito.mad.project.R
-import it.polito.mad.project.commons.fragments.MapViewFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.user.User
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.loadingLayout
+import kotlinx.android.synthetic.main.map.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -47,13 +65,17 @@ class UserEditFragment : Fragment() {
     private lateinit var mContext: Context
     private lateinit var userViewModel: UserViewModel
 
+    private lateinit var searchEditText: EditText
+    private lateinit var googleMap: GoogleMap
+    private var lastPositionToSave: String = " "
+
+    lateinit var geocode: Geocoder
+    lateinit var address: Address
+
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
     private val selectImage = 2
-
-    //private lateinit var map: GoogleMap
-    //private lateinit var mapView: MapView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,7 +125,7 @@ class UserEditFragment : Fragment() {
         if (user.email.isNotEmpty())
             email.setText(user.email)
         if (user.location.isNotEmpty())
-            location.setText(user.location)
+            //location.setText(user.location)
         if (user.photoProfilePath.isNotEmpty()) {
             savedImagePath = user.photoProfilePath
             image = userViewModel.user.image.value
@@ -140,23 +162,16 @@ class UserEditFragment : Fragment() {
             userViewModel.user.image.value = image
         }
 
-        btnMapOpen.setOnClickListener {
-            openMap()
+        location.setOnClickListener {
+            if(ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED){
+                // Permission granted --> get current location
+                openMap()
+            } else {
+                // Permission is denied
+                requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 44)
+            }
         }
-
-        // set the Map View
-        /*mapView = view.findViewById(R.id.mapEditProfile)
-
-        if(mapView != null) {
-            mapView.onCreate(null)
-            mapView.onResume()
-            mapView.getMapAsync(this)
-        }*/
-    }
-
-    private fun openMap(){
-        val newFragment = MapViewFragment()
-        newFragment.show(supFragmentManager, "dialog")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -235,6 +250,14 @@ class UserEditFragment : Fragment() {
                 Toast.makeText(mContext, "Camera permission has been denied", Toast.LENGTH_SHORT).show()
             }
         }
+        if(requestCode == 44){
+            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                openMap()
+            } else {
+                Toast.makeText(mContext, "Location permission has been denied", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     @Suppress("DEPRECATION")
@@ -283,8 +306,7 @@ class UserEditFragment : Fragment() {
         Log.d("DEBUG", userViewModel.user.data.value.toString())
     }
 
-    private fun rotateImage(img:Bitmap, degree: Int = 90):Bitmap {
-        //val img = BitmapFactory.decodeFile(path)
+    private fun rotateImage(img:Bitmap, degree: Int = 90) : Bitmap {
         val matrix = Matrix()
         matrix.postRotate(degree.toFloat())
         val rotatedImg = Bitmap.createBitmap(img, 0, 0, img.width, img.height, matrix, true)
@@ -319,9 +341,9 @@ class UserEditFragment : Fragment() {
             dataInserted = false
 
         }
-        if (location.text.isNullOrBlank()){
-            location.error = "Insert full name"
-            dataInserted = false
+        if (location.toString().isNullOrBlank()){
+            //location.toString() = "Insert location name"
+            //dataInserted = false
         }
 
         if (!dataInserted){
@@ -331,7 +353,7 @@ class UserEditFragment : Fragment() {
         val name = full_name.text.toString()
         val nickname = nickname.text.toString()
         val email = email.text.toString()
-        val location = location.text.toString()
+        val location = location.toString()
         val path = savedImagePath
 
         val user = User(
@@ -375,7 +397,6 @@ class UserEditFragment : Fragment() {
         }
     }
 
-    // Methods to manage the camera
     private fun openGallery(){
         val galleryIntent = Intent()
         galleryIntent.type = "image/*"
@@ -383,9 +404,115 @@ class UserEditFragment : Fragment() {
         startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), selectImage)
     }
 
-    /*override fun onMapReady(p0: GoogleMap?) {
-        MapsInitializer.initialize(context)
-        map = p0!!
-    }*/
+    // Managing Modal Map
 
+    private fun openMap(){
+
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
+        val mapView = dialogView.findViewById<MapView>(R.id.map)
+
+        searchEditText = dialogView.findViewById(R.id.search_loc)
+
+        val task: Task<Location> = LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation
+
+        task.addOnSuccessListener(object : OnSuccessListener<Location>{
+            override fun onSuccess(locationSuccess: Location?) {
+                if(locationSuccess != null && mapView != null){
+                    mapView.onCreate(null)
+                    mapView.onResume()
+                    mapView.getMapAsync(object : OnMapReadyCallback{
+
+                        override fun onMapReady(gMap: GoogleMap?) {
+
+                            gMap?.let {
+                                googleMap = it
+                            }
+
+                            gMap?.uiSettings?.isZoomControlsEnabled = true
+                            gMap?.uiSettings?.isMapToolbarEnabled = true
+                            gMap?.uiSettings?.isMyLocationButtonEnabled = true
+                            gMap?.uiSettings?.isCompassEnabled = true
+
+                            var position = LatLng(locationSuccess.latitude, locationSuccess.longitude)
+                            gMap?.moveCamera(CameraUpdateFactory.newLatLng(position))
+                            gMap?.animateCamera(CameraUpdateFactory.zoomTo(4.8F))
+                            gMap?.addMarker(
+                                MarkerOptions().position(position).title("Your Current Position")
+                            )
+
+                            geocode = Geocoder(context?.applicationContext, Locale.getDefault())
+
+                            try {
+                                var addr = geocode.getFromLocationName(
+                                    location.text.toString(), 1)
+                                if(addr.size > 0){
+                                    var address : Address = addr.get(0)
+                                    val cameraPos = LatLng(address.latitude, address.longitude)
+                                    gMap?.addMarker(
+                                        MarkerOptions()
+                                            .position(LatLng(address.latitude, address.longitude))
+                                            .title("User Last Location")
+                                    )
+                                }
+                            } catch (e: IOException){
+                                e.printStackTrace()
+                            }
+
+                            searchEditText.setOnEditorActionListener { v, actionId, event ->
+                                if(actionId == EditorInfo.IME_ACTION_SEARCH || event?.action == KeyEvent.ACTION_DOWN ||
+                                    event?.action == KeyEvent.KEYCODE_ENTER){
+                                    Toast.makeText(context, "Giusto così", Toast.LENGTH_SHORT).show()
+                                    geoLocate()
+                                }
+                                false
+                            }
+
+                            gMap?.setOnMapClickListener {
+                                var clickPosition = LatLng(it.latitude, it.longitude)
+                                val markerOpt = MarkerOptions()
+                                markerOpt.position(clickPosition!!)
+                                gMap.clear()
+                                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
+                                gMap.addMarker(markerOpt)
+                            }
+
+                            if(MarkerOptions().position != null){
+                                lastPositionToSave = MarkerOptions().title
+                            }
+                        }
+                    })
+                }
+            }
+
+        })
+
+        val builder= AlertDialog.Builder(context).setView(dialogView)
+            .setPositiveButton("Set Location",
+                DialogInterface.OnClickListener{ dialog, id ->
+                    Toast.makeText(context, "Last saved position is " + lastPositionToSave, Toast.LENGTH_SHORT).show()
+                    dialog.cancel()
+                })
+            .setNegativeButton("Close Map",
+                DialogInterface.OnClickListener { dialog, id ->
+                    dialog.cancel()
+                })
+        builder.show()
+    }
+
+    private fun geoLocate(){
+        // This to manage the search of location from the upper bar
+        val searchString = searchEditText.text.toString()
+        var addressList : List<Address> = ArrayList()
+
+        try {
+            addressList = geocode.getFromLocationName(searchString, 1)
+        } catch (e: IOException){
+            e.printStackTrace()
+        }
+
+        if (addressList.size > 0){
+            address = addressList.get(0)
+            Toast.makeText(context, "We are here: " + address.toString(), Toast.LENGTH_SHORT).show()
+        }
+    }
 }

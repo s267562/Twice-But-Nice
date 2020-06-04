@@ -1,14 +1,18 @@
 package it.polito.mad.project.fragments.profile
 
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import it.polito.mad.project.R
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.viewmodels.AuthViewModel
 import it.polito.mad.project.viewmodels.ItemViewModel
@@ -16,15 +20,19 @@ import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_on_sale_list.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 import kotlinx.android.synthetic.main.fragment_show_profile.loadingLayout
+import java.io.IOException
+import java.util.*
 
-
-class UserDetailsFragment : Fragment() {
+class UserDetailsFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var itemViewModel: ItemViewModel
     private lateinit var userViewModel: UserViewModel
     private lateinit var authViewModel: AuthViewModel
 
+    private lateinit var googleMap: GoogleMap
+
     private var isAuthUser = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
@@ -90,6 +98,14 @@ class UserDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setFabButton()
 
+        val mapView = activity?.findViewById<MapView>(R.id.mapViewProfile)
+
+        if(mapView != null) {
+            mapView.onCreate(null)
+            mapView.onResume()
+            mapView.getMapAsync(this)
+        }
+
         userViewModel.loadUser(arguments?.getString("UserId"))
 
         reviewRecyclerView.setHasFixedSize(true)
@@ -106,9 +122,11 @@ class UserDetailsFragment : Fragment() {
             full_name.visibility = View.VISIBLE
             inflater.inflate(R.menu.edit_menu, menu)
         }
-        else{
+        else {
             name_container.visibility = View.GONE
             full_name.visibility = View.GONE
+            mapViewProfile.visibility = View.GONE
+            location.visibility = View.VISIBLE
         }
     }
 
@@ -136,4 +154,32 @@ class UserDetailsFragment : Fragment() {
         }
     }
 
+    override fun onMapReady(gMap: GoogleMap?) {
+        gMap?.let {
+            googleMap = it
+        }
+
+        var geocode = Geocoder(context?.applicationContext, Locale.getDefault())
+
+        gMap?.uiSettings?.isZoomControlsEnabled = true
+        gMap?.uiSettings?.isMapToolbarEnabled = true
+        gMap?.uiSettings?.isMyLocationButtonEnabled = true
+        gMap?.uiSettings?.isCompassEnabled = true
+
+        try {
+            var addr = geocode.getFromLocationName(location.text.toString(), 1)
+            if(addr.size > 0){
+                var address : Address = addr.get(0)
+                val cameraPos = LatLng(address.latitude, address.longitude)
+                gMap?.addMarker(
+                    MarkerOptions()
+                        .position(LatLng(address.latitude, address.longitude))
+                        .title("User Current Location")
+                )
+                gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 7.5F))
+            }
+        } catch (e: IOException){
+            e.printStackTrace()
+        }
+    }
 }

@@ -100,7 +100,8 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:drawableLeft="@drawable/ic_location_24dp"
             android:drawableTint="@android:color/primary_text_light"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
@@ -183,6 +184,12 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <com.google.android.gms.maps.MapView
+            android:layout_width="380dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="16dp"
+            android:id="@+id/mapViewProfile"/>
 
     </LinearLayout>
 

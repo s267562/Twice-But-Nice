@@ -187,31 +187,17 @@
                 android:imeOptions="actionNext" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
+        <TextView
+            android:id="@+id/location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="1dp"
-            android:textColorHint="@android:color/tertiary_text_dark"
+            android:layout_marginBottom="16dp"
+            android:layout_marginVertical="20dp"
+            android:textColor="@android:color/primary_text_light"
             android:hint="Location"
-            android:layout_marginTop="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/location"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:inputType="textAutoCorrect"
-                android:imeOptions="actionDone" />
-
-            <Button
-                android:id="@+id/btnMapOpen"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Open Map"
-                android:layout_marginTop="10dp"/>
-        </com.google.android.material.textfield.TextInputLayout>
+            android:maxLines="1"
+            android:drawableRight="@drawable/ic_location_24dp"
+            android:drawableTint="@color/colorAccent" />
 
     </LinearLayout>
 

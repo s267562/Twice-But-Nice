@@ -1,32 +1,35 @@
 package it.polito.mad.project.fragments.advertisements
 
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.messaging.FirebaseMessaging
-
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
-import it.polito.mad.project.viewmodels.UserViewModel
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.viewmodels.ItemViewModel
+import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_item_details.*
-import kotlinx.android.synthetic.main.fragment_item_details.item_descr
-import kotlinx.android.synthetic.main.fragment_item_details.item_exp
-import kotlinx.android.synthetic.main.fragment_item_details.item_location
-import kotlinx.android.synthetic.main.fragment_item_details.item_photo
-import kotlinx.android.synthetic.main.fragment_item_details.item_price
-import kotlinx.android.synthetic.main.fragment_item_details.item_title
-import kotlinx.android.synthetic.main.fragment_item_details.loadingLayout
 import org.json.JSONObject
+import java.io.IOException
+import java.util.*
 
-class ItemDetailsFragment : NotificationFragment() {
+class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
 
     private lateinit var itemViewModel: ItemViewModel
     private lateinit var userViewModel: UserViewModel
@@ -35,11 +38,13 @@ class ItemDetailsFragment : NotificationFragment() {
 
     private var listenerRegistration: ListenerRegistration? = null
 
+    private lateinit var googleMap: GoogleMap
+    lateinit var supFragManager : FragmentManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemViewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
         userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
-
     }
 
     override fun onStart() {
@@ -99,6 +104,7 @@ class ItemDetailsFragment : NotificationFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
+        supFragManager = this.requireFragmentManager()
         return inflater.inflate(R.layout.fragment_item_details, container, false)
     }
 
@@ -107,6 +113,13 @@ class ItemDetailsFragment : NotificationFragment() {
         setFabButton()
         itemViewModel.loadItem(arguments?.getString("ItemId")!!)
 
+        val mapView = activity?.findViewById<MapView>(R.id.mapViewItem)
+
+        if(mapView != null) {
+            mapView.onCreate(null)
+            mapView.onResume()
+            mapView.getMapAsync(this)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -153,6 +166,45 @@ class ItemDetailsFragment : NotificationFragment() {
         interestedUsersFab.setOnClickListener{
             itemViewModel.loadInterestedUsers()
             this.findNavController().navigate(R.id.action_showItemFragment_to_usersInterestedFragment)
+        }
+    }
+
+    override fun onMapReady(gMap: GoogleMap?) {
+        gMap?.let {
+            googleMap = it
+        }
+
+        var geocode = Geocoder(context?.applicationContext, Locale.getDefault())
+
+        gMap?.uiSettings?.isZoomControlsEnabled = true
+        gMap?.uiSettings?.isMapToolbarEnabled = true
+        gMap?.uiSettings?.isMyLocationButtonEnabled = true
+        gMap?.uiSettings?.isCompassEnabled = true
+
+        try {
+            var addr = geocode.getFromLocationName(item_location.text.toString(), 1)
+            if(addr.size > 0){
+                var address : Address = addr.get(0)
+                val cameraPos = LatLng(address.latitude, address.longitude)
+                gMap?.addMarker(
+                    MarkerOptions()
+                        .position(LatLng(address.latitude, address.longitude))
+                        .title("Item Current Location")
+                )
+                    gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 7.5F))
+            }
+        } catch (e: IOException){
+            e.printStackTrace()
+        }
+
+        if(!isMyItem){
+                // if the item does not belog to me, the map becomes clickable
+            //Toast.makeText(context, "not my item -> show route", Toast.LENGTH_SHORT).show()
+            gMap?.setOnMapClickListener {
+                //Toast.makeText(context, "Map clicked", Toast.LENGTH_SHORT).show()
+                this.findNavController().navigate(R.id.action_itemDetails_to_showRoute)
+
+            }
         }
     }
 }

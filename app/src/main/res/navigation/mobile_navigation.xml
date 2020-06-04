@@ -126,6 +126,13 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_close_enter"
             app:popExitAnim="@anim/fragment_close_exit" />
+        <action
+            android:id="@+id/action_itemDetails_to_showRoute"
+            app:destination="@+id/showRouteItemUserFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit"/>
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"
@@ -202,4 +209,8 @@
         android:id="@+id/itemReviewFragment"
         android:name="it.polito.mad.project.fragments.advertisements.ItemReviewFragment"
         android:label="ItemReviewFragment" />
+    <fragment
+        android:id="@+id/showRouteItemUserFragment"
+        android:name="it.polito.mad.project.fragments.advertisements.ShowRouteItemUserFragment"
+        android:label="@string/show_route" />
 </navigation>
