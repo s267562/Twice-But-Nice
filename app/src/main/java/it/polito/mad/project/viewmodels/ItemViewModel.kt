@@ -114,7 +114,9 @@ class ItemViewModel : LoadingViewModel() {
                     myItems.items.add(item)
                 } else {
                     var pos = -1
-                    myItems.items.forEachIndexed {index, i -> if (i.id == item.id) pos = index}
+                    myItems.items.forEachIndexed {index, i ->
+                        if (i.id == item.id) pos = index
+                    }
                     myItems.items[pos] = item
                 }
                 popLoader()
@@ -234,7 +236,15 @@ class ItemViewModel : LoadingViewModel() {
 
     fun setReview(item:Item, review: Review) {
         item.review = review
-        saveItem(item)
+        pushLoader()
+        itemRepository.saveItem(item)
+            .addOnSuccessListener {
+                popLoader()
+                error = false
+            }.addOnFailureListener {
+                popLoader()
+                error = true
+            }
     }
 
 }
