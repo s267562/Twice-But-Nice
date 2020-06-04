@@ -23,6 +23,8 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
     lateinit var searchView: SearchView
     lateinit var supFragmentManager : FragmentManager
 
+    lateinit var bundle: Bundle
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)

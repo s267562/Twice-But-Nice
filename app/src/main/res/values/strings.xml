@@ -20,6 +20,7 @@
     <string name="menu_edit_advertisement">Edit Item</string>
     <string name="items_of_interest_list">List of Interested Items</string>
     <string name="bought_items_list">List of Bought Items</string>
+    <string name="show_route">Show Route from User to Item</string>
 
     <string name="category_def">Category</string>
     <string name="subcategory_def">Subcategory</string>
@@ -138,5 +139,8 @@
         <item>RV Parts &amp; Accessories</item>
         <item>Tools &amp; Equipment</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

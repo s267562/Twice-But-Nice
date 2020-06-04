@@ -1,15 +1,13 @@
 package it.polito.mad.project.fragments.advertisements
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.view.*
-import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -41,12 +39,12 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
     private var listenerRegistration: ListenerRegistration? = null
 
     private lateinit var googleMap: GoogleMap
+    lateinit var supFragManager : FragmentManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemViewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
         userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
-
     }
 
     override fun onStart() {
@@ -106,6 +104,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
+        supFragManager = this.requireFragmentManager()
         return inflater.inflate(R.layout.fragment_item_details, container, false)
     }
 
@@ -116,29 +115,6 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
 
         val mapView = activity?.findViewById<MapView>(R.id.mapViewItem)
 
-        /*item_location.setOnClickListener {
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
-
-            val relLayout = dialogView.findViewById<RelativeLayout>(R.id.searchRelLayout)
-            relLayout.visibility = View.GONE
-
-            val mapView = dialogView.findViewById<MapView>(R.id.map)
-
-            Toast.makeText(context, item_location.text.toString(), Toast.LENGTH_SHORT).show()
-
-            if(mapView != null) {
-                mapView.onCreate(null)
-                mapView.onResume()
-                mapView.getMapAsync(this)
-            }
-
-            val builder = AlertDialog.Builder(context).setView(dialogView)
-                .setNegativeButton("Close Map",
-                    DialogInterface.OnClickListener { dialog, id ->
-                        dialog.cancel()
-                    })
-            val alertDialog = builder.show()
-        }*/
         if(mapView != null) {
             mapView.onCreate(null)
             mapView.onResume()
@@ -219,6 +195,16 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
             }
         } catch (e: IOException){
             e.printStackTrace()
+        }
+
+        if(!isMyItem){
+                // if the item does not belog to me, the map becomes clickable
+            Toast.makeText(context, "not my item -> show route", Toast.LENGTH_SHORT).show()
+            gMap?.setOnMapClickListener {
+                Toast.makeText(context, "Map clicked", Toast.LENGTH_SHORT).show()
+                this.findNavController().navigate(R.id.action_itemDetails_to_showRoute)
+
+            }
         }
     }
 }

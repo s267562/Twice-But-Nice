@@ -39,6 +39,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
@@ -66,6 +67,7 @@ class UserEditFragment : Fragment() {
 
     private lateinit var searchEditText: EditText
     private lateinit var googleMap: GoogleMap
+    private var lastPositionToSave: String = " "
 
     lateinit var geocode: Geocoder
     lateinit var address: Address
@@ -409,6 +411,8 @@ class UserEditFragment : Fragment() {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
         val mapView = dialogView.findViewById<MapView>(R.id.map)
 
+        searchEditText = dialogView.findViewById(R.id.search_loc)
+
         val task: Task<Location> = LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation
 
         task.addOnSuccessListener(object : OnSuccessListener<Location>{
@@ -471,19 +475,21 @@ class UserEditFragment : Fragment() {
                                 gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
                                 gMap.addMarker(markerOpt)
                             }
-                        }
 
+                            if(MarkerOptions().position != null){
+                                lastPositionToSave = MarkerOptions().title
+                            }
+                        }
                     })
                 }
             }
 
         })
 
-        searchEditText = dialogView.findViewById(R.id.search_loc)
-
         val builder= AlertDialog.Builder(context).setView(dialogView)
             .setPositiveButton("Set Location",
                 DialogInterface.OnClickListener{ dialog, id ->
+                    Toast.makeText(context, "Last saved position is " + lastPositionToSave, Toast.LENGTH_SHORT).show()
                     dialog.cancel()
                 })
             .setNegativeButton("Close Map",
