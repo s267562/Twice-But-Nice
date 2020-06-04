@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -21,6 +20,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
+import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.viewmodels.ItemViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
@@ -113,7 +113,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
         setFabButton()
         itemViewModel.loadItem(arguments?.getString("ItemId")!!)
 
-        val mapView = activity?.findViewById<MapView>(R.id.mapViewItem)
+        val mapView = activity?.findViewById<CustomMapView>(R.id.mapViewItem)
 
         if(mapView != null) {
             mapView.onCreate(null)
