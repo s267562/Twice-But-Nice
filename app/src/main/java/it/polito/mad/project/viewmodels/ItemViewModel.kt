@@ -125,23 +125,21 @@ class ItemViewModel : LoadingViewModel() {
     }
 
     fun loadItem(id: String) {
-        if (id != item.data.value?.id) {
-            item.data.value = null
-            pushLoader()
-            itemRepository.getItem(id)
-                .addOnSuccessListener { it ->
-                    val localItem = it.toObject(Item::class.java) as Item
-                    item.data.value = localItem
-                    loadItemInterest(localItem.id!!)
-                    popLoader()
+        item.data.value = null
+        pushLoader()
+        itemRepository.getItem(id)
+            .addOnSuccessListener { it ->
+                val localItem = it.toObject(Item::class.java) as Item
+                item.data.value = localItem
+                loadItemInterest(localItem.id!!)
+                popLoader()
 
-                    loadItemImage(localItem.id!!, localItem.imagePath)
-                    error = false
-                }.addOnFailureListener {
-                    popLoader()
-                    error = true
-                }
-        }
+                loadItemImage(localItem.id!!, localItem.imagePath)
+                error = false
+            }.addOnFailureListener {
+                popLoader()
+                error = true
+            }
     }
 
     private fun loadItemInterest(itemId: String) {
@@ -258,10 +256,10 @@ class ItemViewModel : LoadingViewModel() {
             }
     }
 
-    fun setReview(item:Item, review: Review) {
-        item.review = review
+    fun setReview(review: Review) {
+        item.data.value!!.review = review
         pushLoader()
-        itemRepository.saveItem(item)
+        itemRepository.saveItem(item.data.value!!)
             .addOnSuccessListener {
                 popLoader()
                 error = false

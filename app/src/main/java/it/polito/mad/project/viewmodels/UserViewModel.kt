@@ -27,6 +27,7 @@ class UserViewModel : LoadingViewModel() {
 
     init {
         loadUser()
+        loadReviews(null)
     }
 
     fun saveUser(user: User): Task<Void> {
@@ -62,7 +63,7 @@ class UserViewModel : LoadingViewModel() {
                     error = true
                     popLoader()
                 }
-            loadReviews(verifiedId)
+
         }
     }
 
@@ -97,15 +98,17 @@ class UserViewModel : LoadingViewModel() {
             user.image.value = authPhotoProfile
     }
 
-    fun loadReviews(userId: String) {
+    fun loadReviews( userId: String? = null) {
+        val id = userId ?: userRepository.getFirebaseUser()!!.uid
 
         /* load all sold items with review */
         pushLoader()
-        itemRepository.getSoldItems(userId)
+        itemRepository.getSoldItems(id)
             .addOnSuccessListener { it ->
                 reviews.items.clear()
                 reviews.items.addAll(it.toObjects(Item::class.java)
                     .filter { it -> it.review != null })
+                reviews.adapter.setItemReviews(reviews.items)
                 popLoader()
                 error = false
             }.addOnFailureListener {

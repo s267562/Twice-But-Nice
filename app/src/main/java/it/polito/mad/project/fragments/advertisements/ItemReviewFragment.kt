@@ -48,7 +48,7 @@ class ItemReviewFragment : Fragment() {
                 description.text.toString(),
                 ratingBar.rating
             )
-            itemViewModel.setReview(itemViewModel.item.data.value!!,review)
+            itemViewModel.setReview(review)
 
             findNavController().popBackStack()
         }
