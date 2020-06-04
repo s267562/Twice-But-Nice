@@ -181,7 +181,11 @@
         android:id="@+id/itemsOfInterestListFragment"
         android:name="it.polito.mad.project.fragments.profile.ItemsOfInterestListFragment"
         android:label="fragment_items_of_interest"
-        tools:layout="@layout/fragment_items_of_interest" />
+        tools:layout="@layout/fragment_items_of_interest" >
+        <action
+            android:id="@+id/action_itemsOfInterestListFragment_to_showItemFragment"
+            app:destination="@id/showItemFragment" />
+    </fragment>
     <fragment
         android:id="@+id/boughtItemsListFragment"
         android:name="it.polito.mad.project.fragments.profile.BoughtItemsListFragment"

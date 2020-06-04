@@ -24,7 +24,7 @@ class ItemViewModel : LoadingViewModel() {
     val myItems = ItemList(ItemAdapter(mutableListOf()))
 
     // On Sale items
-    val onSaleItems = ItemList(ItemOnSaleAdapter(mutableListOf()))
+    val onSaleItems = ItemList(ItemOnSaleAdapter(mutableListOf(), "onSaleItems"))
 
     // Interested users
     val interestedUsers = UserList(UserAdapter(this, mutableListOf()))
@@ -38,7 +38,7 @@ class ItemViewModel : LoadingViewModel() {
     // Reviews (sold items with review)
     val reviews = ItemList(ReviewAdapter(mutableListOf()))
     //Items of Interest
-    val interestedItems = ItemList(ItemOnSaleAdapter(mutableListOf()))
+    val interestedItems = ItemList(ItemOnSaleAdapter(mutableListOf(), "interestedItems"))
 
     init {
         loadItems()
@@ -250,7 +250,13 @@ class ItemViewModel : LoadingViewModel() {
                         popLoader()
                         error = true
                     }
+                } else {
+                    popLoader()
                 }
+            }
+            .addOnFailureListener{
+                popLoader()
+                error = true
             }
     }
 
