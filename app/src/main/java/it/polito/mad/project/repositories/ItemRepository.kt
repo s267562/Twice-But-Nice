@@ -95,4 +95,8 @@ class ItemRepository {
     fun getBoughtItems(userId: String): Task<QuerySnapshot> {
         return database.collection("items").whereEqualTo("status", "Sold").whereEqualTo("buyerId",userId).get()
     }
+
+    fun getSoldItems(userId: String): Task<QuerySnapshot> {
+        return database.collection("items").whereEqualTo("ownerId", userId).whereEqualTo("status", "Sold").get()
+    }
 }

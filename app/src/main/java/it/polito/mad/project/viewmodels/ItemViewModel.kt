@@ -3,10 +3,7 @@ package it.polito.mad.project.viewmodels
 import android.graphics.BitmapFactory
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
-import it.polito.mad.project.adapters.ItemAdapter
-import it.polito.mad.project.adapters.ItemBoughtAdapter
-import it.polito.mad.project.adapters.ItemOnSaleAdapter
-import it.polito.mad.project.adapters.UserAdapter
+import it.polito.mad.project.adapters.*
 import it.polito.mad.project.commons.viewmodels.LoadingViewModel
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.models.item.ItemDetail
@@ -38,8 +35,8 @@ class ItemViewModel : LoadingViewModel() {
     // Single item detail loaded
     val item = ItemDetail()
 
-    // Single item detail loaded
-    val review = ReviewDetail()
+    // Reviews (sold items with review)
+    val reviews = ItemList(ReviewAdapter(mutableListOf()))
 
     init {
         loadItems()
@@ -52,7 +49,6 @@ class ItemViewModel : LoadingViewModel() {
             .addOnSuccessListener { it1 ->
                 myItems.items.clear()
                 myItems.items.addAll(it1.toObjects(Item::class.java))
-                myItems
                 loadItemsOnSale()
                 loadItemsBought()
                 popLoader()
@@ -239,6 +235,25 @@ class ItemViewModel : LoadingViewModel() {
         pushLoader()
         itemRepository.saveItem(item)
             .addOnSuccessListener {
+                popLoader()
+                error = false
+            }.addOnFailureListener {
+                popLoader()
+                error = true
+            }
+    }
+
+    fun loadReviews(userId: String? = null) {
+        val userId = userId ?: itemRepository.getAuthUserId()
+
+        /* load all sold items with review */
+        pushLoader()
+
+        itemRepository.getSoldItems(userId)
+            .addOnSuccessListener { it ->
+                reviews.items.clear()
+                reviews.items.addAll(it.toObjects(Item::class.java)
+                    .filter { it -> it.review != null })
                 popLoader()
                 error = false
             }.addOnFailureListener {

@@ -9,19 +9,25 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.viewmodels.AuthViewModel
+import it.polito.mad.project.viewmodels.ItemViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
+import kotlinx.android.synthetic.main.fragment_on_sale_list.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
+import kotlinx.android.synthetic.main.fragment_show_profile.loadingLayout
 
 
 class UserDetailsFragment : Fragment() {
 
+    private lateinit var itemViewModel: ItemViewModel
     private lateinit var userViewModel: UserViewModel
     private lateinit var authViewModel: AuthViewModel
 
     private var isAuthUser = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        itemViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
         userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
         authViewModel = ViewModelProvider(requireActivity()).get(AuthViewModel::class.java)
     }
@@ -65,6 +71,14 @@ class UserDetailsFragment : Fragment() {
         } else {
             logoutFab.hide()
         }
+
+        itemViewModel.loader.observe(viewLifecycleOwner, Observer {
+            if (itemViewModel.isNotLoading()) {
+                // loader ended
+                itemViewModel.reviews.adapter.setItemReviews(itemViewModel.reviews.items)
+            }
+        })
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -75,7 +89,14 @@ class UserDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setFabButton()
+
         userViewModel.loadUser(arguments?.getString("UserId"))
+
+        reviewRecyclerView.setHasFixedSize(true)
+        reviewRecyclerView.layoutManager = LinearLayoutManager(this.activity)
+        reviewRecyclerView.adapter = itemViewModel.reviews.adapter
+
+        itemViewModel.loadReviews(arguments?.getString("UserId"))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
