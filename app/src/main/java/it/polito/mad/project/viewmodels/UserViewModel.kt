@@ -62,8 +62,8 @@ class UserViewModel : LoadingViewModel() {
                     error = true
                     popLoader()
                 }
+
         }
-        loadReviews(verifiedId)
     }
 
     private fun loadUserPhotoProfile(id: String, photoProfilePath: String) {
@@ -97,11 +97,12 @@ class UserViewModel : LoadingViewModel() {
             user.image.value = authPhotoProfile
     }
 
-    fun loadReviews(userId: String) {
+    fun loadReviews( userId: String?) {
+        val id = userId ?: userRepository.getFirebaseUser()!!.uid
 
         /* load all sold items with review */
         pushLoader()
-        itemRepository.getSoldItems(userId)
+        itemRepository.getSoldItems(id)
             .addOnSuccessListener { it ->
                 reviews.items.clear()
                 reviews.items.addAll(it.toObjects(Item::class.java)

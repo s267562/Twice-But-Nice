@@ -98,7 +98,7 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
         }
 
         userViewModel.loadUser(arguments?.getString("UserId"))
-
+        userViewModel.loadReviews(arguments?.getString("UserId"))
         reviewRecyclerView.setHasFixedSize(true)
         reviewRecyclerView.layoutManager = LinearLayoutManager(this.activity)
         reviewRecyclerView.adapter = userViewModel.reviews.adapter
