@@ -1,19 +1,16 @@
 package it.polito.mad.project.viewmodels
 
-import android.app.Application
 import android.graphics.BitmapFactory
-import androidx.lifecycle.AndroidViewModel
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
-import it.polito.mad.project.adapters.ItemAdapter
-import it.polito.mad.project.adapters.ItemBoughtAdapter
-import it.polito.mad.project.adapters.ItemOnSaleAdapter
-import it.polito.mad.project.adapters.UserAdapter
+import it.polito.mad.project.adapters.*
 import it.polito.mad.project.commons.viewmodels.LoadingViewModel
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.models.item.ItemDetail
 import it.polito.mad.project.models.item.ItemInterest
 import it.polito.mad.project.models.item.ItemList
+import it.polito.mad.project.models.review.Review
+import it.polito.mad.project.models.review.ReviewDetail
 import it.polito.mad.project.models.user.User
 import it.polito.mad.project.models.user.UserList
 import it.polito.mad.project.repositories.ItemRepository
@@ -27,16 +24,21 @@ class ItemViewModel : LoadingViewModel() {
     val myItems = ItemList(ItemAdapter(mutableListOf()))
 
     // On Sale items
-    val onSaleItems = ItemList(ItemOnSaleAdapter(mutableListOf()))
+    val onSaleItems = ItemList(ItemOnSaleAdapter(mutableListOf(), "onSaleItems"))
 
     // Interested users
     val interestedUsers = UserList(UserAdapter(this, mutableListOf()))
 
     //Bought Items
-    val boughtItems = ItemList(ItemBoughtAdapter(mutableListOf()))
+    val boughtItems = ItemList(ItemBoughtAdapter(this, mutableListOf()))
 
     // Single item detail loaded
     val item = ItemDetail()
+
+    // Reviews (sold items with review)
+    val reviews = ItemList(ReviewAdapter(mutableListOf()))
+    //Items of Interest
+    val interestedItems = ItemList(ItemOnSaleAdapter(mutableListOf(), "interestedItems"))
 
     init {
         loadItems()
@@ -49,9 +51,9 @@ class ItemViewModel : LoadingViewModel() {
             .addOnSuccessListener { it1 ->
                 myItems.items.clear()
                 myItems.items.addAll(it1.toObjects(Item::class.java))
-                myItems
                 loadItemsOnSale()
                 loadItemsBought()
+                loadInterestedItems()
                 popLoader()
                 error = false
             }.addOnFailureListener {
@@ -83,7 +85,7 @@ class ItemViewModel : LoadingViewModel() {
             .addOnSuccessListener {
                 // Items on sale are all items sub user items
                 boughtItems.items.clear()
-                boughtItems.items.addAll(it.toObjects(Item::class.java).subtract(myItems.items.toList()))
+                boughtItems.items.addAll(it.toObjects(Item::class.java))
                 popLoader()
                 error = false
             }.addOnFailureListener {
@@ -100,8 +102,8 @@ class ItemViewModel : LoadingViewModel() {
     fun saveItem(item: Item): Task<Void> {
         val isNewItem = item.id == null
         if (isNewItem) {
-            item.user = itemRepository.getAuthUserId()
-            item.id = "${item.user}-${myItems.items.size}"
+            item.ownerId = itemRepository.getAuthUserId()
+            item.id = "${item.ownerId}-${myItems.items.size}"
         }
         pushLoader()
         return itemRepository.saveItem(item)
@@ -111,7 +113,9 @@ class ItemViewModel : LoadingViewModel() {
                     myItems.items.add(item)
                 } else {
                     var pos = -1
-                    myItems.items.forEachIndexed {index, i -> if (i.id == item.id) pos = index}
+                    myItems.items.forEachIndexed {index, i ->
+                        if (i.id == item.id) pos = index
+                    }
                     myItems.items[pos] = item
                 }
                 popLoader()
@@ -195,6 +199,7 @@ class ItemViewModel : LoadingViewModel() {
         val interest =  item.interest
         interest.interested = !interest.interested
         interest.userId = itemRepository.getAuthUserId()
+        interest.itemId = item.data.value!!.id!!
         return itemRepository.saveItemInterest(interest.userId, item.data.value!!.id!!, interest)
             .addOnSuccessListener {
                 popLoader()
@@ -229,7 +234,62 @@ class ItemViewModel : LoadingViewModel() {
         }
     }
 
-    fun setItemSold() {
-
+    fun loadInterestedItems() {
+        pushLoader()
+        interestedItems.items.clear()
+        itemRepository.getInterestedItemsIDs()
+            .addOnSuccessListener { itemIdsSnap ->
+                val itemIds = itemIdsSnap.toObjects(ItemInterest::class.java).map { interest -> interest.itemId }
+                if (itemIds.isNotEmpty()) {
+                    itemRepository.getItemsByItemsIds(itemIds).addOnSuccessListener {
+                        interestedItems.items.clear()
+                        interestedItems.items.addAll(it.toObjects(Item::class.java))
+                        popLoader()
+                        error = false
+                    }.addOnFailureListener {
+                        popLoader()
+                        error = true
+                    }
+                } else {
+                    popLoader()
+                }
+            }
+            .addOnFailureListener{
+                popLoader()
+                error = true
+            }
     }
+
+    fun setReview(item:Item, review: Review) {
+        item.review = review
+        pushLoader()
+        itemRepository.saveItem(item)
+            .addOnSuccessListener {
+                popLoader()
+                error = false
+            }.addOnFailureListener {
+                popLoader()
+                error = true
+            }
+    }
+
+    fun loadReviews(userId: String? = null) {
+        val userId = userId ?: itemRepository.getAuthUserId()
+
+        /* load all sold items with review */
+        pushLoader()
+
+        itemRepository.getSoldItems(userId)
+            .addOnSuccessListener { it ->
+                reviews.items.clear()
+                reviews.items.addAll(it.toObjects(Item::class.java)
+                    .filter { it -> it.review != null })
+                popLoader()
+                error = false
+            }.addOnFailureListener {
+                popLoader()
+                error = true
+            }
+    }
+
 }

@@ -1,5 +1,6 @@
 package it.polito.mad.project.adapters
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -13,12 +14,13 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
+import it.polito.mad.project.fragments.advertisements.OnSaleListFragment
 import it.polito.mad.project.fragments.advertisements.StringGlobal.Companion.globalFilter
 import it.polito.mad.project.models.item.Item
 import kotlinx.android.synthetic.main.item.view.*
 import java.util.*
 
-class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemOnSaleAdapter.ViewHolder>(), Filterable{
+class ItemOnSaleAdapter(private var items: MutableList<Item>, private val source: String) : RecyclerView.Adapter<ItemOnSaleAdapter.ViewHolder>(), Filterable{
     private var totalItems: MutableList<Item> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,7 +36,10 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>) : RecyclerView.Ada
         holder.bind(items[position]
         ) {
             val bundle = bundleOf("ItemId" to items[position].id)
-            holder.itemView.findNavController().navigate(R.id.action_onSaleListFragment_to_showItemFragment, bundle)
+            if(source == "onSaleItems")
+                holder.itemView.findNavController().navigate(R.id.action_onSaleListFragment_to_showItemFragment, bundle)
+            else if(source == "interestedItems")
+                holder.itemView.findNavController().navigate(R.id.action_itemsOfInterestListFragment_to_showItemFragment, bundle)
         }
     }
 
