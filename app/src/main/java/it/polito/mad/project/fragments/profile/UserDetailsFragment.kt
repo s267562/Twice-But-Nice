@@ -1,7 +1,5 @@
 package it.polito.mad.project.fragments.profile
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
@@ -105,9 +103,11 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
             full_name.visibility = View.VISIBLE
             inflater.inflate(R.menu.edit_menu, menu)
         }
-        else{
+        else {
             name_container.visibility = View.GONE
             full_name.visibility = View.GONE
+            mapViewProfile.visibility = View.GONE
+            location.visibility = View.VISIBLE
         }
     }
 

@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,7 +17,6 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 
 import it.polito.mad.project.R
@@ -91,6 +90,7 @@ class ShowRouteItemUserFragment : Fragment(), OnMapReadyCallback {
                 var addressItem : Address = addrItem.get(0)
                 var addressUser : Address = addrUser.get(0)
                 val cameraPos = LatLng(addressItem.latitude, addressItem.longitude)
+                Toast.makeText(context, "ROUTE: " + itemLocation.toUpperCase() + " " + userLocation.toUpperCase(), Toast.LENGTH_SHORT).show()
                 gMap?.addMarker(
                     MarkerOptions().position(LatLng(addressItem.latitude, addressItem.longitude))
                         .title("Item position")
