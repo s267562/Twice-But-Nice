@@ -66,8 +66,6 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
                 if (userViewModel.error) {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                 }
-                userViewModel.reviews.adapter.setItemReviews(userViewModel.reviews.items)
-
             } else {
                 loadingLayout.visibility = View.VISIBLE
             }
@@ -96,9 +94,9 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
             mapView.onResume()
             mapView.getMapAsync(this)
         }
-
-        userViewModel.loadUser(arguments?.getString("UserId"))
-        userViewModel.loadReviews(arguments?.getString("UserId"))
+        val userId = arguments?.getString("UserId")
+        userViewModel.loadUser(userId)
+        userViewModel.loadReviews(userId)
         reviewRecyclerView.setHasFixedSize(true)
         reviewRecyclerView.layoutManager = LinearLayoutManager(this.activity)
         reviewRecyclerView.adapter = userViewModel.reviews.adapter
