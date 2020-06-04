@@ -114,7 +114,9 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
         setFabButton()
         itemViewModel.loadItem(arguments?.getString("ItemId")!!)
 
-        item_location.setOnClickListener {
+        val mapView = activity?.findViewById<MapView>(R.id.mapViewItem)
+
+        /*item_location.setOnClickListener {
             val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
 
             val relLayout = dialogView.findViewById<RelativeLayout>(R.id.searchRelLayout)
@@ -136,6 +138,11 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
                         dialog.cancel()
                     })
             val alertDialog = builder.show()
+        }*/
+        if(mapView != null) {
+            mapView.onCreate(null)
+            mapView.onResume()
+            mapView.getMapAsync(this)
         }
     }
 

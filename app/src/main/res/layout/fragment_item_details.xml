@@ -281,16 +281,18 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Location: "
+                        android:text="Expiring Date:"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp" />
+                        android:layout_marginBottom="8dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Expiring Date:"
+                        android:text="Location: "
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp"/>
+                        android:layout_marginBottom="8dp" />
+
+
 
                 </LinearLayout>
 
@@ -301,15 +303,6 @@
                     android:layout_marginLeft="16dp">
 
                     <TextView
-                        android:id="@+id/item_location"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Location"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp"
-                        android:maxLines="1"/>
-
-                    <TextView
                         android:id="@+id/item_exp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -317,6 +310,23 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:layout_marginBottom="8dp"
                         android:maxLines="1" />
+
+                    <TextView
+                        android:id="@+id/item_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Location"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:layout_marginBottom="8dp"
+                        android:maxLines="1"
+                        android:visibility="gone"/>
+
+                    <com.google.android.gms.maps.MapView
+                        android:id="@+id/mapViewItem"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginBottom="16dp" />
 
                 </LinearLayout>
 
