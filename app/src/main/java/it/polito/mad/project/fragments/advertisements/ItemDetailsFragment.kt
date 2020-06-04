@@ -199,9 +199,9 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
 
         if(!isMyItem){
                 // if the item does not belog to me, the map becomes clickable
-            Toast.makeText(context, "not my item -> show route", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(context, "not my item -> show route", Toast.LENGTH_SHORT).show()
             gMap?.setOnMapClickListener {
-                Toast.makeText(context, "Map clicked", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "Map clicked", Toast.LENGTH_SHORT).show()
                 this.findNavController().navigate(R.id.action_itemDetails_to_showRoute)
 
             }
