@@ -35,8 +35,6 @@ class ItemViewModel : LoadingViewModel() {
     // Single item detail loaded
     val item = ItemDetail()
 
-    // Reviews (sold items with review)
-    val reviews = ItemList(ReviewAdapter(mutableListOf()))
     //Items of Interest
     val interestedItems = ItemList(ItemOnSaleAdapter(mutableListOf(), "interestedItems"))
 
@@ -272,24 +270,4 @@ class ItemViewModel : LoadingViewModel() {
                 error = true
             }
     }
-
-    fun loadReviews(userId: String? = null) {
-        val userId = userId ?: itemRepository.getAuthUserId()
-
-        /* load all sold items with review */
-        pushLoader()
-
-        itemRepository.getSoldItems(userId)
-            .addOnSuccessListener { it ->
-                reviews.items.clear()
-                reviews.items.addAll(it.toObjects(Item::class.java)
-                    .filter { it -> it.review != null })
-                popLoader()
-                error = false
-            }.addOnFailureListener {
-                popLoader()
-                error = true
-            }
-    }
-
 }
