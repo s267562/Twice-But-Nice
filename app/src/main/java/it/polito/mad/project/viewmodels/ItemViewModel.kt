@@ -3,10 +3,7 @@ package it.polito.mad.project.viewmodels
 import android.graphics.BitmapFactory
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
-import it.polito.mad.project.adapters.ItemAdapter
-import it.polito.mad.project.adapters.ItemBoughtAdapter
-import it.polito.mad.project.adapters.ItemOnSaleAdapter
-import it.polito.mad.project.adapters.UserAdapter
+import it.polito.mad.project.adapters.*
 import it.polito.mad.project.commons.viewmodels.LoadingViewModel
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.models.item.ItemDetail
@@ -38,6 +35,9 @@ class ItemViewModel : LoadingViewModel() {
     // Single item detail loaded
     val item = ItemDetail()
 
+    //Items of Interest
+    val interestedItems = ItemList(ItemOnSaleAdapter(mutableListOf()))
+
     // Single item detail loaded
     val review = ReviewDetail()
 
@@ -55,6 +55,7 @@ class ItemViewModel : LoadingViewModel() {
                 myItems
                 loadItemsOnSale()
                 loadItemsBought()
+                loadInterestedItems()
                 popLoader()
                 error = false
             }.addOnFailureListener {
@@ -86,7 +87,7 @@ class ItemViewModel : LoadingViewModel() {
             .addOnSuccessListener {
                 // Items on sale are all items sub user items
                 boughtItems.items.clear()
-                boughtItems.items.addAll(it.toObjects(Item::class.java).subtract(myItems.items.toList()))
+                boughtItems.items.addAll(it.toObjects(Item::class.java))
                 popLoader()
                 error = false
             }.addOnFailureListener {
@@ -200,6 +201,7 @@ class ItemViewModel : LoadingViewModel() {
         val interest =  item.interest
         interest.interested = !interest.interested
         interest.userId = itemRepository.getAuthUserId()
+        interest.itemId = item.data.value!!.id!!
         return itemRepository.saveItemInterest(interest.userId, item.data.value!!.id!!, interest)
             .addOnSuccessListener {
                 popLoader()
@@ -244,6 +246,26 @@ class ItemViewModel : LoadingViewModel() {
             }.addOnFailureListener {
                 popLoader()
                 error = true
+            }
+    }
+
+    fun loadInterestedItems() {
+        pushLoader()
+        interestedItems.items.clear()
+        itemRepository.getInterestedItemsIDs()
+            .addOnSuccessListener { itemIdsSnap ->
+                val itemIds = itemIdsSnap.toObjects(ItemInterest::class.java).map { interest -> interest.itemId }
+                if (itemIds.isNotEmpty()) {
+                    itemRepository.getItemsByItemsIds(itemIds).addOnSuccessListener {
+                        interestedItems.items.clear()
+                        interestedItems.items.addAll(it.toObjects(Item::class.java))
+                        popLoader()
+                        error = false
+                    }.addOnFailureListener {
+                popLoader()
+                error = true
+                    }
+                }
             }
     }
 

@@ -57,11 +57,6 @@ class ItemRepository {
         return photoRef.getFile(localFile)
     }
 
-    // set the intereste of the user for the item
-    fun saveItemInterest(userId: String, id: String, itemInterest: ItemInterest): Task<Void> {
-        return database.collection("items").document(id).collection("users").document(userId).set(itemInterest)
-    }
-
     // get the interest of the user for the item
     fun getItemInterest(userId: String, id: String): Task<DocumentSnapshot> {
         return database.collection("items").document(id).collection("users").document(userId).get()
@@ -94,5 +89,19 @@ class ItemRepository {
 
     fun getBoughtItems(userId: String): Task<QuerySnapshot> {
         return database.collection("items").whereEqualTo("status", "Sold").whereEqualTo("buyerId",userId).get()
+    }
+    // set the intereste of the user for the item
+    fun saveItemInterest(userId: String, id: String, itemInterest: ItemInterest): Task<Void> {
+        database.collection("users").document(userId).collection("iterestedItems").document(id).set(itemInterest)
+        return database.collection("items").document(id).collection("users").document(userId).set(itemInterest)
+    }
+
+    fun getInterestedItemsIDs (): Task<QuerySnapshot> {
+        val userId = auth.currentUser!!.uid
+        return database.collection("users").document(userId).collection("iterestedItems").whereEqualTo("interested", true).get()
+    }
+
+    fun getItemsByItemsIds(itemIds: List<String>): Task<QuerySnapshot>  {
+        return database.collection("items").whereIn("id", itemIds).get()
     }
 }
