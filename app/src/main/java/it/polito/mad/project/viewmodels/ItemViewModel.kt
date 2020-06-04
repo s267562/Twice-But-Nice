@@ -258,10 +258,10 @@ class ItemViewModel : LoadingViewModel() {
             }
     }
 
-    fun setReview(item:Item, review: Review) {
-        item.review = review
+    fun setReview(review: Review) {
+        item.data.value!!.review = review
         pushLoader()
-        itemRepository.saveItem(item)
+        itemRepository.saveItem(item.data.value!!)
             .addOnSuccessListener {
                 popLoader()
                 error = false
