@@ -24,8 +24,6 @@ import java.io.IOException
 import java.util.*
 
 class UserDetailsFragment : Fragment(), OnMapReadyCallback {
-
-    private lateinit var itemViewModel: ItemViewModel
     private lateinit var userViewModel: UserViewModel
     private lateinit var authViewModel: AuthViewModel
 
@@ -35,7 +33,6 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        itemViewModel = ViewModelProvider(activity?:this).get(ItemViewModel::class.java)
         userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
         authViewModel = ViewModelProvider(requireActivity()).get(AuthViewModel::class.java)
     }
@@ -69,6 +66,8 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
                 if (userViewModel.error) {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                 }
+                userViewModel.reviews.adapter.setItemReviews(userViewModel.reviews.items)
+
             } else {
                 loadingLayout.visibility = View.VISIBLE
             }
@@ -79,14 +78,6 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
         } else {
             logoutFab.hide()
         }
-
-        itemViewModel.loader.observe(viewLifecycleOwner, Observer {
-            if (itemViewModel.isNotLoading()) {
-                // loader ended
-                itemViewModel.reviews.adapter.setItemReviews(itemViewModel.reviews.items)
-            }
-        })
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -110,9 +101,7 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
 
         reviewRecyclerView.setHasFixedSize(true)
         reviewRecyclerView.layoutManager = LinearLayoutManager(this.activity)
-        reviewRecyclerView.adapter = itemViewModel.reviews.adapter
-
-        itemViewModel.loadReviews(arguments?.getString("UserId"))
+        reviewRecyclerView.adapter = userViewModel.reviews.adapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

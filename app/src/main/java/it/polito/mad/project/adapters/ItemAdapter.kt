@@ -61,6 +61,7 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
 
             container.setOnClickListener { callback(adapterPosition) }
             button.setOnClickListener { callbackEdit(adapterPosition) }
+
         }
 
         fun unbind() {
