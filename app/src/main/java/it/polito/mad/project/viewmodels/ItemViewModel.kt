@@ -1,10 +1,7 @@
 package it.polito.mad.project.viewmodels
 
-import android.app.Application
 import android.graphics.BitmapFactory
-import androidx.lifecycle.AndroidViewModel
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.project.adapters.ItemAdapter
 import it.polito.mad.project.adapters.ItemBoughtAdapter
@@ -20,14 +17,11 @@ import it.polito.mad.project.models.review.ReviewDetail
 import it.polito.mad.project.models.user.User
 import it.polito.mad.project.models.user.UserList
 import it.polito.mad.project.repositories.ItemRepository
-import it.polito.mad.project.repositories.ReviewRepository
 import java.io.File
 
 class ItemViewModel : LoadingViewModel() {
 
     private val itemRepository = ItemRepository()
-
-    private val reviewRepository = ReviewRepository()
 
     // User items
     val myItems = ItemList(ItemAdapter(mutableListOf()))
@@ -109,8 +103,8 @@ class ItemViewModel : LoadingViewModel() {
     fun saveItem(item: Item): Task<Void> {
         val isNewItem = item.id == null
         if (isNewItem) {
-            item.user = itemRepository.getAuthUserId()
-            item.id = "${item.user}-${myItems.items.size}"
+            item.ownerId = itemRepository.getAuthUserId()
+            item.id = "${item.ownerId}-${myItems.items.size}"
         }
         pushLoader()
         return itemRepository.saveItem(item)
@@ -238,29 +232,9 @@ class ItemViewModel : LoadingViewModel() {
         }
     }
 
-
-    fun saveReview(review: Review): Task<Void> {
-        pushLoader()
-        return reviewRepository.saveReview(review).addOnSuccessListener {
-            popLoader()
-        }
-    }
-
-    fun getReviewById(reviewId: String): Task<DocumentSnapshot> {
-        pushLoader()
-        return reviewRepository.getReviewById(reviewId)
-                    .addOnSuccessListener { it ->
-                        if(it.toObject(Review::class.java) != null) {
-                            review.data.value = it.toObject(Review::class.java) as Review
-                        } else {
-                            review.data.value = null
-                        }
-                        popLoader()
-                        error = false
-                    }.addOnFailureListener {
-                        popLoader()
-                        error = true
-                    }
+    fun setReview(item:Item, review: Review) {
+        item.review = review
+        saveItem(item)
     }
 
 }

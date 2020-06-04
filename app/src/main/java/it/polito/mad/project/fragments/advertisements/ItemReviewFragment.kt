@@ -45,14 +45,10 @@ class ItemReviewFragment : Fragment() {
 
         publishReview.setOnClickListener {
             val review = Review(
-                itemViewModel.item.data.value!!.id!!,
-                itemViewModel.item.data.value!!.title,
                 description.text.toString(),
-                ratingBar.rating,
-                itemViewModel.item.data.value!!.user,
-                itemViewModel.item.data.value!!.buyer
+                ratingBar.rating
             )
-            itemViewModel.saveReview(review)
+            itemViewModel.setReview(itemViewModel.item.data.value!!,review)
 
             findNavController().popBackStack()
         }

@@ -1,5 +1,6 @@
 package it.polito.mad.project.models.item
 
+import it.polito.mad.project.models.review.Review
 import java.io.Serializable
 
 data class Item (var id: String?) : Serializable {
@@ -14,8 +15,9 @@ data class Item (var id: String?) : Serializable {
     var expiryDate: String = ""
     var location: String = ""
     var imagePath: String = ""
-    var user: String=""
-    var buyer: String=""
+    var ownerId: String=""
+    var buyerId: String=""
+    var review: Review? = null
 
     constructor(id: String, title: String, category: String, subcategory: String, status: String, price: Double,
                 description: String, expiryDate: String, location: String, imagePath: String? = "") : this(id){

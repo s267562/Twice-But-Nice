@@ -142,11 +142,11 @@ class ItemDetailsFragment : NotificationFragment() {
                     val body = JSONObject().put("ItemId", item.id).put("IsMyItem", true)
                     if (itemViewModel.item.interest.interested) {
                         FirebaseMessaging.getInstance().subscribeToTopic(item.id!!)
-                        sendNotification(item.user, item.title, "$nickname is interested in your item", body)
+                        sendNotification(item.ownerId, item.title, "$nickname is interested in your item", body)
                     }
                     else {
                         FirebaseMessaging.getInstance().unsubscribeFromTopic(item.id!!)
-                        sendNotification(item.user, item.title, "$nickname is not more interested in your item", body)
+                        sendNotification(item.ownerId, item.title, "$nickname is not more interested in your item", body)
                     }
                 }
         }
