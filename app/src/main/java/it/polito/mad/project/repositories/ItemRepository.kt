@@ -79,7 +79,7 @@ class ItemRepository {
 
     // get list of items of a single user
     fun getItemsByUserId(userId: String): Task<QuerySnapshot> {
-        return database.collection("items").whereEqualTo("user", userId).get()
+        return database.collection("items").whereEqualTo("ownerId", userId).get()
     }
 
     // Get only available items
@@ -93,6 +93,6 @@ class ItemRepository {
     }
 
     fun getBoughtItems(userId: String): Task<QuerySnapshot> {
-        return database.collection("items").whereEqualTo("status", "Sold").whereEqualTo("buyer",userId).get()
+        return database.collection("items").whereEqualTo("status", "Sold").whereEqualTo("buyerId",userId).get()
     }
 }
