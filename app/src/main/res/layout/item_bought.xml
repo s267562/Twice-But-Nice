@@ -30,7 +30,7 @@
             android:numStars="5"
             android:stepSize="0.5"
             android:layout_marginEnd="16dp"
-            android:visibility="visible"
+            android:visibility="gone"
             android:progressTint="@color/colorPrimary"/>
 
         <Button
@@ -44,7 +44,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             style="?android:attr/borderlessButtonStyle"
-            android:visibility="visible"/>
+            android:visibility="gone"/>
 
         <LinearLayout
             android:layout_width="wrap_content"

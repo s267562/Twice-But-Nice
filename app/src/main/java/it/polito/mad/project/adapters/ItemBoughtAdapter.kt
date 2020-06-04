@@ -8,13 +8,17 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.os.bundleOf
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
 import it.polito.mad.project.models.item.Item
+import it.polito.mad.project.models.review.Review
+import it.polito.mad.project.viewmodels.ItemViewModel
+import kotlinx.android.synthetic.main.fragment_item_details.*
 
-class ItemBoughtAdapter (private var itemsBought: MutableList<Item>) : RecyclerView.Adapter<ItemBoughtAdapter.ViewHolder>(){
+class ItemBoughtAdapter (private var itemViewModel: ItemViewModel, private var itemsBought: MutableList<Item>) : RecyclerView.Adapter<ItemBoughtAdapter.ViewHolder>(){
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -29,14 +33,19 @@ class ItemBoughtAdapter (private var itemsBought: MutableList<Item>) : RecyclerV
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(itemsBought[position],
+            itemViewModel,
             {
                 val bundle = bundleOf("ItemId" to itemsBought[position].id)
                 holder.itemView.findNavController().navigate(R.id.action_boughtItemsListFragment_to_showItemFragment, bundle)
             },
             {
                 val bundle = bundleOf("ItemId" to itemsBought[position].id)
-                holder.itemView.findNavController().navigate(R.id.action_boughtItemsListFragment_to_showItemFragment, bundle)
+                holder.itemView.findNavController().navigate(R.id.action_boughtItemsListFragment_to_itemReviewFragment, bundle)
             })
+    }
+
+    override fun onViewRecycled(holder: ItemBoughtAdapter.ViewHolder) {
+        holder.unbind()
     }
 
     fun setItems(newItems: MutableList<Item>) {
@@ -55,24 +64,29 @@ class ItemBoughtAdapter (private var itemsBought: MutableList<Item>) : RecyclerV
         private val button: Button = view.findViewById(R.id.item_review_button)
         private val ratingBar: RatingBar = view.findViewById(R.id.item_rating)
 
-        fun bind(item: Item, callback: (Int) -> Unit, callbackReview: (Int) -> Unit ) {
+        fun bind(item: Item, itemViewModel: ItemViewModel, callback: (Int) -> Unit, callbackReview: (Int) -> Unit ) {
             val priceStr = "${item.price} €"
 
             category.text = item.category
             title.text = item.title
             price.text = priceStr
 
-            container.setOnClickListener { callback(adapterPosition) }
-            if(/*item.rating != null*/ adapterPosition%2 == 1 ) {
-                button.visibility = View.GONE
-                ratingBar.visibility = View.VISIBLE
-                // TODO ratingBar.rating = item.rating
-                ratingBar.rating = 3.7F
-            } else {
-                ratingBar.visibility = View.GONE
-                button.visibility = View.VISIBLE
-                button.setOnClickListener{callbackReview(adapterPosition)}
+            itemViewModel.getReviewById(item.id!!).addOnSuccessListener {
+                if (itemViewModel.review.data.value != null) {
+                    val rating = itemViewModel.review.data.value!!.rating
+
+                    button.visibility = View.GONE
+                    ratingBar.visibility = View.VISIBLE
+                    ratingBar.rating = rating
+
+                } else {
+                    ratingBar.visibility = View.GONE
+                    button.visibility = View.VISIBLE
+                    button.setOnClickListener{callbackReview(adapterPosition)}
+                }
             }
+
+            container.setOnClickListener{callback(adapterPosition)}
         }
 
         fun unbind() {
