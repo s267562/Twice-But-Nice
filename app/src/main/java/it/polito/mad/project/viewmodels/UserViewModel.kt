@@ -4,22 +4,30 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
+import it.polito.mad.project.adapters.ReviewAdapter
 import it.polito.mad.project.commons.viewmodels.LoadingViewModel
+import it.polito.mad.project.models.item.Item
+import it.polito.mad.project.models.item.ItemList
 import it.polito.mad.project.models.user.User
 import it.polito.mad.project.models.user.UserDetail
+import it.polito.mad.project.repositories.ItemRepository
 import it.polito.mad.project.repositories.UserRepository
 import java.io.File
 
 class UserViewModel : LoadingViewModel() {
     private val userRepository = UserRepository()
+    private val itemRepository = ItemRepository()
 
     private lateinit var authUser: User
     private var authPhotoProfile: Bitmap? = null
 
     val user = UserDetail()
+    // Reviews (sold items with review)
+    val reviews = ItemList(ReviewAdapter(mutableListOf()))
 
     init {
         loadUser()
+        loadReviews(null)
     }
 
     fun saveUser(user: User): Task<Void> {
@@ -55,6 +63,7 @@ class UserViewModel : LoadingViewModel() {
                     error = true
                     popLoader()
                 }
+
         }
     }
 
@@ -87,6 +96,25 @@ class UserViewModel : LoadingViewModel() {
         user.data.value = authUser
         if (authPhotoProfile != null)
             user.image.value = authPhotoProfile
+    }
+
+    fun loadReviews( userId: String? = null) {
+        val id = userId ?: userRepository.getFirebaseUser()!!.uid
+
+        /* load all sold items with review */
+        pushLoader()
+        itemRepository.getSoldItems(id)
+            .addOnSuccessListener { it ->
+                reviews.items.clear()
+                reviews.items.addAll(it.toObjects(Item::class.java)
+                    .filter { it -> it.review != null })
+                reviews.adapter.setItemReviews(reviews.items)
+                popLoader()
+                error = false
+            }.addOnFailureListener {
+                popLoader()
+                error = true
+            }
     }
 
 }

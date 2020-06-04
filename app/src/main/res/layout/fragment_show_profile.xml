@@ -19,7 +19,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"  />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -150,12 +150,12 @@
 
             </LinearLayout>
 
-        <com.google.android.gms.maps.MapView
+        <it.polito.mad.project.customViews.CustomMapView
             android:id="@+id/mapViewProfile"
             android:layout_width="340dp"
             android:layout_height="200dp"
             android:layout_marginTop="25dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"/>
 
             <!-- REVIEWS -->
 
@@ -234,7 +234,7 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:id="@+id/loadingLayout"

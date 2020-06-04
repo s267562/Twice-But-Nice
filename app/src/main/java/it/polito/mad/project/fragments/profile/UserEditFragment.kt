@@ -36,7 +36,6 @@ import androidx.lifecycle.Observer
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -44,6 +43,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import it.polito.mad.project.R
+import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.user.User
 import it.polito.mad.project.viewmodels.UserViewModel
@@ -409,7 +409,7 @@ class UserEditFragment : Fragment() {
     private fun openMap(){
 
         val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
-        val mapView = dialogView.findViewById<MapView>(R.id.map)
+        val mapView = dialogView.findViewById<CustomMapView>(R.id.map)
 
         searchEditText = dialogView.findViewById(R.id.search_loc)
 
