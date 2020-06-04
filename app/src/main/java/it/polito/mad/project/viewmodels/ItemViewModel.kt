@@ -234,11 +234,50 @@ class ItemViewModel : LoadingViewModel() {
         }
     }
 
+    fun loadInterestedItems() {
+        pushLoader()
+        interestedItems.items.clear()
+        itemRepository.getInterestedItemsIDs()
+            .addOnSuccessListener { itemIdsSnap ->
+                val itemIds = itemIdsSnap.toObjects(ItemInterest::class.java).map { interest -> interest.itemId }
+                if (itemIds.isNotEmpty()) {
+                    itemRepository.getItemsByItemsIds(itemIds).addOnSuccessListener {
+                        interestedItems.items.clear()
+                        interestedItems.items.addAll(it.toObjects(Item::class.java))
+                        popLoader()
+                        error = false
+                    }.addOnFailureListener {
+                        popLoader()
+                        error = true
+                    }
+                }
+            }
+    }
+
     fun setReview(item:Item, review: Review) {
         item.review = review
         pushLoader()
         itemRepository.saveItem(item)
             .addOnSuccessListener {
+                popLoader()
+                error = false
+            }.addOnFailureListener {
+                popLoader()
+                error = true
+            }
+    }
+
+    fun loadReviews(userId: String? = null) {
+        val userId = userId ?: itemRepository.getAuthUserId()
+
+        /* load all sold items with review */
+        pushLoader()
+
+        itemRepository.getSoldItems(userId)
+            .addOnSuccessListener { it ->
+                reviews.items.clear()
+                reviews.items.addAll(it.toObjects(Item::class.java)
+                    .filter { it -> it.review != null })
                 popLoader()
                 error = false
             }.addOnFailureListener {
