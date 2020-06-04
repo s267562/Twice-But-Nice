@@ -62,8 +62,8 @@ class UserViewModel : LoadingViewModel() {
                     error = true
                     popLoader()
                 }
-            loadReviews(verifiedId)
         }
+        loadReviews(verifiedId)
     }
 
     private fun loadUserPhotoProfile(id: String, photoProfilePath: String) {
