@@ -13,15 +13,15 @@ class Util {
         }
 
         fun <T> saveToStoreFile(activity: Activity?, key: String, value: T) {
-            val sharedPref = activity?.getSharedPreferences(activity?.resources.getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
+            val sharedPref = activity?.getSharedPreferences(activity.resources.getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
             val prefsEditor = sharedPref?.edit()
             prefsEditor?.putString(key, Gson().toJson(value));
-            prefsEditor?.commit();
+            prefsEditor?.apply()
         }
 
         fun loadJsonFromStoreFile(activity: Activity?, key: String): String? {
             // Load store file of our app from shared preferences
-            val sharedPreferences = activity?.getSharedPreferences(activity?.resources.getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
+            val sharedPreferences = activity?.getSharedPreferences(activity.resources.getString(R.string.app_store_file_name), Context.MODE_PRIVATE)
 
             // Load from the store file the user object. For the first time we load empty string.
             return sharedPreferences?.getString(key, "")

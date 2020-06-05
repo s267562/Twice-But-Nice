@@ -3,7 +3,6 @@ package it.polito.mad.project.services
 import it.polito.mad.project.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -69,7 +68,7 @@ class MessageService : FirebaseMessagingService() {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private fun setupChannels(notificationManager: NotificationManager?) {
         val adminChannelName = "New notification"
-        val adminChannelDescription = "Device to devie notification"
+        val adminChannelDescription = "Device to device notification"
 
         val adminChannel: NotificationChannel
         adminChannel = NotificationChannel(adminChannelId, adminChannelName, NotificationManager.IMPORTANCE_HIGH)
