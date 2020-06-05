@@ -29,7 +29,7 @@
     <string name="search_hint">Hint</string>
     <string name="param_def">Parameters</string>
 
-    <string-array name="params">
+    <string-array name="item_filters">
         <item>Title</item>
         <item>Category</item>
         <item>Subcategory</item>
