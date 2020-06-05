@@ -4,12 +4,14 @@ import android.content.IntentSender
 import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.EditText
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -28,10 +30,11 @@ import it.polito.mad.project.R
 import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.viewmodels.ItemViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
+import kotlinx.android.synthetic.main.fragment_map.*
 import java.io.IOException
 import java.util.*
 
-class MapFragment : Fragment(), OnMapReadyCallback {
+class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListener {
 
     private lateinit var googleMap: GoogleMap
     private lateinit var itemViewModel: ItemViewModel
@@ -42,6 +45,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val TAG = "LocationOnOff"
     private var googleApiClient: GoogleApiClient? = null
     private val REQUEST_LOCATION = 199
+
+    lateinit var searchView: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,8 +69,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_show_route_item_user, container, false)
+        return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,6 +84,31 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             mapRoute.onResume()
             mapRoute.getMapAsync(this)
         }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.map_search_menu, menu)
+
+        val itemMenu: MenuItem = menu.findItem(R.id.menu_search)
+
+        searchView = itemMenu.actionView as SearchView
+
+        val editText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+        editText.hint = "Enter location..."
+
+        searchView.setOnQueryTextListener(this)
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        Toast.makeText(requireContext(), "TODO onQueryTextChange: ${newText}", Toast.LENGTH_SHORT).show() // TODO
+        return true
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return false
     }
 
     override fun onMapReady(gMap: GoogleMap?) {
@@ -85,7 +116,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             googleMap = it
         }
 
-        gMap?.uiSettings?.isZoomControlsEnabled = true
+        gMap?.uiSettings?.isZoomControlsEnabled = false
         gMap?.uiSettings?.isMapToolbarEnabled = true
         gMap?.uiSettings?.isMyLocationButtonEnabled = true
         gMap?.uiSettings?.isCompassEnabled = true
