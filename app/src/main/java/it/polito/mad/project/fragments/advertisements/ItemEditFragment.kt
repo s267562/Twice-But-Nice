@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,7 +15,9 @@ import android.graphics.drawable.BitmapDrawable
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.location.LocationManager
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -27,9 +30,11 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.findFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -45,7 +50,6 @@ import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_item_edit.*
-import kotlinx.android.synthetic.main.fragment_item_edit.loadingLayout
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
@@ -151,7 +155,21 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             if(ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED){
                 // Permission granted
-                openMap()
+
+                val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                val gpsEnabled: Boolean = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+                if(gpsEnabled) {
+                    openMapWithPostion()
+                } else {
+
+                    openMap()
+
+                    /* TODO alert --> enable GPS?
+                    if(no) openMap()
+                    else openMapWithPostion() */
+                }
+
             } else {
                 // Permission is denied
                 requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 44)
@@ -370,8 +388,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                     it,
                     DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                         item_exp.text = (
-                            dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year
-                        )
+                                dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year
+                                )
                         this.dateValue = item_exp.text.toString()
                     },
                     year, month, day
@@ -384,7 +402,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         context?.let {
             ArrayAdapter.createFromResource(it, R.array.item_status, android.R.layout.simple_spinner_item)
                 .also {
-                    adapter ->
+                        adapter ->
                     // Specify the layout to use when the list of choices appears
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     // Apply the adapter to the spinner
@@ -422,7 +440,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         context?.let {
             ArrayAdapter.createFromResource(it, textArrayResId, android.R.layout.simple_spinner_item)
                 .also {
-                    adapter ->
+                        adapter ->
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     item_subcategory_spinner.adapter = adapter
                 }
@@ -470,12 +488,12 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         updateItem.status = statusContent
 
         itemViewModel.saveItem(updateItem)
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
                     if (updateItem.id != null && updateItem.status == "Sold") {
-                            val body = JSONObject().put("ItemId", updateItem.id!!).put("IsMyItem", false)
-                            sendNotification(updateItem.id!!, updateItem.title, "The item was sold", body)
-                        }
+                        val body = JSONObject().put("ItemId", updateItem.id!!).put("IsMyItem", false)
+                        sendNotification(updateItem.id!!, updateItem.title, "The item was sold", body)
+                    }
                     if (itemViewModel.item.localImage != null)
                         itemViewModel.item.image.value = itemViewModel.item.localImage
 
@@ -483,10 +501,10 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                     itemViewModel.item.localImage = null
 
                     findNavController().popBackStack()
-                    } else {
-                        Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()
-                    }
+                } else {
+                    Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()
                 }
+            }
     }
 
     private fun openGallery(){
@@ -503,6 +521,50 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
         val mapView = dialogView.findViewById<CustomMapView>(R.id.map)
 
+        searchEditText = dialogView.findViewById(R.id.search_loc)
+
+        mapView.onCreate(null)
+        mapView.onResume()
+        mapView.getMapAsync { gMap: GoogleMap ->
+            gMap.let {
+                googleMap = it
+            }
+
+            gMap.uiSettings?.isZoomControlsEnabled = true
+            gMap.uiSettings?.isMapToolbarEnabled = true
+            gMap.uiSettings?.isMyLocationButtonEnabled = true
+            gMap.uiSettings?.isCompassEnabled = true
+
+            searchEditText.setOnEditorActionListener { v, actionId, event ->
+                Log.d("SEARCH_EDIT_TEXT", actionId.toString())
+                if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH
+                    || event?.action == KeyEvent.ACTION_DOWN || event?.action == KeyEvent.KEYCODE_ENTER){
+                    geoLocate()
+                }
+                false
+            }
+        }
+
+        val builder= AlertDialog.Builder(context).setView(dialogView)
+            .setPositiveButton("Set Location",
+                DialogInterface.OnClickListener{ dialog, id ->
+                    dialog.cancel()
+                })
+            .setNegativeButton("Close Map",
+                DialogInterface.OnClickListener { dialog, id ->
+                    dialog.cancel()
+                })
+        builder.show()
+
+    }
+
+    private fun openMapWithPostion(){
+
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
+        val mapView = dialogView.findViewById<CustomMapView>(R.id.map)
+
+        searchEditText = dialogView.findViewById(R.id.search_loc)
+
         val task: Task<Location> = LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation
 
         task.addOnSuccessListener(object : OnSuccessListener<Location> {
@@ -510,7 +572,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 if(location != null && mapView != null){
                     mapView.onCreate(null)
                     mapView.onResume()
-                    mapView.getMapAsync(object : OnMapReadyCallback{
+                    mapView.getMapAsync(object : OnMapReadyCallback {
 
                         override fun onMapReady(gMap: GoogleMap?) {
 
@@ -572,7 +634,6 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
         })
 
-        searchEditText = dialogView.findViewById(R.id.search_loc)
         val builder= AlertDialog.Builder(context).setView(dialogView)
             .setPositiveButton("Set Location",
                 DialogInterface.OnClickListener{ dialog, id ->
@@ -584,6 +645,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 })
         builder.show()
     }
+
     private fun geoLocate(){
         // This to manage the search of location from the upper bar
         val searchString = searchEditText.text.toString()
@@ -600,4 +662,5 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             Toast.makeText(context, "You typed: " + address.toString(), Toast.LENGTH_SHORT).show()
         }
     }
+
 }
