@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.fragment_show_profile.loadingLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.*
@@ -93,6 +94,7 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
         setFabButton()
 
         CoroutineScope(Main).launch {
+            delay(1000)
             setMap()
         }
 

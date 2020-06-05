@@ -28,6 +28,7 @@ import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.IOException
@@ -118,6 +119,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
         itemViewModel.loadItem(arguments?.getString("ItemId")!!)
 
         CoroutineScope(Main).launch {
+            delay(1000)
             setMap()
         }
     }
