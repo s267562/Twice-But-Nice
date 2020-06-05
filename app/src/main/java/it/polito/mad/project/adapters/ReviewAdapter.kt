@@ -40,7 +40,7 @@ class ReviewAdapter(private var itemReviews: MutableList<Item>) : RecyclerView.A
 
         fun bind(item: Item) {
 
-            buyerNickname.text = item.buyerId
+            buyerNickname.text = item.buyerNickname
             reviewRating.rating = item.review!!.rating
             reviewTitle.text = item.title
             reviewDescription.text = item.review!!.description

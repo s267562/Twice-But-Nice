@@ -33,6 +33,7 @@ class UserAdapter(private var itemViewModel: ItemViewModel , private var users: 
         }, {
                 itemViewModel.item.data.value!!.status = "Sold"
                 itemViewModel.item.data.value!!.buyerId = users[position].id
+                itemViewModel.item.data.value!!.buyerNickname = users[position].nickname
                 itemViewModel.saveItem(itemViewModel.item.data.value!!).addOnSuccessListener {
                     holder.itemView.findNavController().popBackStack()
                 }

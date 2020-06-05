@@ -3,6 +3,7 @@ package it.polito.mad.project.fragments.profile
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -21,6 +22,8 @@ import kotlinx.android.synthetic.main.fragment_on_sale_list.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 import kotlinx.android.synthetic.main.fragment_show_profile.loadingLayout
 import java.io.IOException
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.util.*
 
 class UserDetailsFragment : Fragment(), OnMapReadyCallback {
@@ -66,6 +69,24 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
                 if (userViewModel.error) {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                 }
+
+                var nRatings = userViewModel.reviews.items.size
+                var sumRatings = 0F
+                for(item in userViewModel.reviews.items) {
+                    sumRatings += item.review!!.rating
+                }
+                val avgRating = sumRatings / nRatings
+
+                userRating.rating = avgRating
+
+                val decimalFormat = DecimalFormat("#.#")
+                decimalFormat.roundingMode = RoundingMode.CEILING
+                val userRatingText = "${decimalFormat.format(avgRating)} of 5"
+                userRatingTextView.text = userRatingText
+
+                val nRatingsText = "$nRatings reviews"
+                nReviewsTextView.text = nRatingsText
+
             } else {
                 loadingLayout.visibility = View.VISIBLE
             }
