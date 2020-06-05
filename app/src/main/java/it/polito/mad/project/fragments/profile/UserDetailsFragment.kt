@@ -14,12 +14,17 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import it.polito.mad.project.R
 import androidx.recyclerview.widget.LinearLayoutManager
+import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.viewmodels.AuthViewModel
 import it.polito.mad.project.viewmodels.ItemViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_on_sale_list.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 import kotlinx.android.synthetic.main.fragment_show_profile.loadingLayout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.*
 
@@ -87,19 +92,27 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
         setFabButton()
 
-        val mapView = activity?.findViewById<MapView>(R.id.mapViewProfile)
-
-        if(mapView != null) {
-            mapView.onCreate(null)
-            mapView.onResume()
-            mapView.getMapAsync(this)
+        CoroutineScope(Main).launch {
+            setMap()
         }
+
         val userId = arguments?.getString("UserId")
         userViewModel.loadUser(userId)
         userViewModel.loadReviews(userId)
         reviewRecyclerView.setHasFixedSize(true)
         reviewRecyclerView.layoutManager = LinearLayoutManager(this.activity)
         reviewRecyclerView.adapter = userViewModel.reviews.adapter
+    }
+
+    private suspend fun setMap(){
+        val mapView = activity?.findViewById<CustomMapView>(R.id.mapViewProfile)
+
+        if(mapView != null) {
+            mapView.onCreate(null)
+            mapView.onResume()
+            mapView.getMapAsync(this@UserDetailsFragment)
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

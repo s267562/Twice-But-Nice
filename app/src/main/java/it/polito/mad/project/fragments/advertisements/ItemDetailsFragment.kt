@@ -25,6 +25,10 @@ import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.viewmodels.ItemViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_item_details.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.IOException
 import java.util.*
@@ -113,12 +117,18 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
         setFabButton()
         itemViewModel.loadItem(arguments?.getString("ItemId")!!)
 
+        CoroutineScope(Main).launch {
+            setMap()
+        }
+    }
+
+    private suspend fun setMap(){
         val mapView = activity?.findViewById<CustomMapView>(R.id.mapViewItem)
 
         if(mapView != null) {
             mapView.onCreate(null)
             mapView.onResume()
-            mapView.getMapAsync(this)
+            mapView.getMapAsync(this@ItemDetailsFragment)
         }
     }
 
