@@ -26,6 +26,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -103,7 +104,7 @@ class UserEditFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        supFragmentManager = this.requireFragmentManager()
+        supFragmentManager = (context as AppCompatActivity).supportFragmentManager
         return inflater.inflate(R.layout.fragment_edit_profile, container, false)
     }
 
@@ -458,7 +459,7 @@ class UserEditFragment : Fragment() {
                                 e.printStackTrace()
                             }
 
-                            searchEditText.setOnEditorActionListener { v, actionId, event ->
+                            searchEditText.setOnEditorActionListener { _, actionId, event ->
                                 if(actionId == EditorInfo.IME_ACTION_SEARCH || event?.action == KeyEvent.ACTION_DOWN ||
                                     event?.action == KeyEvent.KEYCODE_ENTER){
                                     Toast.makeText(context, "Giusto così", Toast.LENGTH_SHORT).show()
@@ -468,9 +469,9 @@ class UserEditFragment : Fragment() {
                             }
 
                             gMap?.setOnMapClickListener {
-                                var clickPosition = LatLng(it.latitude, it.longitude)
+                                val clickPosition = LatLng(it.latitude, it.longitude)
                                 val markerOpt = MarkerOptions()
-                                markerOpt.position(clickPosition!!)
+                                markerOpt.position(clickPosition)
                                 gMap.clear()
                                 gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
                                 gMap.addMarker(markerOpt)
@@ -488,12 +489,12 @@ class UserEditFragment : Fragment() {
 
         val builder= AlertDialog.Builder(context).setView(dialogView)
             .setPositiveButton("Set Location",
-                DialogInterface.OnClickListener{ dialog, id ->
+                DialogInterface.OnClickListener{ dialog, _ ->
                     Toast.makeText(context, "Last saved position is " + lastPositionToSave, Toast.LENGTH_SHORT).show()
                     dialog.cancel()
                 })
             .setNegativeButton("Close Map",
-                DialogInterface.OnClickListener { dialog, id ->
+                DialogInterface.OnClickListener { dialog, _ ->
                     dialog.cancel()
                 })
         builder.show()

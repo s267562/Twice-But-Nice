@@ -21,12 +21,12 @@ import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.customViews.CustomMapView
+import it.polito.mad.project.enums.items.ItemStatus
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.viewmodels.ItemViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -40,7 +40,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
     private lateinit var userViewModel: UserViewModel
 
     private var isMyItem: Boolean = false
-
+    private var isSoldItem: Boolean = false
     private var listenerRegistration: ListenerRegistration? = null
 
     private lateinit var googleMap: GoogleMap
@@ -57,6 +57,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
         (activity as AppCompatActivity?)?.supportActionBar?.show()
 
         isMyItem = arguments?.getBoolean("IsMyItem")?:false
+        isSoldItem = arguments?.getBoolean("IsSoldItem ")?:false
         itemViewModel.item.data.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 item_title.text = it.title
@@ -64,7 +65,8 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
                 item_location.text = it.location
                 item_category.text = it.category
                 item_subcategory.text = it.subcategory
-                item_price.text = "${it.price} €"
+                val priceString = "${it.price} €"
+                item_price.text = priceString
                 item_exp.text = it.expiryDate
                 if (listenerRegistration == null)
                    listenerRegistration = itemViewModel.listenToChanges()
@@ -84,7 +86,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                 }
                 if (!isMyItem) {
-                    if (itemViewModel.item.data.value!!.status == "Available") {
+                    if (itemViewModel.item.data.value!!.status == ItemStatus.Available.toString()) {
                         var interestFabDrawableId: Int = R.drawable.ic_favorite_border_white_24dp
                         if (itemViewModel.item.interest.interested)
                             interestFabDrawableId = R.drawable.ic_favorite_white_24dp
@@ -109,7 +111,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        supFragManager = this.requireFragmentManager()
+        supFragManager = (context as AppCompatActivity).supportFragmentManager
         return inflater.inflate(R.layout.fragment_item_details, container, false)
     }
 
@@ -124,8 +126,8 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
         }
     }
 
-    private suspend fun setMap(){
-        val mapView = activity?.findViewById<CustomMapView>(R.id.mapViewItem)
+    private fun setMap(){
+        val mapView: CustomMapView? = activity?.findViewById<CustomMapView>(R.id.mapViewItem)
 
         if(mapView != null) {
             mapView.onCreate(null)
@@ -136,7 +138,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        if (isMyItem) {
+        if (isMyItem && !isSoldItem) {
             inflater.inflate(R.menu.edit_menu, menu)
         }
     }
@@ -186,7 +188,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
             googleMap = it
         }
 
-        var geocode = Geocoder(context?.applicationContext, Locale.getDefault())
+        val geocode = Geocoder(context?.applicationContext, Locale.getDefault())
 
         gMap?.uiSettings?.isZoomControlsEnabled = true
         gMap?.uiSettings?.isMapToolbarEnabled = true
@@ -194,9 +196,9 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
         gMap?.uiSettings?.isCompassEnabled = true
 
         try {
-            var addr = geocode.getFromLocationName(item_location.text.toString(), 1)
-            if(addr.size > 0){
-                var address : Address = addr.get(0)
+            val addresses = geocode.getFromLocationName(item_location.text.toString(), 1)
+            if(addresses.size > 0){
+                val address : Address = addresses[0]
                 val cameraPos = LatLng(address.latitude, address.longitude)
                 gMap?.addMarker(
                     MarkerOptions()

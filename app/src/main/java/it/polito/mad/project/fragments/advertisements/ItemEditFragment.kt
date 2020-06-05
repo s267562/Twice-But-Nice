@@ -5,7 +5,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -17,7 +16,6 @@ import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -27,14 +25,13 @@ import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.findFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -47,6 +44,9 @@ import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.enums.IntentRequest
+import it.polito.mad.project.enums.items.ItemStatus
+import it.polito.mad.project.fragments.advertisements.dialogs.SetBuyerDialogFragment
+import it.polito.mad.project.fragments.advertisements.dialogs.SetFilterDialogFragment
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_item_edit.*
@@ -65,8 +65,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
     private lateinit var searchEditText: EditText
     private lateinit var googleMap: GoogleMap
 
-    lateinit var geocode: Geocoder
-    lateinit var address: Address
+    private lateinit var geocode: Geocoder
+    private lateinit var address: Address
 
     private var imageFile: File? = null
     private var imagePath: String? = null
@@ -77,6 +77,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         R.array.item_sub_women, R.array.item_sub_men, R.array.item_sub_electo, R.array.item_sub_games, R.array.item_sub_auto)
 
     private val selectImage = 2
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemViewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
@@ -102,7 +103,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 if (it.categoryPos >= 0)
                     item_category_spinner.setSelection(localIt.categoryPos)
                 item_descr.setText(localIt.description)
-                item_location.setText(localIt.location)
+                item_location.text = localIt.location
                 item_price.setText(localIt.price)
                 item_exp.text = localIt.expiryDate
                 if(localIt.statusPos >= 0){
@@ -138,7 +139,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        supFragmentManager = this.requireFragmentManager()
+        supFragmentManager = (context as AppCompatActivity).supportFragmentManager
         return inflater.inflate(R.layout.fragment_item_edit, container, false)
     }
 
@@ -160,7 +161,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 val gpsEnabled: Boolean = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
                 if(gpsEnabled) {
-                    openMapWithPostion()
+                    openMapWithPosition()
                 } else {
 
                     openMap()
@@ -253,8 +254,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         }
     }
 
-    override fun onNothingSelected(p0: AdapterView<*>?) {
-        TODO("Not yet implemented")
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        // Nothing to do
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
@@ -418,6 +419,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                     val status: String = parent?.getItemAtPosition(position) as String
                     itemViewModel.item.localData?.status = status
                     itemViewModel.item.localData?.statusPos = position
+                    if (status == ItemStatus.Sold.toString())
+                        SetBuyerDialogFragment().show(supFragmentManager, "Set Buyer")
                 }
             }
         }
@@ -490,7 +493,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         itemViewModel.saveItem(updateItem)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    if (updateItem.id != null && updateItem.status == "Sold") {
+                    if (updateItem.id != null && updateItem.status == ItemStatus.Sold.toString()) {
                         val body = JSONObject().put("ItemId", updateItem.id!!).put("IsMyItem", false)
                         sendNotification(updateItem.id!!, updateItem.title, "The item was sold", body)
                     }
@@ -535,7 +538,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             gMap.uiSettings?.isMyLocationButtonEnabled = true
             gMap.uiSettings?.isCompassEnabled = true
 
-            searchEditText.setOnEditorActionListener { v, actionId, event ->
+            searchEditText.setOnEditorActionListener { _, actionId, event ->
                 Log.d("SEARCH_EDIT_TEXT", actionId.toString())
                 if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH
                     || event?.action == KeyEvent.ACTION_DOWN || event?.action == KeyEvent.KEYCODE_ENTER){
@@ -546,19 +549,19 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         }
 
         val builder= AlertDialog.Builder(context).setView(dialogView)
-            .setPositiveButton("Set Location",
-                DialogInterface.OnClickListener{ dialog, id ->
-                    dialog.cancel()
-                })
-            .setNegativeButton("Close Map",
-                DialogInterface.OnClickListener { dialog, id ->
-                    dialog.cancel()
-                })
+            .setPositiveButton("Set Location"
+            ) { dialog, _ ->
+                dialog.cancel()
+            }
+            .setNegativeButton("Close Map"
+            ) { dialog, _ ->
+                dialog.cancel()
+            }
         builder.show()
 
     }
 
-    private fun openMapWithPostion(){
+    private fun openMapWithPosition(){
 
         val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
         val mapView = dialogView.findViewById<CustomMapView>(R.id.map)
@@ -585,7 +588,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                             gMap?.uiSettings?.isMyLocationButtonEnabled = true
                             gMap?.uiSettings?.isCompassEnabled = true
 
-                            var position = LatLng(location.latitude, location.longitude)
+                            val position = LatLng(location.latitude, location.longitude)
                             gMap?.moveCamera(CameraUpdateFactory.newLatLng(position))
                             gMap?.animateCamera(CameraUpdateFactory.zoomTo(4.8F))
                             gMap?.addMarker(
@@ -595,11 +598,11 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                             geocode = Geocoder(context?.applicationContext, Locale.getDefault())
 
                             try {
-                                var addr = geocode.getFromLocationName(
+                                val addresses = geocode.getFromLocationName(
                                     item_location.text.toString(), 1)
-                                if(addr.size > 0){
-                                    var address : Address = addr.get(0)
-                                    val cameraPos = LatLng(address.latitude, address.longitude)
+                                if(addresses.size > 0){
+                                    val address : Address = addresses[0]
+//                                    val cameraPos = LatLng(address.latitude, address.longitude)
                                     gMap?.addMarker(
                                         MarkerOptions()
                                             .position(LatLng(address.latitude, address.longitude))
@@ -610,7 +613,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                                 e.printStackTrace()
                             }
 
-                            searchEditText.setOnEditorActionListener { v, actionId, event ->
+                            searchEditText.setOnEditorActionListener { _, actionId, event ->
                                 if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH
                                     || event?.action == KeyEvent.ACTION_DOWN || event?.action == KeyEvent.KEYCODE_ENTER){
                                     geoLocate()
@@ -619,9 +622,9 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                             }
 
                             gMap?.setOnMapClickListener {
-                                var clickPosition = LatLng(it.latitude, it.longitude)
+                                val clickPosition = LatLng(it.latitude, it.longitude)
                                 val markerOpt = MarkerOptions()
-                                markerOpt.position(clickPosition!!)
+                                markerOpt.position(clickPosition)
                                 gMap.clear()
                                 gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
                                 gMap.addMarker(markerOpt)
@@ -635,14 +638,14 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         })
 
         val builder= AlertDialog.Builder(context).setView(dialogView)
-            .setPositiveButton("Set Location",
-                DialogInterface.OnClickListener{ dialog, id ->
-                    dialog.cancel()
-                })
-            .setNegativeButton("Close Map",
-                DialogInterface.OnClickListener { dialog, id ->
-                    dialog.cancel()
-                })
+            .setPositiveButton("Set Location"
+            ) { dialog, _ ->
+                dialog.cancel()
+            }
+            .setNegativeButton("Close Map"
+            ) { dialog, _ ->
+                dialog.cancel()
+            }
         builder.show()
     }
 
@@ -659,7 +662,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
         if (addressList.size > 0){
             address = addressList.get(0)
-            Toast.makeText(context, "You typed: " + address.toString(), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "You typed: $address", Toast.LENGTH_SHORT).show()
         }
     }
 

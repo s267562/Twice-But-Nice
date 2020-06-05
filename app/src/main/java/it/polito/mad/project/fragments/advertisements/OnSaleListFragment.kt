@@ -14,16 +14,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.R
+import it.polito.mad.project.fragments.advertisements.dialogs.SetFilterDialogFragment
 import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_on_sale_list.*
 
 class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private lateinit var itemViewModel: ItemViewModel
-    lateinit var searchView: SearchView
-    lateinit var supFragmentManager : FragmentManager
-
-    lateinit var bundle: Bundle
+    private lateinit var supFragmentManager: FragmentManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +31,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         setHasOptionsMenu(true)
-        supFragmentManager = this.requireFragmentManager()
+        supFragmentManager = (context as AppCompatActivity).supportFragmentManager
         return inflater.inflate(R.layout.fragment_on_sale_list, container, false)
     }
 
@@ -72,9 +70,7 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         inflater.inflate(R.menu.search_menu, menu)
 
         val itemMenu: MenuItem = menu.findItem(R.id.menu_search)
-
-        searchView = itemMenu.actionView as SearchView
-
+        val searchView = itemMenu.actionView as SearchView
         val editText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
         editText.hint = "Type any kind of info"
 
@@ -93,8 +89,9 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun openModal(){
-        val newFragment = DialogViewFragment()
-        newFragment.show(supFragmentManager, "dialog")
+        val newFragment =
+            SetFilterDialogFragment()
+        newFragment.show(supFragmentManager, "Set Filter")
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
