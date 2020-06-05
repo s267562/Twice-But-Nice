@@ -1,8 +1,10 @@
 package it.polito.mad.project.fragments.advertisements
 
+import android.content.IntentSender.SendIntentException
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -26,13 +28,13 @@ import it.polito.mad.project.viewmodels.ItemViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.IOException
 import java.util.*
+
 
 class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
 
@@ -45,6 +47,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
 
     private lateinit var googleMap: GoogleMap
     lateinit var supFragManager : FragmentManager
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -210,10 +213,10 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
         }
 
         if(!isMyItem){
-                // if the item does not belog to me, the map becomes clickable
-            //Toast.makeText(context, "not my item -> show route", Toast.LENGTH_SHORT).show()
+            // if the item does not belog to me, the map becomes clickable
+            // Toast.makeText(context, "not my item -> show route", Toast.LENGTH_SHORT).show()
             gMap?.setOnMapClickListener {
-                //Toast.makeText(context, "Map clicked", Toast.LENGTH_SHORT).show()
+                // Toast.makeText(context, "Map clicked", Toast.LENGTH_SHORT).show()
                 this.findNavController().navigate(R.id.action_itemDetails_to_showRoute)
 
             }
