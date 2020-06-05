@@ -11,6 +11,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage
+import it.polito.mad.project.enums.items.ItemStatus
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.models.item.ItemInterest
 import java.io.File
@@ -33,7 +34,7 @@ class ItemRepository {
             val photoRef = storage.reference.child("item/${item.id}")
             val file = Uri.fromFile(File(item.imagePath))
             val bitmap = BitmapFactory.decodeFile(item.imagePath)
-            val localFile = File.createTempFile(item.id,".jpg")
+            val localFile = File.createTempFile(item.id.toString(),".jpg")
             val fOut = FileOutputStream(localFile)
             bitmap.compress(Bitmap.CompressFormat.JPEG,100, fOut);
             item.imagePath=localFile.path
@@ -79,7 +80,7 @@ class ItemRepository {
 
     // Get only available items
     fun getAvailableItems(): Task<QuerySnapshot> {
-        return database.collection("items").whereEqualTo("status", "Available").get()
+        return database.collection("items").whereEqualTo("status", ItemStatus.Available.toString()).get()
     }
 
     // get the authenticated user id
@@ -88,11 +89,11 @@ class ItemRepository {
     }
 
     fun getBoughtItems(userId: String): Task<QuerySnapshot> {
-        return database.collection("items").whereEqualTo("status", "Sold").whereEqualTo("buyerId",userId).get()
+        return database.collection("items").whereEqualTo("status", ItemStatus.Sold.toString()).whereEqualTo("buyerId",userId).get()
     }
 
     fun getSoldItems(userId: String): Task<QuerySnapshot> {
-        return database.collection("items").whereEqualTo("ownerId", userId).whereEqualTo("status", "Sold").get()
+        return database.collection("items").whereEqualTo("ownerId", userId).whereEqualTo("status", ItemStatus.Sold.toString()).get()
     }
     // set the intereste of the user for the item
     fun saveItemInterest(userId: String, id: String, itemInterest: ItemInterest): Task<Void> {
