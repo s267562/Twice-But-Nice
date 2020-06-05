@@ -3,14 +3,16 @@ package it.polito.mad.project.viewmodels
 import android.graphics.BitmapFactory
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
-import it.polito.mad.project.adapters.*
+import it.polito.mad.project.adapters.items.BoughtItemAdapter
+import it.polito.mad.project.adapters.items.MyItemAdapter
+import it.polito.mad.project.adapters.items.OnSaleItemAdapter
+import it.polito.mad.project.adapters.users.InterestedUserAdapter
 import it.polito.mad.project.commons.viewmodels.LoadingViewModel
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.models.item.ItemDetail
 import it.polito.mad.project.models.item.ItemInterest
 import it.polito.mad.project.models.item.ItemList
 import it.polito.mad.project.models.review.Review
-import it.polito.mad.project.models.review.ReviewDetail
 import it.polito.mad.project.models.user.User
 import it.polito.mad.project.models.user.UserList
 import it.polito.mad.project.repositories.ItemRepository
@@ -21,22 +23,44 @@ class ItemViewModel : LoadingViewModel() {
     private val itemRepository = ItemRepository()
 
     // User items
-    val myItems = ItemList(ItemAdapter(mutableListOf()))
+    val myItems = ItemList(
+        MyItemAdapter(
+            mutableListOf()
+        )
+    )
 
     // On Sale items
-    val onSaleItems = ItemList(ItemOnSaleAdapter(mutableListOf(), "onSaleItems"))
+    val onSaleItems = ItemList(
+        OnSaleItemAdapter(
+            mutableListOf(),
+            "onSaleItems"
+        )
+    )
 
     // Interested users
-    val interestedUsers = UserList(UserAdapter(this, mutableListOf()))
+    val interestedUsers = UserList(
+        InterestedUserAdapter(
+            mutableListOf()
+        )
+    )
 
     //Bought Items
-    val boughtItems = ItemList(ItemBoughtAdapter(this, mutableListOf()))
+    val boughtItems = ItemList(
+        BoughtItemAdapter(
+            mutableListOf()
+        )
+    )
+
+    //Items of Interest
+    val interestedItems = ItemList(
+        OnSaleItemAdapter(
+            mutableListOf(),
+            "interestedItems"
+        )
+    )
 
     // Single item detail loaded
     val item = ItemDetail()
-
-    //Items of Interest
-    val interestedItems = ItemList(ItemOnSaleAdapter(mutableListOf(), "interestedItems"))
 
     init {
         loadItems()

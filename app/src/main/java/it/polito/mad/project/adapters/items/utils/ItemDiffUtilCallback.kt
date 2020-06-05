@@ -1,10 +1,10 @@
-package it.polito.mad.project.adapters
+package it.polito.mad.project.adapters.items.utils
 
 import androidx.recyclerview.widget.DiffUtil
 import it.polito.mad.project.models.item.Item
 
-class ItemDiffCallback(private val items: MutableList<Item>,
-                       private val newItems: MutableList<Item>): DiffUtil.Callback() {
+class ItemDiffUtilCallback(private val items: MutableList<Item>,
+                           private val newItems: MutableList<Item>): DiffUtil.Callback() {
 
         override fun getOldListSize(): Int = items.size
         override fun getNewListSize(): Int = newItems.size

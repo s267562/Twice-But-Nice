@@ -1,6 +1,5 @@
-package it.polito.mad.project.adapters
+package it.polito.mad.project.adapters.items
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -8,24 +7,30 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.os.bundleOf
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
-import it.polito.mad.project.fragments.advertisements.OnSaleListFragment
-import it.polito.mad.project.fragments.advertisements.StringGlobal.Companion.globalFilter
+import it.polito.mad.project.adapters.items.utils.ItemDiffUtilCallback
+import it.polito.mad.project.enums.items.ItemFilter
 import it.polito.mad.project.models.item.Item
+import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.item.view.*
 import java.util.*
 
-class ItemOnSaleAdapter(private var items: MutableList<Item>, private val source: String) : RecyclerView.Adapter<ItemOnSaleAdapter.ViewHolder>(), Filterable{
+class OnSaleItemAdapter(private var items: MutableList<Item>, private val source: String) : RecyclerView.Adapter<OnSaleItemAdapter.ViewHolder>(), Filterable {
+    private lateinit var itemViewModel: ItemViewModel
+
     private var totalItems: MutableList<Item> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val userItemView = LayoutInflater.from(parent.context).inflate(
             R.layout.item, parent, false)
+        itemViewModel = ViewModelProvider(parent.context as AppCompatActivity).get(ItemViewModel::class.java)
         return ViewHolder(userItemView)
     }
 
@@ -48,7 +53,12 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>, private val source
     }
 
     fun setItems(newItems: MutableList<Item>) {
-        val diffs = DiffUtil.calculateDiff(ItemDiffCallback(items, newItems))
+        val diffs = DiffUtil.calculateDiff(
+            ItemDiffUtilCallback(
+                items,
+                newItems
+            )
+        )
         items = newItems //update data
         totalItems.clear()
         totalItems.addAll(items)
@@ -84,9 +94,10 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>, private val source
 
         override fun performFiltering(constraint: CharSequence?): FilterResults {
 
-            var filteredList: MutableList<Item> = mutableListOf()
+            val filteredList: MutableList<Item> = mutableListOf()
             if(constraint.isNullOrEmpty()){
-                filteredList = totalItems
+                filteredList.clear()
+                filteredList.addAll(totalItems)
             } else {
                 val line: String = constraint.toString().toLowerCase(Locale.ROOT).trim()
                 for(i: Item in totalItems){
@@ -97,35 +108,13 @@ class ItemOnSaleAdapter(private var items: MutableList<Item>, private val source
                     val price = i.price.toLowerCase(Locale.ROOT)
                     val loc = i.location.toLowerCase(Locale.ROOT)
 
-                    if(globalFilter.toLowerCase().equals("title")){
-                        if(title.contains(line)){
-                            filteredList.add(i)
-                        }
-                    }
-                    if(globalFilter.toLowerCase().equals("category")){
-                        if(category.contains(line)){
-                            filteredList.add(i)
-                        }
-                    }
-                    if(globalFilter.toLowerCase().equals("subcategory")){
-                        if(sub.contains(line)){
-                            filteredList.add(i)
-                        }
-                    }
-                    if(globalFilter.toLowerCase().equals("description")){
-                        if(descri.contains(line)){
-                            filteredList.add(i)
-                        }
-                    }
-                    if(globalFilter.toLowerCase().equals("price")){
-                        if(price.contains(line)){
-                            filteredList.add(i)
-                        }
-                    }
-                    if(globalFilter.toLowerCase().equals("location")){
-                        if(loc.contains(line)){
-                            filteredList.add(i)
-                        }
+                    when(itemViewModel.onSaleItems.filter) {
+                        ItemFilter.Title -> { if(title.contains(line)) filteredList.add(i) }
+                        ItemFilter.Category -> { if(category.contains(line)) filteredList.add(i) }
+                        ItemFilter.Subcategory -> { if(sub.contains(line)) filteredList.add(i) }
+                        ItemFilter.Description -> { if(descri.contains(line)) filteredList.add(i) }
+                        ItemFilter.Price -> { if(price.contains(line)) filteredList.add(i) }
+                        ItemFilter.Location -> { if(loc.contains(line)) filteredList.add(i) }
                     }
                 }
             }

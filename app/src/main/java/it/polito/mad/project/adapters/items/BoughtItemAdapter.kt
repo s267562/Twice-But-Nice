@@ -1,4 +1,4 @@
-package it.polito.mad.project.adapters
+package it.polito.mad.project.adapters.items
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,17 +8,14 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.os.bundleOf
-import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
+import it.polito.mad.project.adapters.items.utils.ItemDiffUtilCallback
 import it.polito.mad.project.models.item.Item
-import it.polito.mad.project.models.review.Review
-import it.polito.mad.project.viewmodels.ItemViewModel
-import kotlinx.android.synthetic.main.fragment_item_details.*
 
-class ItemBoughtAdapter (private var itemViewModel: ItemViewModel, private var itemsBought: MutableList<Item>) : RecyclerView.Adapter<ItemBoughtAdapter.ViewHolder>(){
+class BoughtItemAdapter (private var itemsBought: MutableList<Item>) : RecyclerView.Adapter<BoughtItemAdapter.ViewHolder>(){
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -26,7 +23,9 @@ class ItemBoughtAdapter (private var itemViewModel: ItemViewModel, private var i
     ): ViewHolder {
         val userItemView = LayoutInflater.from(parent.context).inflate(
             R.layout.item_bought, parent, false)
-        return ViewHolder(userItemView)
+        return ViewHolder(
+            userItemView
+        )
     }
 
     override fun getItemCount() = itemsBought.size
@@ -43,12 +42,17 @@ class ItemBoughtAdapter (private var itemViewModel: ItemViewModel, private var i
             })
     }
 
-    override fun onViewRecycled(holder: ItemBoughtAdapter.ViewHolder) {
+    override fun onViewRecycled(holder: ViewHolder) {
         holder.unbind()
     }
 
     fun setItems(newItems: MutableList<Item>) {
-        val diffs = DiffUtil.calculateDiff(ItemDiffCallback(itemsBought, newItems))
+        val diffs = DiffUtil.calculateDiff(
+            ItemDiffUtilCallback(
+                itemsBought,
+                newItems
+            )
+        )
         itemsBought.clear()
         itemsBought.addAll(newItems)
         diffs.dispatchUpdatesTo(this) //animate UI

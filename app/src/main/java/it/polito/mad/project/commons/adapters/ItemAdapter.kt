@@ -1,4 +1,4 @@
-package it.polito.mad.project.adapters
+package it.polito.mad.project.commons.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +10,8 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
+import it.polito.mad.project.adapters.items.utils.ItemDiffUtilCallback
+import it.polito.mad.project.enums.items.ItemStatus
 import it.polito.mad.project.models.item.Item
 
 class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>(){
@@ -25,7 +27,7 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(items[position],
             {
-                val bundle = bundleOf("ItemId" to items[position].id)
+                val bundle = bundleOf("ItemId" to items[position].id, "IsSoldItem" to (items[position].status == ItemStatus.Sold.toString()))
                 holder.itemView.findNavController().navigate(R.id.action_itemListFragment_to_showItemFragment, bundle)
             },
             {
@@ -39,7 +41,12 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
     }
 
     fun setItems(newItems: MutableList<Item>) {
-        val diffs = DiffUtil.calculateDiff(ItemDiffCallback(items, newItems))
+        val diffs = DiffUtil.calculateDiff(
+            ItemDiffUtilCallback(
+                items,
+                newItems
+            )
+        )
         items.clear()
         items.addAll(newItems)
         diffs.dispatchUpdatesTo(this) //animate UI
@@ -53,15 +60,21 @@ class ItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter<I
         private val button: Button = view.findViewById(R.id.item_edit_button)
 
         fun bind(item: Item, callback: (Int) -> Unit, callbackEdit: (Int) -> Unit) {
-            val priceStr = "${item.price} €"
+            val priceStr: String
+
+            if (item.status == ItemStatus.Sold.toString()) {
+                button.visibility = View.GONE
+                priceStr = "Sold to ${item.buyerNickname} for ${item.price} €"
+            } else {
+                button.visibility = View.VISIBLE
+                priceStr = "On sale for ${item.price} €"
+                button.setOnClickListener { callbackEdit(adapterPosition) }
+            }
+            container.setOnClickListener { callback(adapterPosition) }
 
             category.text = item.category
             title.text = item.title
             price.text = priceStr
-
-            container.setOnClickListener { callback(adapterPosition) }
-            button.setOnClickListener { callbackEdit(adapterPosition) }
-
         }
 
         fun unbind() {
