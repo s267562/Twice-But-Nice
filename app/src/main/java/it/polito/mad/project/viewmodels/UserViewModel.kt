@@ -22,6 +22,7 @@ class UserViewModel : LoadingViewModel() {
     private var authPhotoProfile: Bitmap? = null
 
     val user = UserDetail()
+
     // Reviews (sold items with review)
     val reviews = ItemList(ReviewAdapter(mutableListOf()))
 

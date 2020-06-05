@@ -96,13 +96,13 @@ class ItemRepository {
     }
     // set the intereste of the user for the item
     fun saveItemInterest(userId: String, id: String, itemInterest: ItemInterest): Task<Void> {
-        database.collection("users").document(userId).collection("iterestedItems").document(id).set(itemInterest)
+        database.collection("users").document(userId).collection("interestedItems").document(id).set(itemInterest)
         return database.collection("items").document(id).collection("users").document(userId).set(itemInterest)
     }
 
     fun getInterestedItemsIDs (): Task<QuerySnapshot> {
         val userId = auth.currentUser!!.uid
-        return database.collection("users").document(userId).collection("iterestedItems").whereEqualTo("interested", true).get()
+        return database.collection("users").document(userId).collection("interestedItems").whereEqualTo("interested", true).get()
     }
 
     fun getItemsByItemsIds(itemIds: List<String>): Task<QuerySnapshot>  {
