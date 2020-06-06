@@ -135,13 +135,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         setStatusSpinner()
 
         item_location.setOnClickListener {
-            if(ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-                // Permission is denied
-                requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 44)
-            } else {
-                // Permission granted
-                this.findNavController().navigate(R.id.action_itemEditFragment_to_mapFragment)
-            }
+            this.findNavController().navigate(R.id.action_itemEditFragment_to_mapFragment)
+
         }
 
         if (savedInstanceState != null) {

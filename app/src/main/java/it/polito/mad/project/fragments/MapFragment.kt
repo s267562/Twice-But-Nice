@@ -1,27 +1,30 @@
 package it.polito.mad.project.fragments
 
-import android.app.Activity.RESULT_OK
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.IntentSender
+import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.os.Looper
+import android.provider.Settings
 import android.view.*
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.common.api.PendingResult
-import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -35,22 +38,24 @@ import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_map.*
 import java.io.IOException
 
-class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListener {
 
+class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListener{
+
+    val PERMISSION_ID = 199
+    private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private lateinit var map: GoogleMap
     private lateinit var itemViewModel: ItemViewModel
     private lateinit var userViewModel: UserViewModel
+    private lateinit var searchEditText: TextView
+    private lateinit var geocoder: Geocoder
+    private lateinit var markerOptions: MarkerOptions
     private lateinit var itemLocation: String
     private lateinit var userLocation: String
 
-    private var googleApiClient: GoogleApiClient? = null
-    private val REQUEST_LOCATION = 199
-    lateinit var searchEditText: TextView
-    private lateinit var geocoder: Geocoder
-    private lateinit var markerOptions: MarkerOptions
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         itemViewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
         userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
 
@@ -79,6 +84,53 @@ class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListen
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
+    @SuppressLint("MissingPermission")
+    private fun getLocation() {
+        mFusedLocationClient.lastLocation.addOnCompleteListener { task ->
+            val location: Location? = task.result
+            if (location == null) {
+                requestNewLocationData()
+            } else {
+                setMarker(LatLng(location.latitude, location.longitude))
+            }
+        }
+    }
+
+    private fun enableLocation() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("GPS location required")
+            .setMessage("You have to enable GPS to use this feature")
+            .setPositiveButton("ok") { _, _ ->
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestNewLocationData() {
+        val mLocationRequest = LocationRequest()
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        mLocationRequest.interval = 0
+        mLocationRequest.fastestInterval = 0
+        mLocationRequest.numUpdates = 1
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        mFusedLocationClient.requestLocationUpdates(
+            mLocationRequest, mLocationCallback,
+            Looper.myLooper()
+        )
+    }
+
+    private val mLocationCallback = object : LocationCallback() {
+
+        override fun onLocationResult(locationResult: LocationResult) {
+            val mLastLocation: Location = locationResult.lastLocation
+            setMarker(LatLng(mLastLocation.latitude, mLastLocation.longitude))
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -91,13 +143,25 @@ class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListen
         }
 
         myPositionFAB.setOnClickListener {
-            enableLocation()
+            if (checkPermissions())
+                if (isLocationEnabled())
+                    getLocation()
+                else enableLocation()
+            else requestPermissions()
         }
 
         saveFAB.setOnClickListener {
             //TODO itemViewModel.item.data.value.
-            Toast.makeText(requireContext(), markerOptions.title, Toast.LENGTH_SHORT).show()
-            //findNavController().popBackStack()
+
+            val address = getAddressFromLocation(markerOptions.position.latitude, markerOptions.position.longitude)
+            if (address != null) {
+                // TODO salvare address all'interno dell'item o user
+                val city: String = address.locality
+                val state: String = address.adminArea
+
+                Toast.makeText(requireContext(), "city: $city, state: $state", Toast.LENGTH_SHORT).show()
+            }
+            findNavController().popBackStack()
         }
 
     }
@@ -117,110 +181,71 @@ class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListen
         searchView.setOnQueryTextListener(this)
     }
 
-    override fun onQueryTextChange(newText: String?): Boolean {
-        return true
+    private fun isLocationEnabled(): Boolean {
+        val locationManager: LocationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
     }
 
-    override fun onQueryTextSubmit(query: String?): Boolean {
-
-        if(query != "") {
-            val address: Address? = getAddress(query)
-            if(address != null) {
-                setMarker(
-                    LatLng(address.latitude, address.longitude),
-                    query ?: ""
-                )
-            } else {
-                Toast.makeText(requireContext(), "Location not found, try again", Toast.LENGTH_SHORT).show()
-            }
+    private fun checkPermissions(): Boolean {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            return true
         }
-
-
         return false
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        //super.onActivityResult(requestCode, resultCode, data)
-        when(requestCode) {
-            REQUEST_LOCATION -> {
-                if(resultCode == RESULT_OK)
-                    Log.d("MapFragment-DEBUG", "resultCode $resultCode")
-            }
-        }
-
+    private fun requestPermissions() {
+        requestPermissions(
+            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
+            PERMISSION_ID
+        )
     }
 
-    override fun onMapReady(gMap: GoogleMap) {
-        gMap.uiSettings?.isZoomControlsEnabled = false
-        gMap.uiSettings?.isMapToolbarEnabled = true
-        gMap.uiSettings?.isMyLocationButtonEnabled = true
-        gMap.uiSettings?.isCompassEnabled = true
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        if (requestCode == PERMISSION_ID) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                if (isLocationEnabled())
+                    getLocation()
+                else enableLocation()
+            }
+        }
+    }
 
-        gMap.setOnMapClickListener {
+    override fun onMapReady(googleMap: GoogleMap) {
+        googleMap.uiSettings?.isZoomControlsEnabled = false
+        googleMap.uiSettings?.isMapToolbarEnabled = true
+        googleMap.uiSettings?.isMyLocationButtonEnabled = true
+        googleMap.uiSettings?.isCompassEnabled = true
+
+        googleMap.setOnMapLongClickListener {
             val clickPosition = LatLng(it.latitude, it.longitude)
-            setMarker(clickPosition, "TODO marker title")
+            setMarker(clickPosition)
         }
 
-        map = gMap
+        map = googleMap
+        // TODO passare per parametro una location tra itemLocation o userLaction a seconda che sia per l'item o per lo user.
+        // TODO se itemLocation o userLocatin sono blank allore usare lastLocation
+
+        if (checkPermissions() && isLocationEnabled())
+            getLocation()
     }
 
-    private fun enableLocation() {
-
-        if (googleApiClient == null) {
-            googleApiClient = GoogleApiClient.Builder(requireActivity())
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(object : GoogleApiClient.ConnectionCallbacks {
-                    override fun onConnected(bundle: Bundle?) {}
-                    override fun onConnectionSuspended(i: Int) {
-                        googleApiClient!!.connect()
-                    }
-                })
-                .addOnConnectionFailedListener { connectionResult ->
-                    Log.d("Location error", "Location error " + connectionResult.errorCode)
-                }
-                .build()
-            googleApiClient!!.connect()
-        }
-
-        val locationRequest = LocationRequest.create()
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.interval = 30 * 1000.toLong()
-        locationRequest.fastestInterval = 5 * 1000.toLong()
-        val builder = LocationSettingsRequest.Builder()
-            .addLocationRequest(locationRequest)
-        builder.setAlwaysShow(true)
-        val result: PendingResult<LocationSettingsResult> =
-            LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build())
-        result.setResultCallback { result ->
-            val status: Status = result.status
-            when (status.statusCode) {
-                LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
-                    /* GPS not enabled
-                     * Show the dialog by calling startResolutionForResult(),
-                     * and check the result in onActivityResult(): REQUEST_LOCATION
-                     */
-                    startIntentSenderForResult(
-                        status.resolution.intentSender,
-                        REQUEST_LOCATION,
-                        null, 0, 0, 0, null)
-                } catch (e: IntentSender.SendIntentException) {
-                    // Ignore the error.
-                }
-                LocationSettingsStatusCodes.SUCCESS -> {
-                    Log.d("MapFragment-DEBUG", "LocationSettingsStatusCodes.SUCCESS")
-                    /* GPS enabled */
-                }
-            }
-        }
-    }
-
-    private fun getAddress(location: String?): Address? {
+    private fun getAddressFromLocationName(location: String?): Address? {
         val address: Address? = null
-        var addressList: List<Address>
+        val addressList: List<Address>
 
         if(location != "") {
             try {
-                addressList = geocoder.getFromLocationName(location, 1)
+                addressList = geocoder.getFromLocationName(location, 10)
                 if(addressList.isNotEmpty()) {
                     return addressList[0]
                 }
@@ -231,11 +256,42 @@ class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListen
         return null
     }
 
-    private fun setMarker(latLng: LatLng, title: String) {
-        markerOptions.position(latLng).title(title)
+    private fun getAddressFromLocation(lat: Double, lon: Double): Address? {
+        val address: Address? = null
+        val addressList: List<Address>
+        try {
+            addressList = geocoder.getFromLocation(lat, lon, 1)
+            if(addressList.isNotEmpty()) {
+                return addressList[0]
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+
+    private fun setMarker(latLng: LatLng) {
+        markerOptions.position(latLng)
         map.clear()
         map.addMarker(markerOptions)
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0F))
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return true
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        if(query != "") {
+            val address: Address? = getAddressFromLocationName(query)
+            if(address != null) {
+                setMarker(LatLng(address.latitude, address.longitude))
+            } else {
+                Toast.makeText(requireContext(), "Location not found, try again", Toast.LENGTH_SHORT).show()
+            }
+        }
+        return false
     }
 
 }
