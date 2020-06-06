@@ -136,7 +136,6 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
         item_location.setOnClickListener {
             if(ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-                    openMapWithPosition()
                 // Permission is denied
                 requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 44)
             } else {
@@ -219,16 +218,6 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         if (activity?.isFinishing!! && imagePath != null && imagePath != savedImagePath){
             //it's NOT an orientation change
             File(imagePath!!).delete()
-        }
-        hideKeyboard()
-    }
-
-    private fun hideKeyboard(){
-        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        val view = activity?.currentFocus
-
-        if (view != null){
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
         hideKeyboard()
     }
