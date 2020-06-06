@@ -250,6 +250,16 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
     private fun hideKeyboard(){
         val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         val view = activity?.currentFocus
+
+        if (view != null){
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+        hideKeyboard()
+    }
+
+    private fun hideKeyboard(){
+        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = activity?.currentFocus
         if(view != null){
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }

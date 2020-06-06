@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Camera
 import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.location.Address
@@ -40,7 +39,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
@@ -51,7 +49,6 @@ import it.polito.mad.project.models.user.User
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.loadingLayout
-import kotlinx.android.synthetic.main.map.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -401,6 +398,16 @@ class UserEditFragment : Fragment() {
         if (activity?.isFinishing!! && imagePath!=null && imagePath!=savedImagePath){
             //it's NOT an orientation change
             File(imagePath!!).delete()
+        }
+        hideKeyboard()
+    }
+
+    private fun hideKeyboard(){
+        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = activity?.currentFocus
+
+        if (view != null){
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
         hideKeyboard()
     }
