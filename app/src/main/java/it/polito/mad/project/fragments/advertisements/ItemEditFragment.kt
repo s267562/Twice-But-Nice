@@ -548,72 +548,64 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
         val task: Task<Location> = LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation
 
-        task.addOnSuccessListener(object : OnSuccessListener<Location> {
-            override fun onSuccess(location: Location?) {
-                if(location != null && mapView != null){
-                    mapView.onCreate(null)
-                    mapView.onResume()
-                    mapView.getMapAsync(object : OnMapReadyCallback {
+        task.addOnSuccessListener { location ->
+            if(location != null && mapView != null){
+                mapView.onCreate(null)
+                mapView.onResume()
+                mapView.getMapAsync { gMap ->
+                    gMap?.let {
+                        googleMap = it
+                    }
 
-                        override fun onMapReady(gMap: GoogleMap?) {
+                    gMap?.uiSettings?.isZoomControlsEnabled = true
+                    gMap?.uiSettings?.isMapToolbarEnabled = true
+                    gMap?.uiSettings?.isMyLocationButtonEnabled = true
+                    gMap?.uiSettings?.isCompassEnabled = true
 
-                            gMap?.let {
-                                googleMap = it
-                            }
+                    val position = LatLng(location.latitude, location.longitude)
+                    gMap?.moveCamera(CameraUpdateFactory.newLatLng(position))
+                    gMap?.animateCamera(CameraUpdateFactory.zoomTo(4.8F))
+                    gMap?.addMarker(
+                        MarkerOptions().position(position).title("Your Current Position")
+                    )
 
-                            gMap?.uiSettings?.isZoomControlsEnabled = true
-                            gMap?.uiSettings?.isMapToolbarEnabled = true
-                            gMap?.uiSettings?.isMyLocationButtonEnabled = true
-                            gMap?.uiSettings?.isCompassEnabled = true
+                    geocode = Geocoder(context?.applicationContext, Locale.getDefault())
 
-                            val position = LatLng(location.latitude, location.longitude)
-                            gMap?.moveCamera(CameraUpdateFactory.newLatLng(position))
-                            gMap?.animateCamera(CameraUpdateFactory.zoomTo(4.8F))
+                    try {
+                        val addresses = geocode.getFromLocationName(
+                            item_location.text.toString(), 1)
+                        if(addresses.size > 0){
+                            val address : Address = addresses[0]
+                            //                                    val cameraPos = LatLng(address.latitude, address.longitude)
                             gMap?.addMarker(
-                                MarkerOptions().position(position).title("Your Current Position")
+                                MarkerOptions()
+                                    .position(LatLng(address.latitude, address.longitude))
+                                    .title("Item Last Location")
                             )
-
-                            geocode = Geocoder(context?.applicationContext, Locale.getDefault())
-
-                            try {
-                                val addresses = geocode.getFromLocationName(
-                                    item_location.text.toString(), 1)
-                                if(addresses.size > 0){
-                                    val address : Address = addresses[0]
-//                                    val cameraPos = LatLng(address.latitude, address.longitude)
-                                    gMap?.addMarker(
-                                        MarkerOptions()
-                                            .position(LatLng(address.latitude, address.longitude))
-                                            .title("Item Last Location")
-                                    )
-                                }
-                            } catch (e: IOException){
-                                e.printStackTrace()
-                            }
-
-                            searchEditText.setOnEditorActionListener { _, actionId, event ->
-                                if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH
-                                    || event?.action == KeyEvent.ACTION_DOWN || event?.action == KeyEvent.KEYCODE_ENTER){
-                                    geoLocate()
-                                }
-                                false
-                            }
-
-                            gMap?.setOnMapClickListener {
-                                val clickPosition = LatLng(it.latitude, it.longitude)
-                                val markerOpt = MarkerOptions()
-                                markerOpt.position(clickPosition)
-                                gMap.clear()
-                                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
-                                gMap.addMarker(markerOpt)
-                            }
                         }
+                    } catch (e: IOException){
+                        e.printStackTrace()
+                    }
 
-                    })
+                    searchEditText.setOnEditorActionListener { _, actionId, event ->
+                        if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH
+                            || event?.action == KeyEvent.ACTION_DOWN || event?.action == KeyEvent.KEYCODE_ENTER){
+                            geoLocate()
+                        }
+                        false
+                    }
+
+                    gMap?.setOnMapClickListener {
+                        val clickPosition = LatLng(it.latitude, it.longitude)
+                        val markerOpt = MarkerOptions()
+                        markerOpt.position(clickPosition)
+                        gMap.clear()
+                        gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
+                        gMap.addMarker(markerOpt)
+                    }
                 }
             }
-
-        })
+        }
 
         val builder= AlertDialog.Builder(context).setView(dialogView)
             .setPositiveButton("Set Location"

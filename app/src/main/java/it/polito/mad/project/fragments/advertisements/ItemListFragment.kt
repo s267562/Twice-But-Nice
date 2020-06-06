@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -30,6 +31,9 @@ class ItemListFragment : Fragment() {
         itemViewModel.loader.observe(viewLifecycleOwner, Observer {
             if (itemViewModel.isNotLoading()) {
                 // loader ended
+                if (itemViewModel.error) {
+                    Toast.makeText(context, "List of items not refreshed", Toast.LENGTH_SHORT).show()
+                }
                 itemViewModel.myItems.adapter.setItems(itemViewModel.myItems.items)
                 if(itemViewModel.myItems.items.size == 0) {
                     emptyListLayout.visibility = View.VISIBLE

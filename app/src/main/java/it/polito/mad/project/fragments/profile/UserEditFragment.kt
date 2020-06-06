@@ -518,9 +518,9 @@ class UserEditFragment : Fragment() {
             e.printStackTrace()
         }
 
-        if (addressList.size > 0){
+        if (addressList.isNotEmpty()){
             address = addressList.get(0)
-            Toast.makeText(context, "We are here: " + address.toString(), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "We are here: $address", Toast.LENGTH_SHORT).show()
         }
     }
 

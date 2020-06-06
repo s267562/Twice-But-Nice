@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.*
 import android.view.View.GONE
 import android.widget.EditText
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -40,6 +41,9 @@ class OnSaleListFragment : Fragment(), SearchView.OnQueryTextListener {
         (activity as AppCompatActivity?)?.supportActionBar?.show()
         itemViewModel.loader.observe(viewLifecycleOwner, Observer {
             if (itemViewModel.isNotLoading()) {
+                if (itemViewModel.error) {
+                    Toast.makeText(context, "List of items not refreshed", Toast.LENGTH_SHORT).show()
+                }
                 // loader ended
                 itemViewModel.onSaleItems.adapter.setItems(itemViewModel.onSaleItems.items)
                 if(itemViewModel.onSaleItems.items.size == 0) {
