@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -32,7 +33,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.common.api.PendingResult
+import com.google.android.gms.common.api.ResultCallback
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -72,6 +76,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
     private var imagePath: String? = null
     private var savedImagePath: String? =null
     private var dateValue: String? = null
+
 
     private var subCategoriesResArray: IntArray = intArrayOf(R.array.item_sub_art, R.array.item_sub_sports, R.array.item_sub_baby,
         R.array.item_sub_women, R.array.item_sub_men, R.array.item_sub_electo, R.array.item_sub_games, R.array.item_sub_auto)
@@ -153,27 +158,13 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         setStatusSpinner()
 
         item_location.setOnClickListener {
-            if(ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED){
-                // Permission granted
-
-                val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-                val gpsEnabled: Boolean = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-
-                if(gpsEnabled) {
+            if(ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
                     openMapWithPosition()
-                } else {
-
-                    openMap()
-
-                    /* TODO alert --> enable GPS?
-                    if(no) openMap()
-                    else openMapWithPostion() */
-                }
-
-            } else {
                 // Permission is denied
                 requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 44)
+            } else {
+                // Permission granted
+                this.findNavController().navigate(R.id.action_itemEditFragment_to_mapFragment)
             }
         }
 
@@ -537,48 +528,6 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
     }
 
     // Managing Modal Map
-
-    private fun openMap(){
-
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
-        val mapView = dialogView.findViewById<CustomMapView>(R.id.map)
-
-        searchEditText = dialogView.findViewById(R.id.search_loc)
-
-        mapView.onCreate(null)
-        mapView.onResume()
-        mapView.getMapAsync { gMap: GoogleMap ->
-            gMap.let {
-                googleMap = it
-            }
-
-            gMap.uiSettings?.isZoomControlsEnabled = true
-            gMap.uiSettings?.isMapToolbarEnabled = true
-            gMap.uiSettings?.isMyLocationButtonEnabled = true
-            gMap.uiSettings?.isCompassEnabled = true
-
-            searchEditText.setOnEditorActionListener { _, actionId, event ->
-                Log.d("SEARCH_EDIT_TEXT", actionId.toString())
-                if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH
-                    || event?.action == KeyEvent.ACTION_DOWN || event?.action == KeyEvent.KEYCODE_ENTER){
-                    geoLocate()
-                }
-                false
-            }
-        }
-
-        val builder= AlertDialog.Builder(context).setView(dialogView)
-            .setPositiveButton("Set Location"
-            ) { dialog, _ ->
-                dialog.cancel()
-            }
-            .setNegativeButton("Close Map"
-            ) { dialog, _ ->
-                dialog.cancel()
-            }
-        builder.show()
-
-    }
 
     private fun openMapWithPosition(){
 
