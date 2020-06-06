@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import it.polito.mad.project.MainActivity
@@ -44,6 +45,8 @@ class MessageService : FirebaseMessagingService() {
         if (buyerId.isNotBlank() && buyerId == userRepository.getFirebaseUser()?.uid) {
             message = "Congratulations on your new purchase! You can rate it."
             idDestination = R.id.itemReviewFragment
+            FirebaseMessaging.getInstance()
+                .unsubscribeFromTopic("/topics/${remoteMessage.data["ItemId"]}")
         }
 
         val pendingIntent = NavDeepLinkBuilder(this)
