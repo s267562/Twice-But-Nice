@@ -83,11 +83,15 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
 
                 val decimalFormat = DecimalFormat("#.#")
                 decimalFormat.roundingMode = RoundingMode.CEILING
-                val userRatingText = "${decimalFormat.format(avgRating)} of 5"
-                userRatingTextView.text = userRatingText
 
                 val nRatingsText = "$nRatings reviews"
+                if(nRatings.equals(0)){
+                    userRatingTextView.visibility = View.GONE
+                }
                 nReviewsTextView.text = nRatingsText
+
+                val userRatingText = "${decimalFormat.format(avgRating)} of 5"
+                userRatingTextView.text = userRatingText
 
                 showHideLogoutButton()
             } else {
