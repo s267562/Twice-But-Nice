@@ -1,9 +1,11 @@
 package it.polito.mad.project.fragments.authentication
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -206,4 +208,17 @@ class SignUpFragment: Fragment() {
         button.background.setTint(ContextCompat.getColor(requireContext(), R.color.colorAccentLight))
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        hideKeyboard()
+    }
+
+    private fun hideKeyboard(){
+        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = activity?.currentFocus
+
+        if (view != null){
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
 }

@@ -22,6 +22,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
@@ -400,6 +401,16 @@ class UserEditFragment : Fragment() {
         if (activity?.isFinishing!! && imagePath!=null && imagePath!=savedImagePath){
             //it's NOT an orientation change
             File(imagePath!!).delete()
+        }
+        hideKeyboard()
+    }
+
+    private fun hideKeyboard(){
+        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = activity?.currentFocus
+
+        if (view != null){
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
 
