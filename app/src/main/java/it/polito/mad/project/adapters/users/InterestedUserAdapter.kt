@@ -48,19 +48,15 @@ class InterestedUserAdapter(private var users: MutableList<User>): RecyclerView.
             holder.itemView.findNavController().navigate(R.id.action_usersInterestedFragment_to_showProfileFragment, bundle)
         }, {
                 val updateItem = itemViewModel.item.data.value!!
-                updateItem.status = ItemStatus.Sold.toString()
-                updateItem.buyerId = users[position].id
-                updateItem.buyerNickname = users[position].nickname
-                itemViewModel.saveItem(updateItem)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            val body = JSONObject().put("ItemId", updateItem.id!!).put("IsMyItem", false).put("BuyerId", updateItem.buyerId)
-                            notificator.sendNotification(updateItem.id!!, updateItem.title, "The item was sold", body)
-                            holder.itemView.findNavController().popBackStack()
-                        } else {
-                            Toast.makeText((holder.itemView.context as AppCompatActivity).applicationContext, "Error on saving the buyer", Toast.LENGTH_SHORT).show()
-                        }
+                itemViewModel.sellItem(users[position]).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val body = JSONObject().put("ItemId", updateItem.id!!).put("IsMyItem", false).put("BuyerId", updateItem.buyerId)
+                        notificator.sendNotification(updateItem.id!!, updateItem.title, "The item was sold", body)
+                        holder.itemView.findNavController().popBackStack()
+                    } else {
+                        Toast.makeText((holder.itemView.context as AppCompatActivity).applicationContext, "Error on saving the buyer", Toast.LENGTH_SHORT).show()
                     }
+                }
             })
     }
 
