@@ -54,9 +54,9 @@ class InterestedUserAdapter(private var users: MutableList<User>): RecyclerView.
                 itemViewModel.saveItem(updateItem)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            val body = JSONObject().put("ItemId", updateItem.id!!).put("IsMyItem", false)
+                            val body = JSONObject().put("ItemId", updateItem.id!!).put("IsMyItem", false).put("BuyerId", updateItem.buyerId)
                             notificator.sendNotification(updateItem.id!!, updateItem.title, "The item was sold", body)
-                            itemViewModel.loadInterestedUsers()
+                            holder.itemView.findNavController().popBackStack()
                         } else {
                             Toast.makeText((holder.itemView.context as AppCompatActivity).applicationContext, "Error on saving the buyer", Toast.LENGTH_SHORT).show()
                         }
