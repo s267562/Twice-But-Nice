@@ -104,7 +104,7 @@ class OnSaleItemAdapter(private var items: MutableList<Item>, private val source
                     val title = i.title.toLowerCase(Locale.ROOT)
                     val category = i.category.toLowerCase(Locale.ROOT)
                     val sub = i.subcategory.toLowerCase(Locale.ROOT)
-                    val descri = i.description.toLowerCase(Locale.ROOT)
+                    val description = i.description.toLowerCase(Locale.ROOT)
                     val price = i.price.toLowerCase(Locale.ROOT)
                     val loc = i.location.toLowerCase(Locale.ROOT)
 
@@ -112,7 +112,7 @@ class OnSaleItemAdapter(private var items: MutableList<Item>, private val source
                         ItemFilter.Title -> { if(title.contains(line)) filteredList.add(i) }
                         ItemFilter.Category -> { if(category.contains(line)) filteredList.add(i) }
                         ItemFilter.Subcategory -> { if(sub.contains(line)) filteredList.add(i) }
-                        ItemFilter.Description -> { if(descri.contains(line)) filteredList.add(i) }
+                        ItemFilter.Description -> { if(description.contains(line)) filteredList.add(i) }
                         ItemFilter.Price -> { if(price.contains(line)) filteredList.add(i) }
                         ItemFilter.Location -> { if(loc.contains(line)) filteredList.add(i) }
                     }

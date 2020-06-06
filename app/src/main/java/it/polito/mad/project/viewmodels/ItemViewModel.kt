@@ -3,6 +3,7 @@ package it.polito.mad.project.viewmodels
 import android.graphics.BitmapFactory
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.QuerySnapshot
 import it.polito.mad.project.adapters.items.BoughtItemAdapter
 import it.polito.mad.project.adapters.items.MyItemAdapter
 import it.polito.mad.project.adapters.items.OnSaleItemAdapter
@@ -116,6 +117,32 @@ class ItemViewModel : LoadingViewModel() {
             }
     }
 
+    fun loadInterestedItems() {
+        pushLoader()
+        interestedItems.items.clear()
+        itemRepository.getInterestedItemsIDs()
+            .addOnSuccessListener { itemIdsSnap ->
+                val itemIds = itemIdsSnap.toObjects(ItemInterest::class.java).map { interest -> interest.itemId }
+                if (itemIds.isNotEmpty()) {
+                    itemRepository.getItemsByItemsIds(itemIds).addOnSuccessListener {
+                        interestedItems.items.clear()
+                        interestedItems.items.addAll(it.toObjects(Item::class.java))
+                        popLoader()
+                        error = false
+                    }.addOnFailureListener {
+                        popLoader()
+                        error = true
+                    }
+                } else {
+                    popLoader()
+                }
+            }
+            .addOnFailureListener{
+                popLoader()
+                error = true
+            }
+    }
+
     /** ---------------------------------- SINGLE ITEM METHODS -------------------------------- **/
 
     /**
@@ -156,8 +183,8 @@ class ItemViewModel : LoadingViewModel() {
                 val localItem = it.toObject(Item::class.java) as Item
                 item.data.value = localItem
                 loadItemInterest(localItem.id!!)
+                loadInterestedUsers()
                 popLoader()
-
                 loadItemImage(localItem.id!!, localItem.imagePath)
                 error = false
             }.addOnFailureListener {
@@ -231,10 +258,10 @@ class ItemViewModel : LoadingViewModel() {
             }
     }
 
-    fun loadInterestedUsers() {
+    fun loadInterestedUsers(): Task<QuerySnapshot> {
         pushLoader()
         interestedUsers.users.clear()
-        itemRepository.getInterestedUserIds(item.data.value!!.id!!).addOnSuccessListener { userIdsSnap ->
+        return itemRepository.getInterestedUserIds(item.data.value!!.id!!).addOnSuccessListener { userIdsSnap ->
             val userIds = userIdsSnap.toObjects(ItemInterest::class.java).map { interest -> interest.userId }
             if (userIds.isNotEmpty()) {
                 itemRepository.getUsersByUserIds(userIds).addOnSuccessListener {
@@ -243,7 +270,7 @@ class ItemViewModel : LoadingViewModel() {
                     error = false
                 }.addOnFailureListener{
                     popLoader()
-                    error=true
+                    error = true
                 }
             } else {
                 popLoader()
@@ -252,32 +279,6 @@ class ItemViewModel : LoadingViewModel() {
             popLoader()
             error=true
         }
-    }
-
-    fun loadInterestedItems() {
-        pushLoader()
-        interestedItems.items.clear()
-        itemRepository.getInterestedItemsIDs()
-            .addOnSuccessListener { itemIdsSnap ->
-                val itemIds = itemIdsSnap.toObjects(ItemInterest::class.java).map { interest -> interest.itemId }
-                if (itemIds.isNotEmpty()) {
-                    itemRepository.getItemsByItemsIds(itemIds).addOnSuccessListener {
-                        interestedItems.items.clear()
-                        interestedItems.items.addAll(it.toObjects(Item::class.java))
-                        popLoader()
-                        error = false
-                    }.addOnFailureListener {
-                        popLoader()
-                        error = true
-                    }
-                } else {
-                    popLoader()
-                }
-            }
-            .addOnFailureListener{
-                popLoader()
-                error = true
-            }
     }
 
     fun setReview(review: Review) {

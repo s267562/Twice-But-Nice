@@ -95,7 +95,7 @@ class ItemRepository {
     fun getSoldItems(userId: String): Task<QuerySnapshot> {
         return database.collection("items").whereEqualTo("ownerId", userId).whereEqualTo("status", ItemStatus.Sold.toString()).get()
     }
-    // set the intereste of the user for the item
+    // set the interest of the user for the item
     fun saveItemInterest(userId: String, id: String, itemInterest: ItemInterest): Task<Void> {
         database.collection("users").document(userId).collection("interestedItems").document(id).set(itemInterest)
         return database.collection("items").document(id).collection("users").document(userId).set(itemInterest)
