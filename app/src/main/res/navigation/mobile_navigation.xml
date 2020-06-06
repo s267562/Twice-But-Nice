@@ -148,6 +148,9 @@
             android:name="ItemId"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_itemEditFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
@@ -217,4 +220,8 @@
         android:id="@+id/showRouteItemUserFragment"
         android:name="it.polito.mad.project.fragments.advertisements.ShowRouteItemUserFragment"
         android:label="@string/show_route" />
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="it.polito.mad.project.fragments.MapFragment"
+        android:label="MapFragment" />
 </navigation>
