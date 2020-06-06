@@ -18,21 +18,22 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import it.polito.mad.project.R
 import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.viewmodels.ItemViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
-import androidx.appcompat.widget.SearchView
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.fragment_map.*
 import java.io.IOException
 
@@ -47,7 +48,8 @@ class MapFragment2 : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListe
     private lateinit var searchEditText: TextView
     private lateinit var geocoder: Geocoder
     private lateinit var markerOptions: MarkerOptions
-
+    private lateinit var itemLocation: String
+    private lateinit var userLocation: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -59,6 +61,19 @@ class MapFragment2 : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListe
         markerOptions = MarkerOptions()
     }
 
+    override fun onStart() {
+        super.onStart()
+        itemViewModel.item.data.observe(viewLifecycleOwner, Observer {
+            if(it != null){
+                itemLocation = it.location
+            }
+        })
+        userViewModel.user.data.observe(viewLifecycleOwner, Observer {
+            if(it != null){
+                userLocation = it.location
+            }
+        })
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,7 +87,7 @@ class MapFragment2 : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListe
     }
 
     @SuppressLint("MissingPermission")
-    private fun getLastLocation() {
+    private fun getLocation() {
         if (checkPermissions()) {
             if (isLocationEnabled()) {
                 mFusedLocationClient.lastLocation.addOnCompleteListener { task ->
@@ -128,12 +143,19 @@ class MapFragment2 : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListe
         }
 
         myPositionFAB.setOnClickListener {
-            getLastLocation()
+            getLocation()
         }
 
         saveFAB.setOnClickListener {
             //TODO itemViewModel.item.data.value.
             Toast.makeText(requireContext(), markerOptions.title, Toast.LENGTH_SHORT).show()
+
+            val address = getAddressFromLocation(markerOptions.position.latitude, markerOptions.position.longitude)
+            if (address != null) {
+                // TODO salvare address all'interno dell'item o user
+                val city: String = address.locality
+                val state: String = address.adminArea
+            }
             findNavController().popBackStack()
         }
 
@@ -188,7 +210,7 @@ class MapFragment2 : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListe
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode == PERMISSION_ID) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                getLastLocation()
+                getLocation()
             }
         }
     }
@@ -205,10 +227,12 @@ class MapFragment2 : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListe
         }
 
         map = googleMap
-        getLastLocation()
+        // TODO passare per parametro una location tra itemLocation o userLaction a seconda che sia per l'item o per lo user.
+        // TODO se itemLocation o userLocatin sono blank allore usare lastLocation
+        getLocation()
     }
 
-    private fun getAddress(location: String?): Address? {
+    private fun getAddressFromLocationName(location: String?): Address? {
         val address: Address? = null
         val addressList: List<Address>
 
@@ -225,6 +249,21 @@ class MapFragment2 : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListe
         return null
     }
 
+    private fun getAddressFromLocation(lat: Double, lon: Double): Address? {
+        val address: Address? = null
+        val addressList: List<Address>
+        try {
+            addressList = geocoder.getFromLocation(lat, lon, 1)
+            if(addressList.isNotEmpty()) {
+                return addressList[0]
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
+    }
+    
+
     private fun setMarker(latLng: LatLng, title: String) {
         markerOptions.position(latLng).title(title)
         map.clear()
@@ -238,7 +277,7 @@ class MapFragment2 : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListe
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         if(query != "") {
-            val address: Address? = getAddress(query)
+            val address: Address? = getAddressFromLocationName(query)
             if(address != null) {
                 setMarker(
                     LatLng(address.latitude, address.longitude),
