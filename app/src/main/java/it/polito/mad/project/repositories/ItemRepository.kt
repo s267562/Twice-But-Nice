@@ -14,6 +14,7 @@ import com.google.firebase.storage.FirebaseStorage
 import it.polito.mad.project.enums.items.ItemStatus
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.models.item.ItemInterest
+import it.polito.mad.project.models.user.User
 import java.io.File
 import java.io.FileOutputStream
 
@@ -109,4 +110,20 @@ class ItemRepository {
     fun getItemsByItemsIds(itemIds: List<String>): Task<QuerySnapshot>  {
         return database.collection("items").whereIn("id", itemIds).get()
     }
+
+    // sell item to firebase
+    fun sellItem(
+        item: Item,
+        buyerId: String,
+        usersInterested: List<User>
+    ): Task<Void> {
+        //saveItemImage(item) //non dovrebbe essere necessaria
+        database.collection("users").document(buyerId).collection("interestedItems").document(item.id!!).delete()
+        for (user:User in usersInterested){
+            database.collection("items").document(item.id!!).collection("users").document(user.id).delete()
+        }
+        return database.collection("items").document(item.id!!).set(item)
+    }
+
+
 }

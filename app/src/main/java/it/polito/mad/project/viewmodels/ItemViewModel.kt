@@ -9,6 +9,7 @@ import it.polito.mad.project.adapters.items.MyItemAdapter
 import it.polito.mad.project.adapters.items.OnSaleItemAdapter
 import it.polito.mad.project.adapters.users.InterestedUserAdapter
 import it.polito.mad.project.commons.viewmodels.LoadingViewModel
+import it.polito.mad.project.enums.items.ItemStatus
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.models.item.ItemDetail
 import it.polito.mad.project.models.item.ItemInterest
@@ -126,7 +127,7 @@ class ItemViewModel : LoadingViewModel() {
                 if (itemIds.isNotEmpty()) {
                     itemRepository.getItemsByItemsIds(itemIds).addOnSuccessListener {
                         interestedItems.items.clear()
-                        interestedItems.items.addAll(it.toObjects(Item::class.java))
+                        interestedItems.items.addAll(it.toObjects(Item::class.java).filter { item -> item.status == ItemStatus.Available.toString()})
                         popLoader()
                         error = false
                     }.addOnFailureListener {
@@ -286,6 +287,28 @@ class ItemViewModel : LoadingViewModel() {
         pushLoader()
         itemRepository.saveItem(item.data.value!!)
             .addOnSuccessListener {
+                popLoader()
+                error = false
+            }.addOnFailureListener {
+                popLoader()
+                error = true
+            }
+    }
+
+    fun sellItem(buyer: User) : Task<Void>{
+        val updateItem = item.data.value!!
+        updateItem.status = ItemStatus.Sold.toString()
+        updateItem.buyerId = buyer.id
+        updateItem.buyerNickname = buyer.nickname
+        pushLoader()
+        return itemRepository.sellItem(updateItem,buyer.id,interestedUsers.users.toList())
+            .addOnSuccessListener {
+                this.item.data.value = updateItem
+                var pos = -1
+                myItems.items.forEachIndexed {index, i ->
+                    if (i.id == updateItem.id) pos = index
+                }
+                myItems.items[pos] = updateItem
                 popLoader()
                 error = false
             }.addOnFailureListener {
