@@ -15,7 +15,7 @@ import it.polito.mad.project.viewmodels.ItemViewModel
 
 class SetBuyerDialogFragment() : DialogFragment(), AdapterView.OnItemSelectedListener {
     private lateinit var itemViewModel: ItemViewModel
-    private lateinit var buyer: User
+    private var buyer: User? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +38,8 @@ class SetBuyerDialogFragment() : DialogFragment(), AdapterView.OnItemSelectedLis
                         adapter ->
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         spinner.adapter = adapter
-                        buyer = itemViewModel.interestedUsers.users[0]
+                        if (itemViewModel.interestedUsers.users.size > 0)
+                            buyer = itemViewModel.interestedUsers.users[0]
                     }
             }
             // Inflate and set the layout for the dialog
@@ -47,8 +48,10 @@ class SetBuyerDialogFragment() : DialogFragment(), AdapterView.OnItemSelectedLis
                 // Add action buttons
                 .setPositiveButton("SAVE"
                 ) { dialog, _ ->
-                    itemViewModel.item.localData?.buyerId = buyer.id
-                    itemViewModel.item.localData?.buyerNickname = buyer.nickname
+                    if (buyer != null) {
+                        itemViewModel.item.localData?.buyerId = buyer!!.id
+                        itemViewModel.item.localData?.buyerNickname = buyer!!.nickname
+                    }
                     dialog.cancel()
                 }
                 .setNegativeButton("Cancel"

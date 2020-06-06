@@ -351,6 +351,11 @@ class UserEditFragment : Fragment() {
             return
         }
 
+        if (userViewModel.error) {
+            Toast.makeText(context, "Error on loading your profile, is not possible to proceed.", Toast.LENGTH_LONG).show()
+            return
+        }
+
         val name = full_name.text.toString()
         val nickname = nickname.text.toString()
         val email = email.text.toString()
