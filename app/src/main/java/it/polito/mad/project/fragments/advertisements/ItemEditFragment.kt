@@ -16,8 +16,10 @@ import android.provider.MediaStore
 import android.text.InputType
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentManager
@@ -27,8 +29,12 @@ import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.enums.IntentRequest
+import it.polito.mad.project.enums.items.ItemStatus
+import it.polito.mad.project.fragments.advertisements.dialogs.SetBuyerDialogFragment
+import it.polito.mad.project.fragments.advertisements.dialogs.SetFilterDialogFragment
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.viewmodels.ItemViewModel
+import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_item_edit.*
 import org.json.JSONObject
 import java.io.File
@@ -39,6 +45,8 @@ import java.util.*
 class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var itemViewModel: ItemViewModel
+    private lateinit var userViewModel: UserViewModel
+
     private lateinit var supFragmentManager : FragmentManager
 
     private var imageFile: File? = null
@@ -50,9 +58,11 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         R.array.item_sub_women, R.array.item_sub_men, R.array.item_sub_electo, R.array.item_sub_games, R.array.item_sub_auto)
 
     private val selectImage = 2
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemViewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
+        userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
     }
 
     override fun onStart() {
@@ -63,7 +73,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             itemViewModel.loadItem(itemId)
         } else {
             // New Item
-            itemViewModel.item.data.value = Item(itemId)
+            itemViewModel.item.data.value = Item(itemId,userViewModel.user.data.value!!.nickname)
             itemViewModel.item.image.value = null
         }
 
@@ -75,7 +85,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 if (it.categoryPos >= 0)
                     item_category_spinner.setSelection(localIt.categoryPos)
                 item_descr.setText(localIt.description)
-                item_location.setText(localIt.location)
+                item_location.text = localIt.location
                 item_price.setText(localIt.price)
                 item_exp.text = localIt.expiryDate
                 if(localIt.statusPos >= 0){
@@ -111,7 +121,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        supFragmentManager = this.requireFragmentManager()
+        supFragmentManager = (context as AppCompatActivity).supportFragmentManager
         return inflater.inflate(R.layout.fragment_item_edit, container, false)
     }
 
@@ -126,6 +136,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
         item_location.setOnClickListener {
             if(ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+                    openMapWithPosition()
                 // Permission is denied
                 requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 44)
             } else {
@@ -209,10 +220,29 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             //it's NOT an orientation change
             File(imagePath!!).delete()
         }
+        hideKeyboard()
     }
 
-    override fun onNothingSelected(p0: AdapterView<*>?) {
-        TODO("Not yet implemented")
+    private fun hideKeyboard(){
+        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = activity?.currentFocus
+
+        if (view != null){
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+        hideKeyboard()
+    }
+
+    private fun hideKeyboard(){
+        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = activity?.currentFocus
+        if(view != null){
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        // Nothing to do
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
@@ -376,6 +406,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                     val status: String = parent?.getItemAtPosition(position) as String
                     itemViewModel.item.localData?.status = status
                     itemViewModel.item.localData?.statusPos = position
+                    if (status == ItemStatus.Sold.toString())
+                        SetBuyerDialogFragment().show(supFragmentManager, "Set Buyer")
                 }
             }
         }
@@ -432,6 +464,12 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         if (!dataInserted){
             return
         }
+
+        if (itemViewModel.error) {
+            Toast.makeText(context, "Error on item loading, is not possible to save your item.", Toast.LENGTH_LONG).show()
+            return
+        }
+
         val updateItem = itemViewModel.item.localData!!
 
         updateItem.title = item_title.text.toString()
@@ -448,10 +486,23 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         itemViewModel.saveItem(updateItem)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    if (updateItem.id != null && updateItem.status == "Sold") {
-                        val body = JSONObject().put("ItemId", updateItem.id!!).put("IsMyItem", false)
-                        sendNotification(updateItem.id!!, updateItem.title, "The item was sold", body)
+                    if (updateItem.id != null) {
+                        when (updateItem.status) {
+                            ItemStatus.Sold.toString() -> {
+                                val body = JSONObject().put("ItemId", updateItem.id)
+                                    .put("IsMyItem", false)
+                                    .put("BuyerId", updateItem.buyerId)
+                                sendNotification(updateItem.id!!, updateItem.title, "The item was sold", body)
+                            }
+                            ItemStatus.Blocked.toString() -> {
+                                val body = JSONObject().put("ItemId", updateItem.id)
+                                    .put("IsMyItem", false)
+                                sendNotification(updateItem.id!!, updateItem.title, "The item is blocked", body)
+                            }
+                        }
                     }
+
+
                     if (itemViewModel.item.localImage != null)
                         itemViewModel.item.image.value = itemViewModel.item.localImage
 

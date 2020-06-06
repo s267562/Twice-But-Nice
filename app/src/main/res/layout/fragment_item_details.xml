@@ -32,6 +32,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+
     <LinearLayout
         android:id="@+id/loadingLayout"
         android:layout_width="0dp"
@@ -69,9 +70,8 @@
 
     </LinearLayout>
 
+
     <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/info_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -96,20 +96,6 @@
 
             <!-- PHOTO -->
 
-            <TextView
-                android:id="@+id/item_photo_label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/item_photo"
-                android:text="Photo"
-                android:layout_marginBottom="8dp"
-                android:gravity="bottom"
-                android:textAllCaps="true"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
-
             <ImageView
                 android:id="@+id/item_photo"
                 android:layout_width="192dp"
@@ -124,127 +110,47 @@
 
             <!-- DETAILS INFO -->
 
-            <TextView
-                android:id="@+id/item_details_label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/item_photo"
-                android:text="DETAILS"
-                android:paddingTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:gravity="bottom"
-                android:textAllCaps="true"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingTop="8dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginRight="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Title: "
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Category:"
-                        android:maxLines="1"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Subcategory:"
-                        android:maxLines="1"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Price:"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Description:"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp"
-                        android:minLines="2"
-                        android:maxLines="2"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginLeft="16dp">
+                    android:paddingTop="8dp">
 
                     <TextView
                         android:id="@+id/item_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Title"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:layout_marginBottom="8dp"
-                        android:maxLines="1"/>
+                        android:maxLines="1"
+                        android:text="Title"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
                     <TextView
                         android:id="@+id/item_category"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:maxLines="1"
                         android:text="Category"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp"
-                        android:maxLines="1" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-                    <TextView
-                        android:id="@+id/item_subcategory"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Subcategory"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp"
-                        android:maxLines="1" />
+                <TextView
+                    android:id="@+id/item_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:maxLines="1"
+                    android:text="Price"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:textColor="@color/colorPrimary" />
 
-                    <TextView
-                        android:id="@+id/item_price"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Price"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp"
-                        android:maxLines="1" />
-
-                    <TextView
-                        android:id="@+id/item_descr"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Description"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginBottom="8dp"
-                        android:minLines="2"
-                        android:maxLines="2" />
-
-                </LinearLayout>
+                <Button
+                    android:id="@+id/sellerNick"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="SellerNick" />
 
             </LinearLayout>
 
@@ -255,16 +161,48 @@
                 android:id="@+id/item_info_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/item_photo"
-                android:text="MORE INFO"
-                android:paddingTop="16dp"
                 android:layout_marginBottom="8dp"
                 android:gravity="bottom"
+                android:paddingTop="16dp"
+                android:text="DESCRIPTION"
                 android:textAllCaps="true"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                app:layout_constraintBottom_toTopOf="@+id/item_photo"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingTop="8dp">
+
+                <TextView
+                    android:id="@+id/item_descr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:minLines="2"
+                    android:text="Description"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/item_info_label2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="bottom"
+                android:paddingTop="16dp"
+                android:text="MORE INFO"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                app:layout_constraintBottom_toTopOf="@+id/item_photo"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -277,6 +215,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_marginRight="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Subcategory:"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -301,6 +246,15 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_marginLeft="16dp">
+
+                    <TextView
+                        android:id="@+id/item_subcategory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:maxLines="1"
+                        android:text="Subcategory"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
                     <TextView
                         android:id="@+id/item_exp"

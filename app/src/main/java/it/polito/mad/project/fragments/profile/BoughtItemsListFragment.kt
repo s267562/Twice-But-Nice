@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -32,6 +33,9 @@ class BoughtItemsListFragment : Fragment() {
         (activity as AppCompatActivity?)?.supportActionBar?.show()
         itemViewModel.loader.observe(viewLifecycleOwner, Observer {
             if (itemViewModel.isNotLoading()) {
+                if (itemViewModel.error) {
+                    Toast.makeText(context, "List of items not refreshed", Toast.LENGTH_SHORT).show()
+                }
                 // loader ended
                 itemViewModel.boughtItems.adapter.setItems(itemViewModel.boughtItems.items)
                 if(itemViewModel.boughtItems.items.size == 0) {

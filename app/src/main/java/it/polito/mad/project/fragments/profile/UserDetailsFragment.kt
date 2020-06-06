@@ -3,7 +3,6 @@ package it.polito.mad.project.fragments.profile
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -17,13 +16,10 @@ import it.polito.mad.project.R
 import androidx.recyclerview.widget.LinearLayoutManager
 import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.viewmodels.AuthViewModel
-import it.polito.mad.project.viewmodels.ItemViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
-import kotlinx.android.synthetic.main.fragment_on_sale_list.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 import kotlinx.android.synthetic.main.fragment_show_profile.loadingLayout
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -76,7 +72,7 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                 }
 
-                var nRatings = userViewModel.reviews.items.size
+                val nRatings = userViewModel.reviews.items.size
                 var sumRatings = 0F
                 for(item in userViewModel.reviews.items) {
                     sumRatings += item.review!!.rating
@@ -93,16 +89,14 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
                 val nRatingsText = "$nRatings reviews"
                 nReviewsTextView.text = nRatingsText
 
+                showHideLogoutButton()
             } else {
                 loadingLayout.visibility = View.VISIBLE
+
+                showHideLogoutButton()
             }
         })
-
-        if (isAuthUser) {
-            logoutFab.show()
-        } else {
-            logoutFab.hide()
-        }
+        showHideLogoutButton()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -170,19 +164,12 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
             userViewModel.resetUser()
     }
 
-    private fun setFabButton() {
-        logoutFab.setOnClickListener {
-            authViewModel.logout()
-            findNavController().popBackStack()
-        }
-    }
-
     override fun onMapReady(gMap: GoogleMap?) {
         gMap?.let {
             googleMap = it
         }
 
-        var geocode = Geocoder(context?.applicationContext, Locale.getDefault())
+        val geocode = Geocoder(context?.applicationContext, Locale.getDefault())
 
         gMap?.uiSettings?.isZoomControlsEnabled = true
         gMap?.uiSettings?.isMapToolbarEnabled = true
@@ -190,9 +177,9 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
         gMap?.uiSettings?.isCompassEnabled = true
 
         try {
-            var addr = geocode.getFromLocationName(location.text.toString(), 1)
-            if(addr.size > 0){
-                var address : Address = addr.get(0)
+            val addresses = geocode.getFromLocationName(location.text.toString(), 1)
+            if(addresses.size > 0){
+                val address : Address = addresses[0]
                 val cameraPos = LatLng(address.latitude, address.longitude)
                 gMap?.addMarker(
                     MarkerOptions()
@@ -205,4 +192,20 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
             e.printStackTrace()
         }
     }
+
+    private fun setFabButton() {
+        logoutFab.setOnClickListener {
+            authViewModel.logout()
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun showHideLogoutButton() {
+        if (isAuthUser) {
+            logoutFab.show()
+        } else {
+            logoutFab.hide()
+        }
+    }
+
 }

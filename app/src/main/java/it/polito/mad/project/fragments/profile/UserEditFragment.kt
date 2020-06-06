@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Camera
 import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.location.Address
@@ -22,10 +21,12 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -38,7 +39,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
@@ -49,7 +49,6 @@ import it.polito.mad.project.models.user.User
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.loadingLayout
-import kotlinx.android.synthetic.main.map.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -103,7 +102,7 @@ class UserEditFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        supFragmentManager = this.requireFragmentManager()
+        supFragmentManager = (context as AppCompatActivity).supportFragmentManager
         return inflater.inflate(R.layout.fragment_edit_profile, container, false)
     }
 
@@ -159,7 +158,7 @@ class UserEditFragment : Fragment() {
             val rotateBitmap = rotateImage(image!!)
             image = rotateBitmap
             user_photo.setImageBitmap(image)
-            userViewModel.user.image.value = image
+            //userViewModel.user.image.value = image
         }
 
         location.setOnClickListener {
@@ -285,7 +284,7 @@ class UserEditFragment : Fragment() {
         } else {
             Toast.makeText(mContext, "Something wrong", Toast.LENGTH_SHORT).show()
         }
-        userViewModel.user.image.value = (user_photo.drawable as BitmapDrawable).bitmap
+        //userViewModel.user.image.value = (user_photo.drawable as BitmapDrawable).bitmap
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -350,6 +349,11 @@ class UserEditFragment : Fragment() {
             return
         }
 
+        if (userViewModel.error) {
+            Toast.makeText(context, "Error on loading your profile, is not possible to proceed.", Toast.LENGTH_LONG).show()
+            return
+        }
+
         val name = full_name.text.toString()
         val nickname = nickname.text.toString()
         val email = email.text.toString()
@@ -395,6 +399,17 @@ class UserEditFragment : Fragment() {
             //it's NOT an orientation change
             File(imagePath!!).delete()
         }
+        hideKeyboard()
+    }
+
+    private fun hideKeyboard(){
+        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = activity?.currentFocus
+
+        if (view != null){
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+        hideKeyboard()
     }
 
     private fun openGallery(){
@@ -458,7 +473,7 @@ class UserEditFragment : Fragment() {
                                 e.printStackTrace()
                             }
 
-                            searchEditText.setOnEditorActionListener { v, actionId, event ->
+                            searchEditText.setOnEditorActionListener { _, actionId, event ->
                                 if(actionId == EditorInfo.IME_ACTION_SEARCH || event?.action == KeyEvent.ACTION_DOWN ||
                                     event?.action == KeyEvent.KEYCODE_ENTER){
                                     Toast.makeText(context, "Giusto così", Toast.LENGTH_SHORT).show()
@@ -468,9 +483,9 @@ class UserEditFragment : Fragment() {
                             }
 
                             gMap?.setOnMapClickListener {
-                                var clickPosition = LatLng(it.latitude, it.longitude)
+                                val clickPosition = LatLng(it.latitude, it.longitude)
                                 val markerOpt = MarkerOptions()
-                                markerOpt.position(clickPosition!!)
+                                markerOpt.position(clickPosition)
                                 gMap.clear()
                                 gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
                                 gMap.addMarker(markerOpt)
@@ -488,12 +503,12 @@ class UserEditFragment : Fragment() {
 
         val builder= AlertDialog.Builder(context).setView(dialogView)
             .setPositiveButton("Set Location",
-                DialogInterface.OnClickListener{ dialog, id ->
+                DialogInterface.OnClickListener{ dialog, _ ->
                     Toast.makeText(context, "Last saved position is " + lastPositionToSave, Toast.LENGTH_SHORT).show()
                     dialog.cancel()
                 })
             .setNegativeButton("Close Map",
-                DialogInterface.OnClickListener { dialog, id ->
+                DialogInterface.OnClickListener { dialog, _ ->
                     dialog.cancel()
                 })
         builder.show()
@@ -510,9 +525,17 @@ class UserEditFragment : Fragment() {
             e.printStackTrace()
         }
 
-        if (addressList.size > 0){
+        if (addressList.isNotEmpty()){
             address = addressList.get(0)
-            Toast.makeText(context, "We are here: " + address.toString(), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "We are here: $address", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun hideKeyboard(){
+        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = activity?.currentFocus
+        if(view != null){
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
 }

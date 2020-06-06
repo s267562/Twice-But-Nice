@@ -2,9 +2,8 @@ package it.polito.mad.project.viewmodels
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
-import it.polito.mad.project.adapters.ReviewAdapter
+import it.polito.mad.project.adapters.items.ReviewItemAdapter
 import it.polito.mad.project.commons.viewmodels.LoadingViewModel
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.models.item.ItemList
@@ -24,7 +23,11 @@ class UserViewModel : LoadingViewModel() {
     val user = UserDetail()
 
     // Reviews (sold items with review)
-    val reviews = ItemList(ReviewAdapter(mutableListOf()))
+    val reviews = ItemList(
+        ReviewItemAdapter(
+            mutableListOf()
+        )
+    )
 
     init {
         loadUser()
@@ -108,7 +111,7 @@ class UserViewModel : LoadingViewModel() {
             .addOnSuccessListener { it ->
                 reviews.items.clear()
                 reviews.items.addAll(it.toObjects(Item::class.java)
-                    .filter { it -> it.review != null })
+                    .filter { it.review != null })
                 reviews.adapter.setItemReviews(reviews.items)
                 popLoader()
                 error = false

@@ -1,4 +1,4 @@
-package it.polito.mad.project.adapters
+package it.polito.mad.project.adapters.items
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,15 +8,18 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.project.R
+import it.polito.mad.project.adapters.items.utils.ItemDiffUtilCallback
 import it.polito.mad.project.models.item.Item
 
-class ReviewAdapter(private var itemReviews: MutableList<Item>) : RecyclerView.Adapter<ReviewAdapter.ViewHolder>() {
+class ReviewItemAdapter(private var itemReviews: MutableList<Item>) : RecyclerView.Adapter<ReviewItemAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val userReviewView = LayoutInflater.from(parent.context).inflate(
             R.layout.review, parent, false
         )
-        return ViewHolder(userReviewView)
+        return ViewHolder(
+            userReviewView
+        )
     }
 
     override fun getItemCount() = itemReviews.size
@@ -26,7 +29,12 @@ class ReviewAdapter(private var itemReviews: MutableList<Item>) : RecyclerView.A
     }
 
     fun setItemReviews(newItemReviews: MutableList<Item>) {
-        val diffs = DiffUtil.calculateDiff(ItemDiffCallback(itemReviews, newItemReviews))
+        val diffs = DiffUtil.calculateDiff(
+            ItemDiffUtilCallback(
+                itemReviews,
+                newItemReviews
+            )
+        )
         itemReviews.clear()
         itemReviews.addAll(newItemReviews)
         diffs.dispatchUpdatesTo(this) //animate UI
