@@ -102,7 +102,10 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
                     interestedUsersFab.hide()
                 } else {
                     interestFab.hide()
-                    interestedUsersFab.show()
+                    if(!isSoldItem)
+                        interestedUsersFab.show()
+                    else
+                        interestedUsersFab.hide()
                 }
 
             } else {
