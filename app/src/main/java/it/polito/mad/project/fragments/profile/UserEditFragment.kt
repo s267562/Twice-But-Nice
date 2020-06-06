@@ -158,7 +158,7 @@ class UserEditFragment : Fragment() {
             val rotateBitmap = rotateImage(image!!)
             image = rotateBitmap
             user_photo.setImageBitmap(image)
-            userViewModel.user.image.value = image
+            //userViewModel.user.image.value = image
         }
 
         location.setOnClickListener {
@@ -284,7 +284,7 @@ class UserEditFragment : Fragment() {
         } else {
             Toast.makeText(mContext, "Something wrong", Toast.LENGTH_SHORT).show()
         }
-        userViewModel.user.image.value = (user_photo.drawable as BitmapDrawable).bitmap
+        //userViewModel.user.image.value = (user_photo.drawable as BitmapDrawable).bitmap
     }
 
     @SuppressLint("SimpleDateFormat")

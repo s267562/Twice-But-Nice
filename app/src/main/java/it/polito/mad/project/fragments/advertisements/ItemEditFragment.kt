@@ -54,6 +54,7 @@ import it.polito.mad.project.fragments.advertisements.dialogs.SetBuyerDialogFrag
 import it.polito.mad.project.fragments.advertisements.dialogs.SetFilterDialogFragment
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.viewmodels.ItemViewModel
+import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_item_edit.*
 import org.json.JSONObject
 import java.io.File
@@ -65,6 +66,8 @@ import java.util.*
 class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var itemViewModel: ItemViewModel
+    private lateinit var userViewModel: UserViewModel
+
     private lateinit var supFragmentManager : FragmentManager
 
     private lateinit var searchEditText: EditText
@@ -87,6 +90,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemViewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
+        userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
     }
 
     override fun onStart() {
@@ -97,7 +101,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             itemViewModel.loadItem(itemId)
         } else {
             // New Item
-            itemViewModel.item.data.value = Item(itemId)
+            itemViewModel.item.data.value = Item(itemId,userViewModel.user.data.value!!.nickname)
             itemViewModel.item.image.value = null
         }
 
