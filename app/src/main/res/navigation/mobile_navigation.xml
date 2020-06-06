@@ -225,6 +225,6 @@
         android:label="@string/show_route" />
     <fragment
         android:id="@+id/mapFragment"
-        android:name="it.polito.mad.project.fragments.MapFragment"
+        android:name="it.polito.mad.project.fragments.MapFragment2"
         android:label="MapFragment" />
 </navigation>

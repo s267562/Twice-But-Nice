@@ -18,8 +18,8 @@
     <string name="menu_advertisements">My Advertisements</string>
     <string name="menu_show_advertisement">Item Details</string>
     <string name="menu_edit_advertisement">Edit Item</string>
-    <string name="items_of_interest_list">List of Interested Items</string>
-    <string name="bought_items_list">List of Bought Items</string>
+    <string name="items_of_interest_list">Interested Items</string>
+    <string name="bought_items_list">Bought Items</string>
     <string name="show_route">Route from User to Item</string>
 
     <string name="category_def">Category</string>

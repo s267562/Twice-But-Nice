@@ -83,11 +83,15 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
 
                 val decimalFormat = DecimalFormat("#.#")
                 decimalFormat.roundingMode = RoundingMode.CEILING
-                val userRatingText = "${decimalFormat.format(avgRating)} of 5"
-                userRatingTextView.text = userRatingText
 
                 val nRatingsText = "$nRatings reviews"
+                if(nRatings.equals(0)){
+                    userRatingTextView.visibility = View.GONE
+                }
                 nReviewsTextView.text = nRatingsText
+
+                val userRatingText = "${decimalFormat.format(avgRating)} of 5"
+                userRatingTextView.text = userRatingText
 
                 showHideLogoutButton()
             } else {
@@ -164,29 +168,29 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
             userViewModel.resetUser()
     }
 
-    override fun onMapReady(gMap: GoogleMap?) {
-        gMap?.let {
+    override fun onMapReady(gMap: GoogleMap) {
+        gMap.let {
             googleMap = it
         }
 
-        val geocode = Geocoder(context?.applicationContext, Locale.getDefault())
+        val geocode = Geocoder(requireContext().applicationContext, Locale.getDefault())
 
-        gMap?.uiSettings?.isZoomControlsEnabled = true
-        gMap?.uiSettings?.isMapToolbarEnabled = true
-        gMap?.uiSettings?.isMyLocationButtonEnabled = true
-        gMap?.uiSettings?.isCompassEnabled = true
+        gMap.uiSettings.isZoomControlsEnabled = true
+        gMap.uiSettings.isMapToolbarEnabled = true
+        gMap.uiSettings.isMyLocationButtonEnabled = true
+        gMap.uiSettings.isCompassEnabled = true
 
         try {
             val addresses = geocode.getFromLocationName(location.text.toString(), 1)
             if(addresses.size > 0){
                 val address : Address = addresses[0]
                 val cameraPos = LatLng(address.latitude, address.longitude)
-                gMap?.addMarker(
+                gMap.addMarker(
                     MarkerOptions()
                         .position(LatLng(address.latitude, address.longitude))
                         .title("User Current Location")
                 )
-                gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 7.5F))
+                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 15F))
             }
         } catch (e: IOException){
             e.printStackTrace()
