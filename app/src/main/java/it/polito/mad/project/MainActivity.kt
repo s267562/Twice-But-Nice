@@ -1,10 +1,13 @@
 package it.polito.mad.project
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -14,7 +17,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.project.viewmodels.AuthViewModel
-
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -36,7 +38,8 @@ class MainActivity : AppCompatActivity() {
 
         authViewModel.loggedIn.observe(this, Observer {
             if (it) {
-                FirebaseMessaging.getInstance().subscribeToTopic("/topics/${authViewModel.getAuthUserId()}")
+                FirebaseMessaging.getInstance()
+                    .subscribeToTopic("/topics/${authViewModel.getAuthUserId()}")
                 userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
                 bindUserWithNavView()
             }
@@ -47,7 +50,8 @@ class MainActivity : AppCompatActivity() {
                 authViewModel.loggedOut.value = false
                 finish();
                 startActivity(intent)
-                FirebaseMessaging.getInstance().unsubscribeFromTopic("/topics/${authViewModel.getAuthUserId()}")
+                FirebaseMessaging.getInstance()
+                    .unsubscribeFromTopic("/topics/${authViewModel.getAuthUserId()}")
             }
         })
 
@@ -88,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         val fullName = headerView.findViewById<TextView>(R.id.full_name)
         val userPhoto = headerView.findViewById<ImageView>(R.id.user_photo)
 
-        userViewModel.user.data.observe(this, Observer{
+        userViewModel.user.data.observe(this, Observer {
             if (it != null && authViewModel.getAuthUserId() == it.id) {
                 if (it.name.isNotEmpty())
                     fullName.text = it.name
@@ -100,4 +104,5 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
 }
