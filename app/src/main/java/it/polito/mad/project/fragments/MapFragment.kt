@@ -93,6 +93,10 @@ class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListen
             enableLocation()
         }
 
+        saveFAB.setOnClickListener {
+            Toast.makeText(requireContext(), markerOptions.title, Toast.LENGTH_SHORT).show() 
+        }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
