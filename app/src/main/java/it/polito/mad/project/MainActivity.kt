@@ -1,13 +1,11 @@
 package it.polito.mad.project
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -40,6 +38,7 @@ class MainActivity : AppCompatActivity() {
             if (it) {
                 FirebaseMessaging.getInstance()
                     .subscribeToTopic("/topics/${authViewModel.getAuthUserId()}")
+                drawerLayout.visibility = DrawerLayout.VISIBLE
                 userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
                 bindUserWithNavView()
             }
@@ -48,10 +47,11 @@ class MainActivity : AppCompatActivity() {
         authViewModel.loggedOut.observe(this, Observer {
             if (it) {
                 authViewModel.loggedOut.value = false
-                finish();
-                startActivity(intent)
                 FirebaseMessaging.getInstance()
                     .unsubscribeFromTopic("/topics/${authViewModel.getAuthUserId()}")
+                drawerLayout.visibility = DrawerLayout.GONE
+                finish()
+                startActivity(intent)
             }
         })
 
@@ -104,5 +104,4 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
 }
