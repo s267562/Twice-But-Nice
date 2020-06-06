@@ -16,13 +16,14 @@ import androidx.navigation.NavDeepLinkBuilder
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import it.polito.mad.project.MainActivity
+import it.polito.mad.project.repositories.UserRepository
 import kotlin.random.Random
 
 
 class MessageService : FirebaseMessagingService() {
 
     private val adminChannelId = "admin_channel"
-
+    private val userRepository = UserRepository()
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
@@ -37,9 +38,17 @@ class MessageService : FirebaseMessagingService() {
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
+        val buyerId = remoteMessage.data["BuyerId"]?:""
+        var message = remoteMessage.data["message"]
+        var idDestination = R.id.showItemFragment
+        if (buyerId.isNotBlank() && buyerId == userRepository.getFirebaseUser()?.uid) {
+            message = "Congratulations on your new purchase! You can rate it."
+            idDestination = R.id.itemReviewFragment
+        }
+
         val pendingIntent = NavDeepLinkBuilder(this)
             .setGraph(R.navigation.mobile_navigation)
-            .setDestination(R.id.showItemFragment)
+            .setDestination(idDestination)
             .setArguments(bundleOf("ItemId" to remoteMessage.data["ItemId"], "IsMyItem" to (remoteMessage.data["IsMyItem"] == "true")))
             .createPendingIntent()
 
@@ -53,7 +62,7 @@ class MessageService : FirebaseMessagingService() {
             .setSmallIcon(R.drawable.ic_notifications_black_24dp)
             .setLargeIcon(largeIcon)
             .setContentTitle(remoteMessage.data["title"])
-            .setContentText(remoteMessage.data["message"])
+            .setContentText(message)
             .setAutoCancel(true)
             .setSound(notificationSoundUri)
             .setContentIntent(pendingIntent)
