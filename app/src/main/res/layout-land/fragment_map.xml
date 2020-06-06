@@ -1,49 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <it.polito.mad.project.customViews.CustomMapView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/mapRoute"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:elevation="10dp"
-        android:background="#fff"
-        android:id="@+id/searchRelLayout">
+        android:id="@+id/mapRoute" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/search_loc"
-            android:layout_toRightOf="@+id/icon_search"
-            android:layout_centerVertical="true"
-            android:textSize="15dp"
-            android:textColor="#000"
-            android:hint="Enter City Name..."
-            android:imeOptions="actionDone"
-            />
+    <LinearLayout
+        android:id="@+id/fab_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:orientation="vertical">
 
-        <!--<ImageButton
-            android:id="@+id/searchLocStringBtn"
-            android:layout_width="55dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:src="@drawable/ic_search_black"
-            android:background="#fff"
-            />-->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            android:id="@+id/myPositionFAB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            app:borderWidth="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_my_location"
+            android:backgroundTint="@android:color/white" />
 
-    </RelativeLayout>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            android:id="@+id/saveFAB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            app:borderWidth="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_done_24"
+            app:tint="@android:color/white" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+</FrameLayout>
