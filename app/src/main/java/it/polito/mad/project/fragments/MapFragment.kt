@@ -94,7 +94,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListen
         }
 
         saveFAB.setOnClickListener {
-            Toast.makeText(requireContext(), markerOptions.title, Toast.LENGTH_SHORT).show() 
+            //TODO itemViewModel.item.data.value.
+            Toast.makeText(requireContext(), markerOptions.title, Toast.LENGTH_SHORT).show()
+            findNavController().popBackStack()
         }
 
     }
