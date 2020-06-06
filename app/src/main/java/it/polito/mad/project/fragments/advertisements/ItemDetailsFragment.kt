@@ -61,7 +61,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
         (activity as AppCompatActivity?)?.supportActionBar?.show()
 
         isMyItem = arguments?.getBoolean("IsMyItem")?:false
-        isSoldItem = arguments?.getBoolean("IsSoldItem ")?:false
+        isSoldItem = arguments?.getBoolean("IsSoldItem")?:false
         itemViewModel.item.data.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 item_title.text = it.title
