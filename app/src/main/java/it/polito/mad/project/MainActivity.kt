@@ -6,6 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -14,6 +15,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.messaging.FirebaseMessaging
+import it.polito.mad.project.fragments.advertisements.OnSaleListFragment
 import it.polito.mad.project.viewmodels.AuthViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -38,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             if (it) {
                 FirebaseMessaging.getInstance()
                     .subscribeToTopic("/topics/${authViewModel.getAuthUserId()}")
-                drawerLayout.visibility = DrawerLayout.VISIBLE
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
                 userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
                 bindUserWithNavView()
             }
@@ -49,7 +51,7 @@ class MainActivity : AppCompatActivity() {
                 authViewModel.loggedOut.value = false
                 FirebaseMessaging.getInstance()
                     .unsubscribeFromTopic("/topics/${authViewModel.getAuthUserId()}")
-                drawerLayout.visibility = DrawerLayout.GONE
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
                 finish()
                 startActivity(intent)
             }
@@ -67,6 +69,13 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.navMainHostFragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val fragment: Fragment = navMainHostFragment.childFragmentManager.fragments[0]
+        if (fragment is OnSaleListFragment)
+            finish()
     }
 
 

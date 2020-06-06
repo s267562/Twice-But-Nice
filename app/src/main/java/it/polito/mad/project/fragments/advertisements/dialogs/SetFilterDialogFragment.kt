@@ -47,7 +47,10 @@ class SetFilterDialogFragment : DialogFragment() {
                 ) { dialog, _ ->
                     // set up the spinner and pass the filter string
                     val filter = spinner.selectedItem.toString().toLowerCase(Locale.ROOT)
-                    itemViewModel.onSaleItems.filter = ItemFilter.valueOf(filter)
+                    for (itemFilter in ItemFilter.values())
+                         if (itemFilter.toString().toLowerCase(Locale.ROOT) == filter)
+                             itemViewModel.onSaleItems.filter = itemFilter
+
                     Toast.makeText(requireContext(), "You set the filter to: $filter", Toast.LENGTH_SHORT).show()
                     dialog.cancel()
                 }
