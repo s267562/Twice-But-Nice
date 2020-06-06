@@ -143,6 +143,12 @@
                 android:orientation="horizontal"
                 android:paddingTop="8dp">
 
+                <Button
+                    android:id="@+id/sellerNick"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="SellerNick" />
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

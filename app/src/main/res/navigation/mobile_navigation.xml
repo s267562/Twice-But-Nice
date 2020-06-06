@@ -137,6 +137,9 @@
             android:name="IsSoldItem"
             app:argType="boolean"
             android:defaultValue="false" />
+        <action
+            android:id="@+id/action_showItemFragment_to_showProfileFragment"
+            app:destination="@id/showProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"

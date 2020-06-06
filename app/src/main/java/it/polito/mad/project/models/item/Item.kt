@@ -18,6 +18,7 @@ data class Item (var id: String?) : Serializable {
     var ownerId: String=""
     var buyerId: String=""
     var buyerNickname: String=""
+    var ownerNickname: String=""
     var review: Review? = null
 
     constructor(id: String, title: String, category: String, subcategory: String, status: String, price: Double,
@@ -34,4 +35,7 @@ data class Item (var id: String?) : Serializable {
     }
 
     constructor(): this(null)
+    constructor(itemId: Nothing?, nickname: String) : this(null){
+        this.ownerNickname = nickname;
+    }
 }

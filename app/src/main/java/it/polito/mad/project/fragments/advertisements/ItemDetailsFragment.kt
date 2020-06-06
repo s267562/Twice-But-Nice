@@ -12,6 +12,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -72,6 +73,14 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
                 val priceString = "${it.price} €"
                 item_price.text = priceString
                 item_exp.text = it.expiryDate
+                sellerNick.text = it.ownerNickname
+
+                var ownerId = it.ownerId
+                sellerNick.setOnClickListener {
+                    val bundle = bundleOf("UserId" to ownerId, "IsAuthUser" to false)
+                    findNavController().navigate(R.id.action_showItemFragment_to_showProfileFragment, bundle)
+                }
+
                 if (listenerRegistration == null)
                    listenerRegistration = itemViewModel.listenToChanges()
             }
@@ -90,6 +99,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                 }
                 if (!isMyItem) {
+                    sellerNick.visibility= View.VISIBLE
                     if (itemViewModel.item.data.value!!.status == ItemStatus.Available.toString()) {
                         var interestFabDrawableId: Int = R.drawable.ic_favorite_border_white_24dp
                         if (itemViewModel.item.interest.interested)
@@ -228,4 +238,6 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
             }
         }
     }
+
+
 }
