@@ -6,13 +6,13 @@ import android.content.Intent
 import android.content.IntentSender
 import android.location.Address
 import android.location.Geocoder
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -22,33 +22,39 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.PendingResult
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import it.polito.mad.project.R
 import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.viewmodels.ItemViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_map.*
+import java.io.IOException
 
 class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListener {
 
-    private lateinit var googleMap: GoogleMap
+    private lateinit var map: GoogleMap
     private lateinit var itemViewModel: ItemViewModel
     private lateinit var userViewModel: UserViewModel
     private lateinit var itemLocation: String
     private lateinit var userLocation: String
 
-    private val TAG = "LocationOnOff"
     private var googleApiClient: GoogleApiClient? = null
     private val REQUEST_LOCATION = 199
-
     lateinit var searchEditText: TextView
+    private lateinit var geocoder: Geocoder
+    private lateinit var markerOptions: MarkerOptions
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemViewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
         userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+
+        geocoder = Geocoder(requireActivity())
+        markerOptions = MarkerOptions()
     }
 
     override fun onStart() {
@@ -87,6 +93,10 @@ class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListen
             enableLocation()
         }
 
+        saveFAB.setOnClickListener {
+            Toast.makeText(requireContext(), markerOptions.title, Toast.LENGTH_SHORT).show() 
+        }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -105,11 +115,24 @@ class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListen
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        getLocationFromAddress(context, newText)
         return true
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
+
+        if(query != "") {
+            val address: Address? = getAddress(query)
+            if(address != null) {
+                setMarker(
+                    LatLng(address.latitude, address.longitude),
+                    query ?: ""
+                )
+            } else {
+                Toast.makeText(requireContext(), "Location not found, try again", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
         return false
     }
 
@@ -124,16 +147,18 @@ class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListen
 
     }
 
-    override fun onMapReady(gMap: GoogleMap?) {
-        gMap?.let {
-            googleMap = it
+    override fun onMapReady(gMap: GoogleMap) {
+        gMap.uiSettings?.isZoomControlsEnabled = false
+        gMap.uiSettings?.isMapToolbarEnabled = true
+        gMap.uiSettings?.isMyLocationButtonEnabled = true
+        gMap.uiSettings?.isCompassEnabled = true
+
+        gMap.setOnMapClickListener {
+            val clickPosition = LatLng(it.latitude, it.longitude)
+            setMarker(clickPosition, "TODO marker title")
         }
 
-        gMap?.uiSettings?.isZoomControlsEnabled = false
-        gMap?.uiSettings?.isMapToolbarEnabled = true
-        gMap?.uiSettings?.isMyLocationButtonEnabled = true
-        gMap?.uiSettings?.isCompassEnabled = true
-
+        map = gMap
     }
 
     private fun enableLocation() {
@@ -186,25 +211,28 @@ class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListen
         }
     }
 
-    private fun getLocationFromAddress(context: Context?, strAddress: String?): LatLng? {
-        val coder = Geocoder(context)
-        val address: List<Address>?
-        var latLng: LatLng? = null
+    private fun getAddress(location: String?): Address? {
+        val address: Address? = null
+        var addressList: List<Address>
 
-        try {
-            address = coder.getFromLocationName(strAddress, 5)
-            if (address == null || address.isEmpty()) {
-                Log.d("MapFragment-DEBUG", "no result found")
-                return null
+        if(location != "") {
+            try {
+                addressList = geocoder.getFromLocationName(location, 1)
+                if(addressList.isNotEmpty()) {
+                    return addressList[0]
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
-            val location = address[0]
-            location.latitude
-            location.longitude
-            latLng = LatLng(location.latitude, location.longitude)
-            Log.d("MapFragment-DEBUG", "${latLng.latitude}, ${latLng.longitude}")
-        } catch (ex: Exception) {
-            ex.printStackTrace()
         }
-        return latLng
+        return null
     }
+
+    private fun setMarker(latLng: LatLng, title: String) {
+        markerOptions.position(latLng).title(title)
+        map.clear()
+        map.addMarker(markerOptions)
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0F))
+    }
+
 }

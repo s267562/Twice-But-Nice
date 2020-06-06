@@ -2,20 +2,13 @@ package it.polito.mad.project.fragments.advertisements
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.content.Context
 import android.content.Intent
-import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
-import android.location.Address
-import android.location.Geocoder
-import android.location.Location
-import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -23,7 +16,6 @@ import android.provider.MediaStore
 import android.text.InputType
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.annotation.RequiresApi
@@ -34,20 +26,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.common.api.PendingResult
-import com.google.android.gms.common.api.ResultCallback
-import com.google.android.gms.location.*
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
 import it.polito.mad.project.R
 import it.polito.mad.project.commons.fragments.NotificationFragment
-import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.items.ItemStatus
 import it.polito.mad.project.fragments.advertisements.dialogs.SetBuyerDialogFragment
@@ -59,7 +39,6 @@ import kotlinx.android.synthetic.main.fragment_item_edit.*
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -70,17 +49,10 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     private lateinit var supFragmentManager : FragmentManager
 
-    private lateinit var searchEditText: EditText
-    private lateinit var googleMap: GoogleMap
-
-    private lateinit var geocode: Geocoder
-    private lateinit var address: Address
-
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
     private var dateValue: String? = null
-
 
     private var subCategoriesResArray: IntArray = intArrayOf(R.array.item_sub_art, R.array.item_sub_sports, R.array.item_sub_baby,
         R.array.item_sub_women, R.array.item_sub_men, R.array.item_sub_electo, R.array.item_sub_games, R.array.item_sub_auto)
@@ -549,105 +521,6 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         galleryIntent.type = "image/*"
         galleryIntent.action = Intent.ACTION_GET_CONTENT
         startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), selectImage)
-    }
-
-    // Managing Modal Map
-
-    private fun openMapWithPosition(){
-
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
-        val mapView = dialogView.findViewById<CustomMapView>(R.id.map)
-
-        searchEditText = dialogView.findViewById(R.id.search_loc)
-
-        val task: Task<Location> = LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation
-
-        task.addOnSuccessListener { location ->
-            if(location != null && mapView != null){
-                mapView.onCreate(null)
-                mapView.onResume()
-                mapView.getMapAsync { gMap ->
-                    gMap?.let {
-                        googleMap = it
-                    }
-
-                    gMap?.uiSettings?.isZoomControlsEnabled = true
-                    gMap?.uiSettings?.isMapToolbarEnabled = true
-                    gMap?.uiSettings?.isMyLocationButtonEnabled = true
-                    gMap?.uiSettings?.isCompassEnabled = true
-
-                    val position = LatLng(location.latitude, location.longitude)
-                    gMap?.moveCamera(CameraUpdateFactory.newLatLng(position))
-                    gMap?.animateCamera(CameraUpdateFactory.zoomTo(4.8F))
-                    gMap?.addMarker(
-                        MarkerOptions().position(position).title("Your Current Position")
-                    )
-
-                    geocode = Geocoder(context?.applicationContext, Locale.getDefault())
-
-                    try {
-                        val addresses = geocode.getFromLocationName(
-                            item_location.text.toString(), 1)
-                        if(addresses.size > 0){
-                            val address : Address = addresses[0]
-                            //                                    val cameraPos = LatLng(address.latitude, address.longitude)
-                            gMap?.addMarker(
-                                MarkerOptions()
-                                    .position(LatLng(address.latitude, address.longitude))
-                                    .title("Item Last Location")
-                            )
-                        }
-                    } catch (e: IOException){
-                        e.printStackTrace()
-                    }
-
-                    searchEditText.setOnEditorActionListener { _, actionId, event ->
-                        if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH
-                            || event?.action == KeyEvent.ACTION_DOWN || event?.action == KeyEvent.KEYCODE_ENTER){
-                            geoLocate()
-                        }
-                        false
-                    }
-
-                    gMap?.setOnMapClickListener {
-                        val clickPosition = LatLng(it.latitude, it.longitude)
-                        val markerOpt = MarkerOptions()
-                        markerOpt.position(clickPosition)
-                        gMap.clear()
-                        gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
-                        gMap.addMarker(markerOpt)
-                    }
-                }
-            }
-        }
-
-        val builder= AlertDialog.Builder(context).setView(dialogView)
-            .setPositiveButton("Set Location"
-            ) { dialog, _ ->
-                dialog.cancel()
-            }
-            .setNegativeButton("Close Map"
-            ) { dialog, _ ->
-                dialog.cancel()
-            }
-        builder.show()
-    }
-
-    private fun geoLocate(){
-        // This to manage the search of location from the upper bar
-        val searchString = searchEditText.text.toString()
-        var addressList : List<Address> = ArrayList()
-
-        try {
-            addressList = geocode.getFromLocationName(searchString, 1)
-        } catch (e: IOException){
-            e.printStackTrace()
-        }
-
-        if (addressList.size > 0){
-            address = addressList.get(0)
-            Toast.makeText(context, "You typed: $address", Toast.LENGTH_SHORT).show()
-        }
     }
 
 }
