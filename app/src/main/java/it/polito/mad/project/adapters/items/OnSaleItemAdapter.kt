@@ -72,7 +72,7 @@ class OnSaleItemAdapter(private var items: MutableList<Item>, private val source
         private val container: CardView = view.findViewById(R.id.item_container)
 
         fun bind(item: Item, callback: (Int) -> Unit) {
-            val priceStr = "${item.price} €"
+            val priceStr = "Price: ${item.price} €"
 
             category.text = item.category
             title.text = item.title

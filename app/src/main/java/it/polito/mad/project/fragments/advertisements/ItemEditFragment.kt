@@ -484,7 +484,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         }
 
         val updateItem = itemViewModel.item.localData!!
-        val itemId = updateItem.id!!
+
         updateItem.title = item_title.text.toString()
         //updateItem.location = item_location.text.toString()
         updateItem.description = item_descr.text.toString()
@@ -499,19 +499,22 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         itemViewModel.saveItem(updateItem)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    when (updateItem.status) {
-                        ItemStatus.Sold.toString() -> {
-                            val body = JSONObject().put("ItemId", itemId)
-                                .put("IsMyItem", false)
-                                .put("BuyerId", updateItem.buyerId)
-                            sendNotification(itemId, updateItem.title, "The item was sold", body)
-                        }
-                        ItemStatus.Blocked.toString() -> {
-                            val body = JSONObject().put("ItemId", itemId)
-                                .put("IsMyItem", false)
-                            sendNotification(itemId, updateItem.title, "The item is blocked", body)
+                    if (updateItem.id != null) {
+                        when (updateItem.status) {
+                            ItemStatus.Sold.toString() -> {
+                                val body = JSONObject().put("ItemId", updateItem.id)
+                                    .put("IsMyItem", false)
+                                    .put("BuyerId", updateItem.buyerId)
+                                sendNotification(updateItem.id!!, updateItem.title, "The item was sold", body)
+                            }
+                            ItemStatus.Blocked.toString() -> {
+                                val body = JSONObject().put("ItemId", updateItem.id)
+                                    .put("IsMyItem", false)
+                                sendNotification(updateItem.id!!, updateItem.title, "The item is blocked", body)
+                            }
                         }
                     }
+
 
                     if (itemViewModel.item.localImage != null)
                         itemViewModel.item.image.value = itemViewModel.item.localImage

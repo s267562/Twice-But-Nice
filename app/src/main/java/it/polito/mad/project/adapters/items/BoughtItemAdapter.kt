@@ -68,7 +68,7 @@ class BoughtItemAdapter (private var itemsBought: MutableList<Item>) : RecyclerV
         private val ratingBar: RatingBar = view.findViewById(R.id.item_rating)
 
         fun bind(item: Item, callback: (Int) -> Unit, callbackReview: (Int) -> Unit ) {
-            val priceStr = "${item.price} €"
+            val priceStr = "Bought for ${item.price} €"
 
             category.text = item.category
             title.text = item.title
