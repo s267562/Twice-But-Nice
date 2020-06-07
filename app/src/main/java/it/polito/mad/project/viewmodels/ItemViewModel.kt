@@ -1,5 +1,6 @@
 package it.polito.mad.project.viewmodels
 
+import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
@@ -19,6 +20,8 @@ import it.polito.mad.project.models.user.User
 import it.polito.mad.project.models.user.UserList
 import it.polito.mad.project.repositories.ItemRepository
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ItemViewModel : LoadingViewModel() {
 
@@ -76,6 +79,7 @@ class ItemViewModel : LoadingViewModel() {
                 myItems.items.clear()
                 myItems.items.addAll(it1.toObjects(Item::class.java))
                 loadItemsOnSale()
+                itemsExpiredUpdate(myItems.items)
                 loadItemsBought()
                 loadInterestedItems()
                 popLoader()
@@ -86,14 +90,27 @@ class ItemViewModel : LoadingViewModel() {
             }
     }
 
+    private fun itemsExpiredUpdate(items: MutableList<Item>) {
+        var today = Date()
+        items.forEach{
+            if(it.status == ItemStatus.Available.toString() && it.expiryDate.isNotBlank() && today>SimpleDateFormat("dd/MM/yyyy").parse(it.expiryDate))
+            it.status= ItemStatus.Blocked.toString()
+            saveItem(it)
+        }
+    }
+
+
     fun loadItemsOnSale() {
         pushLoader()
 
         itemRepository.getAvailableItems()
             .addOnSuccessListener {
                 // Items on sale are all items sub user items
+                var today = Date()
                 onSaleItems.items.clear()
-                onSaleItems.items.addAll(it.toObjects(Item::class.java).subtract(myItems.items.toList()))
+                onSaleItems.items.addAll(it.toObjects(Item::class.java).filter {
+                        item -> item.expiryDate.isNullOrBlank() || ( item.expiryDate.isNotBlank() &&  today <= SimpleDateFormat("dd/MM/yyyy").parse(item.expiryDate))
+                }.subtract(myItems.items.toList()))
                 popLoader()
                 error = false
             }.addOnFailureListener {
