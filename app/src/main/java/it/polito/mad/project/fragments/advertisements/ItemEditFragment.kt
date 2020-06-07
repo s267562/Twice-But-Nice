@@ -84,6 +84,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 item_title.setText(localIt.title)
                 if (it.categoryPos >= 0)
                     item_category_spinner.setSelection(localIt.categoryPos)
+                if(it.subcategoryPos >= 0)
+                    item_subcategory_spinner.setSelection(localIt.subcategoryPos)
                 item_descr.setText(localIt.description)
                 item_location.text = localIt.location
                 item_price.setText(localIt.price)
@@ -418,6 +420,17 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     item_subcategory_spinner.adapter = adapter
                 }
+            item_subcategory_spinner.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    TODO("Not yet implemented")
+                }
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    val subcategory: String = parent?.getItemAtPosition(position) as String
+                    itemViewModel.item.localData?.subcategory = subcategory
+                    itemViewModel.item.localData?.subcategoryPos = position
+                }
+            }
         }
     }
 
@@ -478,6 +491,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         updateItem.category = updateItem.category
         updateItem.subcategory = subcategoryContent
         updateItem.categoryPos = updateItem.categoryPos
+        updateItem.subcategoryPos = updateItem.subcategoryPos
         updateItem.status = statusContent
 
         itemViewModel.saveItem(updateItem)
@@ -519,5 +533,4 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         galleryIntent.action = Intent.ACTION_GET_CONTENT
         startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), selectImage)
     }
-
 }
