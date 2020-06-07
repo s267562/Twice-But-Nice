@@ -56,6 +56,8 @@ class SetBuyerDialogFragment() : DialogFragment(), AdapterView.OnItemSelectedLis
                 }
                 .setNegativeButton("Cancel"
                 ) { dialog, _ ->
+                    itemViewModel.item.localData?.status = ItemStatus.Available.toString()
+                    itemViewModel.item.localData?.statusPos = 0
                     dialog.cancel()
                 }
             builder.create()

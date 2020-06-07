@@ -2,7 +2,9 @@ package it.polito.mad.project.viewmodels
 
 import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
+import android.widget.Toast
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.QuerySnapshot
 import it.polito.mad.project.adapters.items.BoughtItemAdapter
@@ -91,7 +93,7 @@ class ItemViewModel : LoadingViewModel() {
     }
 
     private fun itemsExpiredUpdate(items: MutableList<Item>) {
-        var today = Date()
+        val today = Date()
         items.forEach{
             if(it.status == ItemStatus.Available.toString() && it.expiryDate.isNotBlank() && today>SimpleDateFormat("dd/MM/yyyy").parse(it.expiryDate))
             it.status= ItemStatus.Blocked.toString()
@@ -106,7 +108,7 @@ class ItemViewModel : LoadingViewModel() {
         itemRepository.getAvailableItems()
             .addOnSuccessListener {
                 // Items on sale are all items sub user items
-                var today = Date()
+                val today = Date()
                 onSaleItems.items.clear()
                 onSaleItems.items.addAll(it.toObjects(Item::class.java).filter {
                         item -> item.expiryDate.isNullOrBlank() || ( item.expiryDate.isNotBlank() &&  today <= SimpleDateFormat("dd/MM/yyyy").parse(item.expiryDate))
@@ -143,8 +145,11 @@ class ItemViewModel : LoadingViewModel() {
                 val itemIds = itemIdsSnap.toObjects(ItemInterest::class.java).map { interest -> interest.itemId }
                 if (itemIds.isNotEmpty()) {
                     itemRepository.getItemsByItemsIds(itemIds).addOnSuccessListener {
+                        var today = Date()
                         interestedItems.items.clear()
-                        interestedItems.items.addAll(it.toObjects(Item::class.java).filter { item -> item.status == ItemStatus.Available.toString()})
+                        interestedItems.items.addAll(it.toObjects(Item::class.java).filter { item ->
+                            item.status == ItemStatus.Available.toString() && (item.expiryDate.isNullOrBlank() || ( item.expiryDate.isNotBlank() &&  today <= SimpleDateFormat("dd/MM/yyyy").parse(item.expiryDate)))
+                        })
                         popLoader()
                         error = false
                     }.addOnFailureListener {
@@ -195,6 +200,7 @@ class ItemViewModel : LoadingViewModel() {
 
     fun loadItem(id: String) {
         item.data.value = null
+        item.image.value = null
         pushLoader()
         itemRepository.getItem(id)
             .addOnSuccessListener { it ->
@@ -244,19 +250,8 @@ class ItemViewModel : LoadingViewModel() {
         }
     }
 
-    /** Add listener to the current item docuement **/
-    fun listenToChanges(): ListenerRegistration {
+    fun getItemDocumentReference(): DocumentReference {
         return itemRepository.getItemDocument(item.data.value!!.id!!)
-            .addSnapshotListener { itemSnapshot, e ->
-                // if there's an exception, we have to skip
-                if (e != null) {
-                    return@addSnapshotListener
-                }
-                // if we are here, this means we didn't meet any exception
-                if (itemSnapshot != null) {
-                    item.data.value = itemSnapshot.toObject(Item::class.java)!!
-                }
-            }
     }
 
     fun updateItemInterest():Task<Void> {
@@ -332,5 +327,10 @@ class ItemViewModel : LoadingViewModel() {
                 popLoader()
                 error = true
             }
+    }
+
+    fun resetLocalData() {
+        item.localImage = null
+        item.localData = null
     }
 }

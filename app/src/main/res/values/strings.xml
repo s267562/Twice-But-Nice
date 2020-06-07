@@ -57,6 +57,11 @@
         <item>Blocked</item>
     </string-array>
 
+    <string-array name="item_status_partial">
+        <item>Available</item>
+        <item>Blocked</item>
+    </string-array>
+
     <string-array name="item_categories">
         <item>Arts &amp; Crafts</item>
         <item>Sports &amp; Hobby</item>
