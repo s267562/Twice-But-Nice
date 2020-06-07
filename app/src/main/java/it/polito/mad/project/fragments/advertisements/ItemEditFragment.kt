@@ -66,42 +66,41 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         R.array.item_sub_women, R.array.item_sub_men, R.array.item_sub_electo, R.array.item_sub_games, R.array.item_sub_auto)
 
     private val selectImage = 2
-    private var isNavigateToMap = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemViewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
         userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
         mapViewModel = ViewModelProvider(requireActivity()).get(MapViewModel::class.java)
-        mapViewModel.location = null
+
     }
 
     override fun onStart() {
         super.onStart()
-        isNavigateToMap = false
 
         val itemId = arguments?.getString("ItemId")
-        if (!isNavigateToMap) {
-            if (itemId != null) {
-                // Item already exist
-                itemViewModel.loadItem(itemId)
-            } else {
-                // New Item
-                itemViewModel.item.data.value =
-                    Item(itemId, userViewModel.user.data.value!!.nickname)
-                itemViewModel.item.image.value = null
-            }
+
+        if (itemId != null) {
+            // Item already exist
+            itemViewModel.loadItem(itemId)
+        } else {
+            // New Item
+            itemViewModel.item.data.value =
+                Item(itemId, userViewModel.user.data.value!!.nickname)
+            itemViewModel.item.image.value = null
         }
 
+
         itemViewModel.item.data.observe(viewLifecycleOwner, Observer {
-            if (it != null && itemViewModel.item.localData == null) {
-                itemViewModel.item.localData = it
+            if (it != null) {
+                if (itemViewModel.item.localData == null)
+                    itemViewModel.item.localData = it
                 val localIt = itemViewModel.item.localData!!
                 item_title.setText(localIt.title)
                 if (localIt.categoryPos >= 0)
                     item_category_spinner.setSelection(localIt.categoryPos)
                 item_descr.setText(localIt.description)
-                item_location.text = mapViewModel.location?:localIt.location
+                item_location.text = localIt.location
                 item_price.setText(localIt.price)
                 item_exp.text = localIt.expiryDate
                 if(localIt.statusPos >= 0){
@@ -135,9 +134,10 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
         mapViewModel.updateLocation.observe(viewLifecycleOwner, Observer {
             if(it) {
-                item_location.text = mapViewModel.location?:item_location.text
-              //  isNavigateToMap = true
+                itemViewModel.item.localData?.location = mapViewModel.location?:item_location.text.toString()
+                item_location.text = itemViewModel.item.localData?.location
                 mapViewModel.updateLocation.value = false
+                mapViewModel.location = null
             }
         })
 
@@ -160,7 +160,6 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
         item_location.setOnClickListener {
             updateLocalData()
-            isNavigateToMap = true
             mapViewModel.location = mapViewModel.location?:item_location.text.toString()
             this.findNavController().navigate(R.id.action_itemEditFragment_to_mapFragment)
         }
@@ -230,9 +229,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if (!isNavigateToMap) {
-            itemViewModel.resetLocalData()
-        }
+        updateLocalData()
     }
 
     override fun onDestroy() {

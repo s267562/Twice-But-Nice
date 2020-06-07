@@ -51,6 +51,7 @@ class ItemListFragment : Fragment() {
         })
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        itemViewModel.resetLocalData()
         return inflater.inflate(R.layout.fragment_item_list, container, false)
     }
 

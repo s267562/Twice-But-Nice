@@ -27,6 +27,7 @@ import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.enums.items.ItemStatus
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.viewmodels.ItemViewModel
+import it.polito.mad.project.viewmodels.MapViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.coroutines.CoroutineScope
@@ -152,6 +153,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         supFragManager = (context as AppCompatActivity).supportFragmentManager
+        itemViewModel.resetLocalData()
         return inflater.inflate(R.layout.fragment_item_details, container, false)
     }
 
