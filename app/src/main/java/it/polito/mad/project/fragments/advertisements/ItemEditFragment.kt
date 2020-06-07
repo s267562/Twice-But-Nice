@@ -81,14 +81,16 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         isNavigateToMap = false
 
         val itemId = arguments?.getString("ItemId")
-        if (itemId != null) {
-            // Item already exist
-            if (!isNavigateToMap)
+        if (!isNavigateToMap) {
+            if (itemId != null) {
+                // Item already exist
                 itemViewModel.loadItem(itemId)
-        } else {
-            // New Item
-            itemViewModel.item.data.value = Item(itemId, userViewModel.user.data.value!!.nickname)
-            itemViewModel.item.image.value = null
+            } else {
+                // New Item
+                itemViewModel.item.data.value =
+                    Item(itemId, userViewModel.user.data.value!!.nickname)
+                itemViewModel.item.image.value = null
+            }
         }
 
         itemViewModel.item.data.observe(viewLifecycleOwner, Observer {
@@ -455,10 +457,10 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
     }
 
     private fun saveItem() {
-        if (!isFormCompleted()) {
+        /*if (!isFormCompleted()) {
             Toast.makeText(context, "Some information are missing. Complete all required fields.", Toast.LENGTH_LONG).show()
             return
-        }
+        }*/
         if (itemViewModel.error) {
             Toast.makeText(context, "Error on item loading, is not possible to save your item.", Toast.LENGTH_LONG).show()
             return
