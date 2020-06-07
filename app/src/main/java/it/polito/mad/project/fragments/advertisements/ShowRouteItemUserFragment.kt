@@ -71,47 +71,48 @@ class ShowRouteItemUserFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(gMap: GoogleMap?) {
-        gMap?.let {
-            googleMap = it
-        }
-
-        gMap?.uiSettings?.isZoomControlsEnabled = true
-        gMap?.uiSettings?.isMapToolbarEnabled = true
-        gMap?.uiSettings?.isMyLocationButtonEnabled = true
-        gMap?.uiSettings?.isCompassEnabled = true
-
-        var geocode = Geocoder(context?.applicationContext, Locale.getDefault())
-
-        try {
-            var addrItem = geocode.getFromLocationName(itemLocation, 1)
-            var addrUser = geocode.getFromLocationName(userLocation, 1)
-
-            if (addrItem.size > 0 && addrUser.size > 0){
-                var addressItem : Address = addrItem.get(0)
-                var addressUser : Address = addrUser.get(0)
-                val cameraPos = LatLng(addressItem.latitude, addressItem.longitude)
-                Toast.makeText(context, "ROUTE: " + itemLocation.toUpperCase() + " " + userLocation.toUpperCase(), Toast.LENGTH_SHORT).show()
-                gMap?.addMarker(
-                    MarkerOptions().position(LatLng(addressItem.latitude, addressItem.longitude))
-                        .title("Item position")
-                )
-                gMap?.addMarker(
-                    MarkerOptions().position(LatLng(addressUser.latitude, addressUser.longitude))
-                        .title("User position")
-                )
-                gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 6.0F))
-
-                val route = gMap?.addPolyline(
-                    PolylineOptions().add(
-                        LatLng(addressItem.latitude, addressItem.longitude),
-                        LatLng(addressUser.latitude, addressUser.longitude)
-                    ).width(4F).color(Color.BLUE).geodesic(true)
-                )
+        if(context != null) {
+            gMap?.let {
+                googleMap = it
             }
 
-        } catch (e: IOException){
-            e.printStackTrace()
-        }
+            gMap?.uiSettings?.isZoomControlsEnabled = true
+            gMap?.uiSettings?.isMapToolbarEnabled = true
+            gMap?.uiSettings?.isMyLocationButtonEnabled = true
+            gMap?.uiSettings?.isCompassEnabled = true
 
+            var geocode = Geocoder(context?.applicationContext, Locale.getDefault())
+
+            try {
+                var addrItem = geocode.getFromLocationName(itemLocation, 1)
+                var addrUser = geocode.getFromLocationName(userLocation, 1)
+
+                if (addrItem.size > 0 && addrUser.size > 0){
+                    var addressItem : Address = addrItem.get(0)
+                    var addressUser : Address = addrUser.get(0)
+                    val cameraPos = LatLng(addressItem.latitude, addressItem.longitude)
+                    Toast.makeText(context, "ROUTE: " + itemLocation.toUpperCase() + " " + userLocation.toUpperCase(), Toast.LENGTH_SHORT).show()
+                    gMap?.addMarker(
+                        MarkerOptions().position(LatLng(addressItem.latitude, addressItem.longitude))
+                            .title("Item position")
+                    )
+                    gMap?.addMarker(
+                        MarkerOptions().position(LatLng(addressUser.latitude, addressUser.longitude))
+                            .title("User position")
+                    )
+                    gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 6.0F))
+
+                    val route = gMap?.addPolyline(
+                        PolylineOptions().add(
+                            LatLng(addressItem.latitude, addressItem.longitude),
+                            LatLng(addressUser.latitude, addressUser.longitude)
+                        ).width(4F).color(Color.BLUE).geodesic(true)
+                    )
+                }
+
+            } catch (e: IOException){
+                e.printStackTrace()
+            }
+        }
     }
 }

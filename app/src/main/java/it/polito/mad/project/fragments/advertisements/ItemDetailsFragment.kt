@@ -201,40 +201,42 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(gMap: GoogleMap) {
-        gMap.let {
-            googleMap = it
-        }
-
-        val geocode = Geocoder(context?.applicationContext, Locale.getDefault())
-
-        gMap.uiSettings.isZoomControlsEnabled = true
-        gMap.uiSettings.isMapToolbarEnabled = true
-        gMap.uiSettings.isMyLocationButtonEnabled = true
-        gMap.uiSettings.isCompassEnabled = true
-
-        try {
-            val addresses = geocode.getFromLocationName(item_location.text.toString(), 1)
-            if(addresses.size > 0){
-                val address : Address = addresses[0]
-                val cameraPos = LatLng(address.latitude, address.longitude)
-                gMap.addMarker(
-                    MarkerOptions()
-                        .position(LatLng(address.latitude, address.longitude))
-                        .title("Item Current Location")
-                )
-                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 15F))
+        if(context != null) {
+            gMap.let {
+                googleMap = it
             }
-        } catch (e: IOException){
-            e.printStackTrace()
-        }
 
-        if(!isMyItem){
-            // if the item does not belog to me, the map becomes clickable
-            // Toast.makeText(context, "not my item -> show route", Toast.LENGTH_SHORT).show()
-            gMap.setOnMapClickListener {
-                // Toast.makeText(context, "Map clicked", Toast.LENGTH_SHORT).show()
-                this.findNavController().navigate(R.id.action_itemDetails_to_showRoute)
+            val geocode = Geocoder(context?.applicationContext, Locale.getDefault())
 
+            gMap.uiSettings.isZoomControlsEnabled = true
+            gMap.uiSettings.isMapToolbarEnabled = true
+            gMap.uiSettings.isMyLocationButtonEnabled = true
+            gMap.uiSettings.isCompassEnabled = true
+
+            try {
+                val addresses = geocode.getFromLocationName(item_location.text.toString(), 1)
+                if(addresses.size > 0){
+                    val address : Address = addresses[0]
+                    val cameraPos = LatLng(address.latitude, address.longitude)
+                    gMap.addMarker(
+                        MarkerOptions()
+                            .position(LatLng(address.latitude, address.longitude))
+                            .title("Item Current Location")
+                    )
+                    gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 15F))
+                }
+            } catch (e: IOException){
+                e.printStackTrace()
+            }
+
+            if(!isMyItem){
+                // if the item does not belog to me, the map becomes clickable
+                // Toast.makeText(context, "not my item -> show route", Toast.LENGTH_SHORT).show()
+                gMap.setOnMapClickListener {
+                    // Toast.makeText(context, "Map clicked", Toast.LENGTH_SHORT).show()
+                    this.findNavController().navigate(R.id.action_itemDetails_to_showRoute)
+
+                }
             }
         }
     }
