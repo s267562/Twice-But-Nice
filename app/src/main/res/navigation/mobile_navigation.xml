@@ -159,7 +159,11 @@
         android:id="@+id/editProfileFragment"
         android:name="it.polito.mad.project.fragments.profile.UserEditFragment"
         android:label="@string/menu_edit_profile"
-        tools:layout="@layout/fragment_edit_profile" />
+        tools:layout="@layout/fragment_edit_profile" >
+        <action
+            android:id="@+id/action_editProfileFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
     <fragment
         android:id="@+id/signUpFragment"
         android:name="it.polito.mad.project.fragments.authentication.SignUpFragment"

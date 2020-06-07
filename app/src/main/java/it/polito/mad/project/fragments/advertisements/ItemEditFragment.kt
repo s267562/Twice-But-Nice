@@ -33,8 +33,16 @@ import it.polito.mad.project.fragments.advertisements.dialogs.SetBuyerDialogFrag
 import it.polito.mad.project.models.item.Item
 import it.polito.mad.project.utils.Util.Companion.hideKeyboard
 import it.polito.mad.project.viewmodels.ItemViewModel
+import it.polito.mad.project.viewmodels.MapViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_item_edit.*
+import kotlinx.android.synthetic.main.fragment_item_edit.item_descr
+import kotlinx.android.synthetic.main.fragment_item_edit.item_exp
+import kotlinx.android.synthetic.main.fragment_item_edit.item_location
+import kotlinx.android.synthetic.main.fragment_item_edit.item_photo
+import kotlinx.android.synthetic.main.fragment_item_edit.item_price
+import kotlinx.android.synthetic.main.fragment_item_edit.item_title
+import kotlinx.android.synthetic.main.fragment_item_edit.loadingLayout
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
@@ -45,6 +53,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     private lateinit var itemViewModel: ItemViewModel
     private lateinit var userViewModel: UserViewModel
+    private lateinit var mapViewModel: MapViewModel
 
     private lateinit var supFragmentManager : FragmentManager
 
@@ -57,11 +66,14 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         R.array.item_sub_women, R.array.item_sub_men, R.array.item_sub_electo, R.array.item_sub_games, R.array.item_sub_auto)
 
     private val selectImage = 2
+    private var isNavigateToMap = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemViewModel = ViewModelProvider(requireActivity()).get(ItemViewModel::class.java)
         userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+        mapViewModel = ViewModelProvider(requireActivity()).get(MapViewModel::class.java)
+        mapViewModel.location = null
     }
 
     override fun onStart() {
@@ -69,10 +81,11 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         val itemId = arguments?.getString("ItemId")
         if (itemId != null) {
             // Item already exist
-            itemViewModel.loadItem(itemId)
+            if (!isNavigateToMap)
+                itemViewModel.loadItem(itemId)
         } else {
             // New Item
-            itemViewModel.item.data.value = Item(itemId,userViewModel.user.data.value!!.nickname)
+            itemViewModel.item.data.value = Item(itemId, userViewModel.user.data.value!!.nickname)
             itemViewModel.item.image.value = null
         }
 
@@ -86,7 +99,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 if(it.subcategoryPos >= 0)
                     item_subcategory_spinner.setSelection(localIt.subcategoryPos)
                 item_descr.setText(localIt.description)
-                item_location.text = localIt.location
+                item_location.text = mapViewModel.location?:localIt.location
                 item_price.setText(localIt.price)
                 item_exp.text = localIt.expiryDate
                 if(localIt.statusPos >= 0){
@@ -118,6 +131,14 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             }
         })
 
+        mapViewModel.updateLocation.observe(viewLifecycleOwner, Observer {
+            if(it) {
+                item_location.text = mapViewModel.location?:item_location.text
+                isNavigateToMap = true
+                mapViewModel.updateLocation.value = false
+            }
+        })
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -136,8 +157,10 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         setStatusSpinner()
 
         item_location.setOnClickListener {
+            updateLocalData()
+            isNavigateToMap = true
+            mapViewModel.location = mapViewModel.location?:item_location.text.toString()
             this.findNavController().navigate(R.id.action_itemEditFragment_to_mapFragment)
-
         }
 
         if (savedInstanceState != null) {
@@ -145,12 +168,12 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             dateValue = savedInstanceState.getString("Date")
         }
 
-        if (this.imagePath != null){
+        if (imagePath != null){
             itemViewModel.item.localImage = BitmapFactory.decodeFile(imagePath)
             item_photo.setImageBitmap(itemViewModel.item.localImage)
             item_photo_rotate.visibility = View.VISIBLE
         }
-        if (this.dateValue != null){
+        if (dateValue != null) {
             item_exp.text= this.dateValue
         }
     }
@@ -205,8 +228,9 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     override fun onDestroyView() {
         super.onDestroyView()
-        itemViewModel.item.localData = null
-        itemViewModel.item.localData = null
+        if (!isNavigateToMap) {
+            itemViewModel.resetLocalData()
+        }
     }
 
     override fun onDestroy() {
@@ -261,6 +285,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
                 && grantResults[1] == PackageManager.PERMISSION_GRANTED){
                 openCamera()
+            } else {
+                Toast.makeText(context, "Camera permission has been denied", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -365,9 +391,9 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     private fun setStatusSpinner(){
         context?.let {
-            ArrayAdapter.createFromResource(it, R.array.item_status, android.R.layout.simple_spinner_item)
-                .also {
-                        adapter ->
+            val arrayId = if (itemViewModel.interestedUsers.users.size > 0) R.array.item_status else R.array.item_status_partial
+            ArrayAdapter.createFromResource(it, arrayId, android.R.layout.simple_spinner_item)
+                .also { adapter ->
                     // Specify the layout to use when the list of choices appears
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     // Apply the adapter to the spinner
@@ -375,8 +401,9 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 }
             item_status_spinner.onItemSelectedListener = object :
                 AdapterView.OnItemSelectedListener {
+
                 override fun onNothingSelected(parent: AdapterView<*>?) {
-                    TODO("Not yet implemented")
+                    // Nothing to do
                 }
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -414,7 +441,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             item_subcategory_spinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
-                    TODO("Not yet implemented")
+                    // Nothing to do
                 }
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     val subcategory: String = parent?.getItemAtPosition(position) as String
@@ -426,11 +453,14 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
     }
 
     private fun saveItem() {
-        val subSpinner: Spinner? = activity?.findViewById(R.id.item_subcategory_spinner)
-        val subcategoryContent : String = subSpinner?.selectedItem.toString()
-
-        val statusSpinner: Spinner? = activity?.findViewById(R.id.item_status_spinner)
-        val statusContent : String = statusSpinner?.selectedItem.toString()
+        if (!isFormCompleted()) {
+            Toast.makeText(context, "Some information are missing. Complete all required fields.", Toast.LENGTH_LONG).show()
+            return
+        }
+        if (itemViewModel.error) {
+            Toast.makeText(context, "Error on item loading, is not possible to save your item.", Toast.LENGTH_LONG).show()
+            return
+        }
 
         if(savedImagePath == null && imagePath != null){
             savedImagePath = imagePath
@@ -438,7 +468,58 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             File(savedImagePath!!).delete()
             savedImagePath = imagePath
         }
+        updateLocalData()
 
+        if (itemViewModel.item.localData != null) {
+            val updatedItem = itemViewModel.item.localData!!
+            itemViewModel.saveItem(updatedItem)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        sendItemNotification(updatedItem)
+                        if (itemViewModel.item.localImage != null)
+                            itemViewModel.item.image.value = itemViewModel.item.localImage
+
+                        itemViewModel.item.localImage = null
+                        findNavController().popBackStack()
+                    } else {
+                        Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+        }
+    }
+
+    private fun sendItemNotification(item: Item) {
+        if (item.id != null) {
+            when (item.status) {
+                ItemStatus.Sold.toString() -> {
+                    val body = JSONObject().put("ItemId", item.id)
+                        .put("IsMyItem", false)
+                        .put("BuyerId", item.buyerId)
+                    sendNotification(item.id!!, item.title, "The item was sold", body)
+                }
+                ItemStatus.Blocked.toString() -> {
+                    val body = JSONObject().put("ItemId", item.id)
+                        .put("IsMyItem", false)
+                    sendNotification(item.id!!, item.title, "The item is blocked", body)
+                }
+            }
+        }
+    }
+
+    private fun updateLocalData() {
+        val updateItem = itemViewModel.item.localData
+        if (updateItem != null) {
+            updateItem.title = item_title.text.toString()
+            updateItem.location = item_location.text.toString()
+            updateItem.description = item_descr.text.toString()
+            updateItem.expiryDate = item_exp.text.toString()
+            updateItem.price = item_price.text.toString()
+            updateItem.imagePath = savedImagePath?:""
+        }
+    }
+
+    private fun isFormCompleted(): Boolean {
         var dataInserted = true
 
         if (item_title.text.isNullOrBlank()){
@@ -453,69 +534,15 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             item_descr.error = "Insert Description"
             dataInserted = false
         }
-        if(!item_exp.isSelected){
+        if(item_exp.text.isNullOrBlank()){
             item_exp.error = "Insert Expiring Date"
             dataInserted = false
         }
-        if(!item_location.isSelected){
+        if(item_location.text.isNullOrBlank()){
             item_location.error = "Pick a Location in Map"
             dataInserted = false
         }
-
-        if (!dataInserted){
-            return
-        }
-
-        if (itemViewModel.error) {
-            Toast.makeText(context, "Error on item loading, is not possible to save your item.", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        val updateItem = itemViewModel.item.localData!!
-
-        updateItem.title = item_title.text.toString()
-        //updateItem.location = item_location.text.toString()
-        updateItem.description = item_descr.text.toString()
-        updateItem.expiryDate = item_exp.text.toString()
-        updateItem.price = item_price.text.toString()
-        updateItem.imagePath = savedImagePath?:""
-        updateItem.category = updateItem.category
-        updateItem.subcategory = subcategoryContent
-        updateItem.categoryPos = updateItem.categoryPos
-        updateItem.subcategoryPos = updateItem.subcategoryPos
-        updateItem.status = statusContent
-
-        itemViewModel.saveItem(updateItem)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    if (updateItem.id != null) {
-                        when (updateItem.status) {
-                            ItemStatus.Sold.toString() -> {
-                                val body = JSONObject().put("ItemId", updateItem.id)
-                                    .put("IsMyItem", false)
-                                    .put("BuyerId", updateItem.buyerId)
-                                sendNotification(updateItem.id!!, updateItem.title, "The item was sold", body)
-                            }
-                            ItemStatus.Blocked.toString() -> {
-                                val body = JSONObject().put("ItemId", updateItem.id)
-                                    .put("IsMyItem", false)
-                                sendNotification(updateItem.id!!, updateItem.title, "The item is blocked", body)
-                            }
-                        }
-                    }
-
-
-                    if (itemViewModel.item.localImage != null)
-                        itemViewModel.item.image.value = itemViewModel.item.localImage
-
-                    itemViewModel.item.localImage = null
-                    itemViewModel.item.localImage = null
-
-                    findNavController().popBackStack()
-                } else {
-                    Toast.makeText(context, "Error on item updating", Toast.LENGTH_SHORT).show()
-                }
-            }
+        return  dataInserted
     }
 
     private fun openGallery(){

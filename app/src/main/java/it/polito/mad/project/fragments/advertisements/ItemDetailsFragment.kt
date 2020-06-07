@@ -81,8 +81,7 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
                     findNavController().navigate(R.id.action_showItemFragment_to_showProfileFragment, bundle)
                 }
 
-                if (listenerRegistration == null)
-                   listenerRegistration = itemViewModel.listenToChanges()
+                listenToChanges()
             }
         })
 
@@ -124,6 +123,24 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
                 interestedUsersFab.hide()
             }
         })
+    }
+
+    /** Add listener to the current item docuement **/
+    private fun listenToChanges() {
+        if (listenerRegistration == null) {
+            listenerRegistration = itemViewModel.getItemDocumentReference()
+                .addSnapshotListener { itemSnapshot, e ->
+                    // if there's an exception, we have to skip
+                    if (e != null) {
+                        return@addSnapshotListener
+                    }
+                    // if we are here, this means we didn't meet any exception
+                    if (itemSnapshot != null) {
+                        itemViewModel.item.data.value = itemSnapshot.toObject(Item::class.java)!!
+                        Toast.makeText(context, "Some information are changed in this moment by the seller", Toast.LENGTH_LONG).show()
+                    }
+                }
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

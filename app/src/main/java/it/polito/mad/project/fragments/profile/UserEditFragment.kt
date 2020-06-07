@@ -2,26 +2,19 @@ package it.polito.mad.project.fragments.profile
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
-import android.location.Address
-import android.location.Geocoder
-import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -33,19 +26,11 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.Observer
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
 import it.polito.mad.project.R
-import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.user.User
 import it.polito.mad.project.utils.Util.Companion.hideKeyboard
+import it.polito.mad.project.viewmodels.MapViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.loadingLayout
@@ -59,26 +44,22 @@ import java.util.*
 
 class UserEditFragment : Fragment() {
 
-    lateinit var supFragmentManager : FragmentManager
-
-    private lateinit var mContext: Context
+    private lateinit var supFragmentManager : FragmentManager
     private lateinit var userViewModel: UserViewModel
-
-    private lateinit var searchEditText: EditText
-    private lateinit var googleMap: GoogleMap
-    private var lastPositionToSave: String = " "
-
-    lateinit var geocode: Geocoder
-    lateinit var address: Address
+    private lateinit var mapViewModel: MapViewModel
+    private lateinit var mContext: Context
 
     private var imageFile: File? = null
     private var imagePath: String? = null
     private var savedImagePath: String? =null
+
     private val selectImage = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+        mapViewModel = ViewModelProvider(requireActivity()).get(MapViewModel::class.java)
+        mapViewModel.location = null
     }
 
     override fun onStart() {
@@ -91,6 +72,12 @@ class UserEditFragment : Fragment() {
                 }
             } else {
                 loadingLayout.visibility = View.VISIBLE
+            }
+        })
+        mapViewModel.updateLocation.observe(viewLifecycleOwner, Observer {
+            if(it) {
+                location.text = mapViewModel.location?:location.text
+                mapViewModel.updateLocation.value = false
             }
         })
     }
@@ -111,12 +98,7 @@ class UserEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (savedInstanceState != null) {
-            imagePath = savedInstanceState.getString("ImagePath")
-        }
-
-        var image: Bitmap?
-        val user = userViewModel.user.data.value as User
+        val user = userViewModel.user.localData?:userViewModel.user.data.value as User
         if (user.name.isNotEmpty())
             full_name.setText(user.name)
         if (user.nickname.isNotEmpty())
@@ -124,10 +106,12 @@ class UserEditFragment : Fragment() {
         if (user.email.isNotEmpty())
             email.setText(user.email)
         if (user.location.isNotEmpty())
-            //location.setText(user.location)
+            location.text = mapViewModel.location?:user.location
+
+        var image: Bitmap?
         if (user.photoProfilePath.isNotEmpty()) {
             savedImagePath = user.photoProfilePath
-            image = userViewModel.user.image.value
+            image = userViewModel.user.localImage?:userViewModel.user.image.value
             if (image != null) {
                 user_photo.setImageBitmap(image)
                 rotation_button.visibility=View.VISIBLE
@@ -136,9 +120,14 @@ class UserEditFragment : Fragment() {
             }
         }
 
+        if (savedInstanceState != null) {
+            imagePath = savedInstanceState.getString("ImagePath")
+        }
+
         if (imagePath != null){
             image = BitmapFactory.decodeFile(imagePath)
             this.user_photo.setImageBitmap(image)
+            userViewModel.user.localImage = image
         }
 
         registerForContextMenu(camera_button)
@@ -162,14 +151,9 @@ class UserEditFragment : Fragment() {
         }
 
         location.setOnClickListener {
-            if(ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED){
-                // Permission granted --> get current location
-                openMap()
-            } else {
-                // Permission is denied
-                requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 44)
-            }
+            updateLocalData()
+            mapViewModel.location = mapViewModel.location?:location.text.toString()
+            this.findNavController().navigate(R.id.action_editProfileFragment_to_mapFragment)
         }
     }
 
@@ -249,14 +233,6 @@ class UserEditFragment : Fragment() {
                 Toast.makeText(mContext, "Camera permission has been denied", Toast.LENGTH_SHORT).show()
             }
         }
-        if(requestCode == 44){
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                && grantResults[1] == PackageManager.PERMISSION_GRANTED){
-                openMap()
-            } else {
-                Toast.makeText(mContext, "Location permission has been denied", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
     @Suppress("DEPRECATION")
@@ -284,7 +260,6 @@ class UserEditFragment : Fragment() {
         } else {
             Toast.makeText(mContext, "Something wrong", Toast.LENGTH_SHORT).show()
         }
-        //userViewModel.user.image.value = (user_photo.drawable as BitmapDrawable).bitmap
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -318,12 +293,52 @@ class UserEditFragment : Fragment() {
     }
 
     private fun saveProfile() {
+        if (!isFormCompleted()){
+            Toast.makeText(context, "Some information are missing. Complete all required fields.", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        if (userViewModel.error) {
+            Toast.makeText(context, "Error on loading your profile, is not possible to proceed.", Toast.LENGTH_LONG).show()
+            return
+        }
+
         if(savedImagePath == null && imagePath != null){
             savedImagePath = imagePath
         }else if (savedImagePath != null && imagePath != savedImagePath && imagePath != null){
             File(savedImagePath!!).delete()
             savedImagePath = imagePath
         }
+
+        updateLocalData()
+        if (userViewModel.user.localData != null) {
+            val user = userViewModel.user.localData!!
+            // Save file in the Cloud DB
+            userViewModel.saveUser(user)
+                .addOnCompleteListener {
+                    if (!it.isSuccessful) {
+                        Toast.makeText(mContext, "Error during user update info", Toast.LENGTH_SHORT).show()
+                    } else {
+                        if (userViewModel.user.localImage != null) {
+                            userViewModel.user.image.value = userViewModel.user.localImage
+                            userViewModel.user.localImage = null
+                        }
+                    }
+                    findNavController().popBackStack()
+                }
+        }
+    }
+
+    private fun updateLocalData() {
+        val updateUser =User(full_name.text.toString())
+        updateUser.nickname = nickname.text.toString()
+        updateUser.email = email.text.toString()
+        updateUser.location = location.text.toString()
+        updateUser.photoProfilePath = savedImagePath?:""
+        userViewModel.user.localData = updateUser
+    }
+
+    private fun isFormCompleted(): Boolean {
         var dataInserted = true
 
         if (nickname.text.isNullOrBlank()){
@@ -333,57 +348,16 @@ class UserEditFragment : Fragment() {
         if (full_name.text.isNullOrBlank()){
             full_name.error = "Insert full name"
             dataInserted = false
-
         }
         if (email.text.isNullOrBlank()){
             email.error = "Insert email address"
             dataInserted = false
-
         }
-        if (location.toString().isNullOrBlank()){
-            //location.toString() = "Insert location name"
-            //dataInserted = false
+        if (location.text.isNullOrBlank()){
+            location.error = "Insert location name"
+            dataInserted = false
         }
-
-        if (!dataInserted){
-            return
-        }
-
-        if (userViewModel.error) {
-            Toast.makeText(context, "Error on loading your profile, is not possible to proceed.", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        val name = full_name.text.toString()
-        val nickname = nickname.text.toString()
-        val email = email.text.toString()
-        val location = location.toString()
-        val path = savedImagePath
-
-        val user = User(
-            name,
-            name,
-            nickname,
-            email,
-            location,
-            path
-        )
-
-        var localImage: Bitmap? = null
-        if (user.photoProfilePath.isNotBlank())
-            localImage = (user_photo.drawable as BitmapDrawable).bitmap
-
-        // Save file in the Cloud DB
-        userViewModel.saveUser(user)
-            .addOnCompleteListener {
-                if (!it.isSuccessful) {
-                    Toast.makeText(mContext, "Error during user update info", Toast.LENGTH_SHORT).show()
-                } else {
-                    if (localImage != null)
-                        userViewModel.user.image.value = localImage
-                }
-                findNavController().popBackStack()
-            }
+        return dataInserted
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -407,119 +381,5 @@ class UserEditFragment : Fragment() {
         galleryIntent.type = "image/*"
         galleryIntent.action = Intent.ACTION_GET_CONTENT
         startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), selectImage)
-    }
-
-    // Managing Modal Map
-
-    private fun openMap(){
-
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.map, null)
-        val mapView = dialogView.findViewById<CustomMapView>(R.id.map)
-
-        searchEditText = dialogView.findViewById(R.id.search_loc)
-
-        val task: Task<Location> = LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation
-
-        task.addOnSuccessListener(object : OnSuccessListener<Location>{
-            override fun onSuccess(locationSuccess: Location?) {
-                if(locationSuccess != null && mapView != null){
-                    mapView.onCreate(null)
-                    mapView.onResume()
-                    mapView.getMapAsync(object : OnMapReadyCallback{
-
-                        override fun onMapReady(gMap: GoogleMap?) {
-
-                            if(context != null) {
-                                gMap?.let {
-                                    googleMap = it
-                                }
-
-                                gMap?.uiSettings?.isZoomControlsEnabled = true
-                                gMap?.uiSettings?.isMapToolbarEnabled = true
-                                gMap?.uiSettings?.isMyLocationButtonEnabled = true
-                                gMap?.uiSettings?.isCompassEnabled = true
-
-                                var position = LatLng(locationSuccess.latitude, locationSuccess.longitude)
-                                gMap?.moveCamera(CameraUpdateFactory.newLatLng(position))
-                                gMap?.animateCamera(CameraUpdateFactory.zoomTo(4.8F))
-                                gMap?.addMarker(
-                                    MarkerOptions().position(position).title("Your Current Position")
-                                )
-
-                                geocode = Geocoder(context?.applicationContext, Locale.getDefault())
-
-                                try {
-                                    var addr = geocode.getFromLocationName(
-                                        location.text.toString(), 1)
-                                    if(addr.size > 0){
-                                        var address : Address = addr.get(0)
-                                        val cameraPos = LatLng(address.latitude, address.longitude)
-                                        gMap?.addMarker(
-                                            MarkerOptions()
-                                                .position(LatLng(address.latitude, address.longitude))
-                                                .title("User Last Location")
-                                        )
-                                    }
-                                } catch (e: IOException){
-                                    e.printStackTrace()
-                                }
-
-                                searchEditText.setOnEditorActionListener { _, actionId, event ->
-                                    if(actionId == EditorInfo.IME_ACTION_SEARCH || event?.action == KeyEvent.ACTION_DOWN ||
-                                        event?.action == KeyEvent.KEYCODE_ENTER){
-                                        Toast.makeText(context, "Giusto così", Toast.LENGTH_SHORT).show()
-                                        geoLocate()
-                                    }
-                                    false
-                                }
-
-                                gMap?.setOnMapClickListener {
-                                    val clickPosition = LatLng(it.latitude, it.longitude)
-                                    val markerOpt = MarkerOptions()
-                                    markerOpt.position(clickPosition)
-                                    gMap.clear()
-                                    gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
-                                    gMap.addMarker(markerOpt)
-                                }
-
-                                if(MarkerOptions().position != null){
-                                    lastPositionToSave = MarkerOptions().title
-                                }
-                            }
-                        }
-                    })
-                }
-            }
-
-        })
-
-        val builder= AlertDialog.Builder(context).setView(dialogView)
-            .setPositiveButton("Set Location",
-                DialogInterface.OnClickListener{ dialog, _ ->
-                    Toast.makeText(context, "Last saved position is " + lastPositionToSave, Toast.LENGTH_SHORT).show()
-                    dialog.cancel()
-                })
-            .setNegativeButton("Close Map",
-                DialogInterface.OnClickListener { dialog, _ ->
-                    dialog.cancel()
-                })
-        builder.show()
-    }
-
-    private fun geoLocate(){
-        // This to manage the search of location from the upper bar
-        val searchString = searchEditText.text.toString()
-        var addressList : List<Address> = ArrayList()
-
-        try {
-            addressList = geocode.getFromLocationName(searchString, 1)
-        } catch (e: IOException){
-            e.printStackTrace()
-        }
-
-        if (addressList.isNotEmpty()){
-            address = addressList.get(0)
-            Toast.makeText(context, "We are here: $address", Toast.LENGTH_SHORT).show()
-        }
     }
 }
