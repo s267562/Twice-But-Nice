@@ -100,7 +100,7 @@ class ShowRouteItemUserFragment : Fragment(), OnMapReadyCallback {
                         MarkerOptions().position(LatLng(addressUser.latitude, addressUser.longitude))
                             .title("User position")
                     )
-                    gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 6.0F))
+                    gMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 12F))
 
                     val route = gMap?.addPolyline(
                         PolylineOptions().add(

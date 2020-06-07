@@ -121,7 +121,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListen
             if(markerOptions.position != null) {
                 val address = getAddressFromLocation(markerOptions.position.latitude, markerOptions.position.longitude)
                 if (address != null) {
-                    mapViewModel.location = address.getAddressLine(0)
+                    mapViewModel.location = "${address.postalCode} ${address.locality}, ${address.countryName}"
                     mapViewModel.updateLocation.value = true
                 }
             }
