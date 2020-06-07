@@ -67,9 +67,13 @@ class MyItemAdapter(private var items: MutableList<Item>) : RecyclerView.Adapter
             if (item.status == ItemStatus.Sold.toString()) {
                 button.visibility = View.GONE
                 priceStr = "Sold to ${item.buyerNickname} for ${item.price} €"
-            } else {
+            } else if (item.status == ItemStatus.Available.toString()) {
                 button.visibility = View.VISIBLE
                 priceStr = "On sale for ${item.price} €"
+                button.setOnClickListener { callbackEdit(adapterPosition) }
+            } else{
+                button.visibility = View.VISIBLE
+                priceStr = "Blocked"
                 button.setOnClickListener { callbackEdit(adapterPosition) }
             }
             container.setOnClickListener { callback(adapterPosition) }
