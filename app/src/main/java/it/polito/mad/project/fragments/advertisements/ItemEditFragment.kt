@@ -445,6 +445,19 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             item_price.error = "Insert Price"
             dataInserted = false
         }
+        if(item_descr.text.isNullOrBlank()){
+            item_descr.error = "Insert Description"
+            dataInserted = false
+        }
+        if(!item_exp.isSelected){
+            item_exp.error = "Insert Expiring Date"
+            dataInserted = false
+        }
+        if(!item_location.isSelected){
+            item_location.error = "Pick a Location in Map"
+            dataInserted = false
+        }
+
         if (!dataInserted){
             return
         }
