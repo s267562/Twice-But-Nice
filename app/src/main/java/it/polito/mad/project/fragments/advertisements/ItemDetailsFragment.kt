@@ -159,7 +159,9 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
         setFabButton()
         itemViewModel.loadItem(arguments?.getString("ItemId")!!)
-
+        if(!isMyItem) {
+            itemViewModel.loadItemInterest(arguments?.getString("ItemId")!!)
+        }
         CoroutineScope(Main).launch {
             delay(1000)
             setMap()
@@ -219,7 +221,10 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
         }
         interestedUsersFab.setOnClickListener{
             itemViewModel.loadInterestedUsers()
-            this.findNavController().navigate(R.id.action_showItemFragment_to_usersInterestedFragment)
+                .addOnCompleteListener {
+                    this.findNavController().navigate(R.id.action_showItemFragment_to_usersInterestedFragment)
+                }
+
         }
     }
 

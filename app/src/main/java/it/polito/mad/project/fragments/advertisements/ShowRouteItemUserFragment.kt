@@ -91,7 +91,7 @@ class ShowRouteItemUserFragment : Fragment(), OnMapReadyCallback {
                     var addressItem : Address = addrItem.get(0)
                     var addressUser : Address = addrUser.get(0)
                     val cameraPos = LatLng(addressItem.latitude, addressItem.longitude)
-                    Toast.makeText(context, "ROUTE: " + itemLocation.toUpperCase() + " " + userLocation.toUpperCase(), Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(context, "ROUTE: " + itemLocation.toUpperCase() + " " + userLocation.toUpperCase(), Toast.LENGTH_SHORT).show()
                     gMap?.addMarker(
                         MarkerOptions().position(LatLng(addressItem.latitude, addressItem.longitude))
                             .title("Item position")

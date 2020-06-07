@@ -15,6 +15,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -55,7 +56,7 @@ class SignInFragment : Fragment() {
                 Toast.makeText(context, authViewModel.errorMessage, Toast.LENGTH_LONG).show()
             else {
                 if (it) {
-                    findNavController().navigate(R.id.action_navHome_to_onSaleListFragment)
+                    findNavController().navigate(R.id.onSaleListFragment)
                 } else {
                     (activity as AppCompatActivity?)?.supportActionBar?.hide()
                     googleSignInClient.signOut()
@@ -114,7 +115,7 @@ class SignInFragment : Fragment() {
         }
 
         signup_button.setOnClickListener {
-            findNavController().navigate(R.id.action_navHome_to_signUpFragment)
+            findNavController().navigate(R.id.signUpFragment)
         }
     }
 
