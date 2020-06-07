@@ -167,7 +167,7 @@
     <fragment
         android:id="@+id/signUpFragment"
         android:name="it.polito.mad.project.fragments.authentication.SignUpFragment"
-        android:label="SignUpFragment" />
+        android:label="Sign Up" />
 
     <fragment
         android:id="@+id/onSaleListFragment"
@@ -225,7 +225,7 @@
     <fragment
         android:id="@+id/itemReviewFragment"
         android:name="it.polito.mad.project.fragments.advertisements.ItemReviewFragment"
-        android:label="ItemReviewFragment" />
+        android:label="Review an Item" />
     <fragment
         android:id="@+id/showRouteItemUserFragment"
         android:name="it.polito.mad.project.fragments.advertisements.ShowRouteItemUserFragment"
@@ -233,5 +233,5 @@
     <fragment
         android:id="@+id/mapFragment"
         android:name="it.polito.mad.project.fragments.MapFragment"
-        android:label="MapFragment" />
+        android:label="Location in Map" />
 </navigation>
