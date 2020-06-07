@@ -45,11 +45,11 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
 
     private var isMyItem: Boolean = false
     private var isSoldItem: Boolean = false
+    private var showToast: Boolean = false
     private var listenerRegistration: ListenerRegistration? = null
 
     private lateinit var googleMap: GoogleMap
-    lateinit var supFragManager : FragmentManager
-
+    private lateinit var supFragManager : FragmentManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,8 +80,8 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
                     val bundle = bundleOf("UserId" to ownerId, "IsAuthUser" to false)
                     findNavController().navigate(R.id.action_showItemFragment_to_showProfileFragment, bundle)
                 }
-
-                listenToChanges()
+                if (!isMyItem)
+                    listenToChanges()
             }
         })
 
@@ -125,9 +125,10 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
         })
     }
 
-    /** Add listener to the current item docuement **/
+    /** Add listener to the current item document **/
     private fun listenToChanges() {
         if (listenerRegistration == null) {
+
             listenerRegistration = itemViewModel.getItemDocumentReference()
                 .addSnapshotListener { itemSnapshot, e ->
                     // if there's an exception, we have to skip
@@ -137,7 +138,12 @@ class ItemDetailsFragment : NotificationFragment(), OnMapReadyCallback {
                     // if we are here, this means we didn't meet any exception
                     if (itemSnapshot != null) {
                         itemViewModel.item.data.value = itemSnapshot.toObject(Item::class.java)!!
-                        Toast.makeText(context, "Some information are changed in this moment by the seller", Toast.LENGTH_LONG).show()
+                        if (showToast) {
+                            Toast.makeText(context, "Some information are changed in this moment by the seller", Toast.LENGTH_LONG).show()
+                        }
+                        
+                        // Not showing toast first
+                        showToast = true
                     }
                 }
         }

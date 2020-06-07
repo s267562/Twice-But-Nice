@@ -78,6 +78,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
 
     override fun onStart() {
         super.onStart()
+        isNavigateToMap = false
+
         val itemId = arguments?.getString("ItemId")
         if (itemId != null) {
             // Item already exist
