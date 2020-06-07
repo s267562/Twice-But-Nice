@@ -143,8 +143,11 @@ class ItemViewModel : LoadingViewModel() {
                 val itemIds = itemIdsSnap.toObjects(ItemInterest::class.java).map { interest -> interest.itemId }
                 if (itemIds.isNotEmpty()) {
                     itemRepository.getItemsByItemsIds(itemIds).addOnSuccessListener {
+                        var today = Date()
                         interestedItems.items.clear()
-                        interestedItems.items.addAll(it.toObjects(Item::class.java).filter { item -> item.status == ItemStatus.Available.toString()})
+                        interestedItems.items.addAll(it.toObjects(Item::class.java).filter { item ->
+                            item.status == ItemStatus.Available.toString() && (item.expiryDate.isNullOrBlank() || ( item.expiryDate.isNotBlank() &&  today <= SimpleDateFormat("dd/MM/yyyy").parse(item.expiryDate)))
+                        })
                         popLoader()
                         error = false
                     }.addOnFailureListener {
