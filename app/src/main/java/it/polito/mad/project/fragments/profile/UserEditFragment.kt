@@ -21,7 +21,6 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
@@ -46,6 +45,7 @@ import it.polito.mad.project.R
 import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.user.User
+import it.polito.mad.project.utils.Util.Companion.hideKeyboard
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.loadingLayout
@@ -399,7 +399,7 @@ class UserEditFragment : Fragment() {
             //it's NOT an orientation change
             File(imagePath!!).delete()
         }
-        hideKeyboard()
+        hideKeyboard(activity)
     }
 
     private fun openGallery(){
@@ -518,14 +518,6 @@ class UserEditFragment : Fragment() {
         if (addressList.isNotEmpty()){
             address = addressList.get(0)
             Toast.makeText(context, "We are here: $address", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun hideKeyboard(){
-        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        val view = activity?.currentFocus
-        if(view != null){
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
 }
