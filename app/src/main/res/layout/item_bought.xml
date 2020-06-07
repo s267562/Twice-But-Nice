@@ -17,7 +17,7 @@
         android:paddingLeft="16dp"
         android:paddingTop="16dp"
         android:paddingRight="16dp"
-        android:paddingBottom="8dp">
+        android:paddingBottom="16dp">
 
         <FrameLayout
             android:id="@+id/rating_container"
@@ -50,8 +50,6 @@
                 android:visibility="gone"/>
         </FrameLayout>
 
-
-
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -65,6 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
+                android:layout_marginBottom="8dp"
                 android:text="category"
                 android:textAllCaps="true"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
@@ -73,9 +72,8 @@
                 android:id="@+id/item_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
+                android:layout_marginBottom="8dp"
                 android:gravity="bottom"
-                android:minHeight="40dp"
                 android:text="Item Title"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
@@ -83,7 +81,6 @@
                 android:id="@id/item_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:text="20€"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/colorPrimaryDark" />
