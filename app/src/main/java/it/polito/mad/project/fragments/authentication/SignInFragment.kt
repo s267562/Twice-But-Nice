@@ -1,20 +1,16 @@
 package it.polito.mad.project.fragments.authentication
 
-import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.text.HtmlCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -26,6 +22,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import it.polito.mad.project.R
+import it.polito.mad.project.utils.Util.Companion.hideKeyboard
 import it.polito.mad.project.viewmodels.AuthViewModel
 import kotlinx.android.synthetic.main.fragment_login.*
 
@@ -151,14 +148,6 @@ class SignInFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        hideKeyboard()
-    }
-
-    private fun hideKeyboard(){
-        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        val view = activity?.currentFocus
-        if(view != null){
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
-        }
+        hideKeyboard(activity)
     }
 }

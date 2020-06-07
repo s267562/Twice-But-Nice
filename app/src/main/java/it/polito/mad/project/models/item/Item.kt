@@ -10,6 +10,7 @@ data class Item (var id: String?) : Serializable {
     var status : String = ""
     var statusPos: Int = -1
     var categoryPos: Int = -1
+    var subcategoryPos: Int = -1
     var price: String = ""
     var description: String = ""
     var expiryDate: String = ""

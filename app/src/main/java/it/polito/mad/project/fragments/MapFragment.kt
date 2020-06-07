@@ -153,14 +153,17 @@ class MapFragment : Fragment(), OnMapReadyCallback, SearchView.OnQueryTextListen
         saveFAB.setOnClickListener {
             //TODO itemViewModel.item.data.value.
 
-            val address = getAddressFromLocation(markerOptions.position.latitude, markerOptions.position.longitude)
-            if (address != null) {
-                // TODO salvare address all'interno dell'item o user
-                val city: String = address.locality
-                val state: String = address.adminArea
+            if(markerOptions.position != null) {
+                val address = getAddressFromLocation(markerOptions.position.latitude, markerOptions.position.longitude)
+                if (address != null) {
+                    // TODO salvare address all'interno dell'item o user
+                    val city: String = address.locality
+                    val state: String = address.adminArea
 
-                Toast.makeText(requireContext(), "city: $city, state: $state", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "city: $city, state: $state", Toast.LENGTH_SHORT).show()
+                }
             }
+
             findNavController().popBackStack()
         }
 

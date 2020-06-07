@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
 import it.polito.mad.project.models.review.Review
+import it.polito.mad.project.utils.Util.Companion.hideKeyboard
 import it.polito.mad.project.viewmodels.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_item_details.*
 import kotlinx.android.synthetic.main.fragment_item_review.*
@@ -65,5 +66,10 @@ class ItemReviewFragment : Fragment() {
         }
 
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        hideKeyboard(activity)
     }
 }

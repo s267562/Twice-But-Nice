@@ -21,7 +21,6 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
@@ -46,6 +45,7 @@ import it.polito.mad.project.R
 import it.polito.mad.project.customViews.CustomMapView
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.user.User
+import it.polito.mad.project.utils.Util.Companion.hideKeyboard
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.loadingLayout
@@ -399,7 +399,7 @@ class UserEditFragment : Fragment() {
             //it's NOT an orientation change
             File(imagePath!!).delete()
         }
-        hideKeyboard()
+        hideKeyboard(activity)
     }
 
     private fun openGallery(){
@@ -429,60 +429,62 @@ class UserEditFragment : Fragment() {
 
                         override fun onMapReady(gMap: GoogleMap?) {
 
-                            gMap?.let {
-                                googleMap = it
-                            }
-
-                            gMap?.uiSettings?.isZoomControlsEnabled = true
-                            gMap?.uiSettings?.isMapToolbarEnabled = true
-                            gMap?.uiSettings?.isMyLocationButtonEnabled = true
-                            gMap?.uiSettings?.isCompassEnabled = true
-
-                            var position = LatLng(locationSuccess.latitude, locationSuccess.longitude)
-                            gMap?.moveCamera(CameraUpdateFactory.newLatLng(position))
-                            gMap?.animateCamera(CameraUpdateFactory.zoomTo(4.8F))
-                            gMap?.addMarker(
-                                MarkerOptions().position(position).title("Your Current Position")
-                            )
-
-                            geocode = Geocoder(context?.applicationContext, Locale.getDefault())
-
-                            try {
-                                var addr = geocode.getFromLocationName(
-                                    location.text.toString(), 1)
-                                if(addr.size > 0){
-                                    var address : Address = addr.get(0)
-                                    val cameraPos = LatLng(address.latitude, address.longitude)
-                                    gMap?.addMarker(
-                                        MarkerOptions()
-                                            .position(LatLng(address.latitude, address.longitude))
-                                            .title("User Last Location")
-                                    )
+                            if(context != null) {
+                                gMap?.let {
+                                    googleMap = it
                                 }
-                            } catch (e: IOException){
-                                e.printStackTrace()
-                            }
 
-                            searchEditText.setOnEditorActionListener { _, actionId, event ->
-                                if(actionId == EditorInfo.IME_ACTION_SEARCH || event?.action == KeyEvent.ACTION_DOWN ||
-                                    event?.action == KeyEvent.KEYCODE_ENTER){
-                                    Toast.makeText(context, "Giusto così", Toast.LENGTH_SHORT).show()
-                                    geoLocate()
+                                gMap?.uiSettings?.isZoomControlsEnabled = true
+                                gMap?.uiSettings?.isMapToolbarEnabled = true
+                                gMap?.uiSettings?.isMyLocationButtonEnabled = true
+                                gMap?.uiSettings?.isCompassEnabled = true
+
+                                var position = LatLng(locationSuccess.latitude, locationSuccess.longitude)
+                                gMap?.moveCamera(CameraUpdateFactory.newLatLng(position))
+                                gMap?.animateCamera(CameraUpdateFactory.zoomTo(4.8F))
+                                gMap?.addMarker(
+                                    MarkerOptions().position(position).title("Your Current Position")
+                                )
+
+                                geocode = Geocoder(context?.applicationContext, Locale.getDefault())
+
+                                try {
+                                    var addr = geocode.getFromLocationName(
+                                        location.text.toString(), 1)
+                                    if(addr.size > 0){
+                                        var address : Address = addr.get(0)
+                                        val cameraPos = LatLng(address.latitude, address.longitude)
+                                        gMap?.addMarker(
+                                            MarkerOptions()
+                                                .position(LatLng(address.latitude, address.longitude))
+                                                .title("User Last Location")
+                                        )
+                                    }
+                                } catch (e: IOException){
+                                    e.printStackTrace()
                                 }
-                                false
-                            }
 
-                            gMap?.setOnMapClickListener {
-                                val clickPosition = LatLng(it.latitude, it.longitude)
-                                val markerOpt = MarkerOptions()
-                                markerOpt.position(clickPosition)
-                                gMap.clear()
-                                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
-                                gMap.addMarker(markerOpt)
-                            }
+                                searchEditText.setOnEditorActionListener { _, actionId, event ->
+                                    if(actionId == EditorInfo.IME_ACTION_SEARCH || event?.action == KeyEvent.ACTION_DOWN ||
+                                        event?.action == KeyEvent.KEYCODE_ENTER){
+                                        Toast.makeText(context, "Giusto così", Toast.LENGTH_SHORT).show()
+                                        geoLocate()
+                                    }
+                                    false
+                                }
 
-                            if(MarkerOptions().position != null){
-                                lastPositionToSave = MarkerOptions().title
+                                gMap?.setOnMapClickListener {
+                                    val clickPosition = LatLng(it.latitude, it.longitude)
+                                    val markerOpt = MarkerOptions()
+                                    markerOpt.position(clickPosition)
+                                    gMap.clear()
+                                    gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 7.2F))
+                                    gMap.addMarker(markerOpt)
+                                }
+
+                                if(MarkerOptions().position != null){
+                                    lastPositionToSave = MarkerOptions().title
+                                }
                             }
                         }
                     })
@@ -518,14 +520,6 @@ class UserEditFragment : Fragment() {
         if (addressList.isNotEmpty()){
             address = addressList.get(0)
             Toast.makeText(context, "We are here: $address", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun hideKeyboard(){
-        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        val view = activity?.currentFocus
-        if(view != null){
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
 }

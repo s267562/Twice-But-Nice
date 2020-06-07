@@ -6,14 +6,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
@@ -28,8 +26,8 @@ import androidx.navigation.fragment.findNavController
 import it.polito.mad.project.R
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.models.user.User
+import it.polito.mad.project.utils.Util.Companion.hideKeyboard
 import it.polito.mad.project.viewmodels.AuthViewModel
-import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_signup.*
 import java.io.File
 import java.io.FileOutputStream
@@ -381,14 +379,6 @@ class SignUpFragment: Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        hideKeyboard()
-    }
-
-    private fun hideKeyboard(){
-        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        val view = activity?.currentFocus
-        if(view != null){
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
-        }
+        hideKeyboard(activity)
     }
 }

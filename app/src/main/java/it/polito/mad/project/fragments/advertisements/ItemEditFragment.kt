@@ -16,7 +16,6 @@ import android.provider.MediaStore
 import android.text.InputType
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -31,8 +30,8 @@ import it.polito.mad.project.commons.fragments.NotificationFragment
 import it.polito.mad.project.enums.IntentRequest
 import it.polito.mad.project.enums.items.ItemStatus
 import it.polito.mad.project.fragments.advertisements.dialogs.SetBuyerDialogFragment
-import it.polito.mad.project.fragments.advertisements.dialogs.SetFilterDialogFragment
 import it.polito.mad.project.models.item.Item
+import it.polito.mad.project.utils.Util.Companion.hideKeyboard
 import it.polito.mad.project.viewmodels.ItemViewModel
 import it.polito.mad.project.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_item_edit.*
@@ -84,6 +83,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 item_title.setText(localIt.title)
                 if (it.categoryPos >= 0)
                     item_category_spinner.setSelection(localIt.categoryPos)
+                if(it.subcategoryPos >= 0)
+                    item_subcategory_spinner.setSelection(localIt.subcategoryPos)
                 item_descr.setText(localIt.description)
                 item_location.text = localIt.location
                 item_price.setText(localIt.price)
@@ -214,15 +215,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             //it's NOT an orientation change
             File(imagePath!!).delete()
         }
-        hideKeyboard()
-    }
-
-    private fun hideKeyboard(){
-        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        val view = activity?.currentFocus
-        if(view != null){
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
-        }
+        hideKeyboard(activity)
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -418,6 +411,17 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     item_subcategory_spinner.adapter = adapter
                 }
+            item_subcategory_spinner.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    TODO("Not yet implemented")
+                }
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    val subcategory: String = parent?.getItemAtPosition(position) as String
+                    itemViewModel.item.localData?.subcategory = subcategory
+                    itemViewModel.item.localData?.subcategoryPos = position
+                }
+            }
         }
     }
 
@@ -445,6 +449,19 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             item_price.error = "Insert Price"
             dataInserted = false
         }
+        if(item_descr.text.isNullOrBlank()){
+            item_descr.error = "Insert Description"
+            dataInserted = false
+        }
+        if(!item_exp.isSelected){
+            item_exp.error = "Insert Expiring Date"
+            dataInserted = false
+        }
+        if(!item_location.isSelected){
+            item_location.error = "Pick a Location in Map"
+            dataInserted = false
+        }
+
         if (!dataInserted){
             return
         }
@@ -465,6 +482,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         updateItem.category = updateItem.category
         updateItem.subcategory = subcategoryContent
         updateItem.categoryPos = updateItem.categoryPos
+        updateItem.subcategoryPos = updateItem.subcategoryPos
         updateItem.status = statusContent
 
         itemViewModel.saveItem(updateItem)
@@ -506,5 +524,4 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         galleryIntent.action = Intent.ACTION_GET_CONTENT
         startActivityForResult(Intent.createChooser(galleryIntent, "Select an image from Gallery"), selectImage)
     }
-
 }

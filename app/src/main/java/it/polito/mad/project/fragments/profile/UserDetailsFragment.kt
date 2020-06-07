@@ -169,31 +169,33 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(gMap: GoogleMap) {
-        gMap.let {
-            googleMap = it
-        }
-
-        val geocode = Geocoder(requireContext().applicationContext, Locale.getDefault())
-
-        gMap.uiSettings.isZoomControlsEnabled = true
-        gMap.uiSettings.isMapToolbarEnabled = true
-        gMap.uiSettings.isMyLocationButtonEnabled = true
-        gMap.uiSettings.isCompassEnabled = true
-
-        try {
-            val addresses = geocode.getFromLocationName(location.text.toString(), 1)
-            if(addresses.size > 0){
-                val address : Address = addresses[0]
-                val cameraPos = LatLng(address.latitude, address.longitude)
-                gMap.addMarker(
-                    MarkerOptions()
-                        .position(LatLng(address.latitude, address.longitude))
-                        .title("User Current Location")
-                )
-                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 15F))
+        if(context != null) {
+            gMap.let {
+                googleMap = it
             }
-        } catch (e: IOException){
-            e.printStackTrace()
+
+            val geocode = Geocoder(requireContext().applicationContext, Locale.getDefault())
+
+            gMap.uiSettings.isZoomControlsEnabled = true
+            gMap.uiSettings.isMapToolbarEnabled = true
+            gMap.uiSettings.isMyLocationButtonEnabled = true
+            gMap.uiSettings.isCompassEnabled = true
+
+            try {
+                val addresses = geocode.getFromLocationName(location.text.toString(), 1)
+                if(addresses.size > 0){
+                    val address : Address = addresses[0]
+                    val cameraPos = LatLng(address.latitude, address.longitude)
+                    gMap.addMarker(
+                        MarkerOptions()
+                            .position(LatLng(address.latitude, address.longitude))
+                            .title("User Current Location")
+                    )
+                    gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cameraPos, 15F))
+                }
+            } catch (e: IOException){
+                e.printStackTrace()
+            }
         }
     }
 
