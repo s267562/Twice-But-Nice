@@ -98,10 +98,8 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
                 itemViewModel.item.localData = it
                 val localIt = itemViewModel.item.localData!!
                 item_title.setText(localIt.title)
-                if (it.categoryPos >= 0)
+                if (localIt.categoryPos >= 0)
                     item_category_spinner.setSelection(localIt.categoryPos)
-                if(it.subcategoryPos >= 0)
-                    item_subcategory_spinner.setSelection(localIt.subcategoryPos)
                 item_descr.setText(localIt.description)
                 item_location.text = mapViewModel.location?:localIt.location
                 item_price.setText(localIt.price)
@@ -138,7 +136,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         mapViewModel.updateLocation.observe(viewLifecycleOwner, Observer {
             if(it) {
                 item_location.text = mapViewModel.location?:item_location.text
-                isNavigateToMap = true
+              //  isNavigateToMap = true
                 mapViewModel.updateLocation.value = false
             }
         })
@@ -256,7 +254,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         itemViewModel.item.localData?.categoryPos = pos
 
         if(pos >= 0 && pos < subCategoriesResArray.size)
-            setSubcategory(subCategoriesResArray[pos])
+            setSubcategory(subCategoriesResArray[pos], itemViewModel.item.localData?.subcategoryPos?:0)
     }
 
     @SuppressLint("UseRequireInsteadOfGet")
@@ -434,13 +432,14 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
         item_category_spinner.onItemSelectedListener = this
     }
 
-    private fun setSubcategory(textArrayResId: Int){
+    private fun setSubcategory(textArrayResId: Int, subcategoryPos: Int = 0){
         context?.let {
             ArrayAdapter.createFromResource(it, textArrayResId, android.R.layout.simple_spinner_item)
                 .also {
                         adapter ->
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     item_subcategory_spinner.adapter = adapter
+                    item_subcategory_spinner.setSelection(subcategoryPos)
                 }
             item_subcategory_spinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
@@ -457,10 +456,10 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
     }
 
     private fun saveItem() {
-        /*if (!isFormCompleted()) {
+        if (!isFormCompleted()) {
             Toast.makeText(context, "Some information are missing. Complete all required fields.", Toast.LENGTH_LONG).show()
             return
-        }*/
+        }
         if (itemViewModel.error) {
             Toast.makeText(context, "Error on item loading, is not possible to save your item.", Toast.LENGTH_LONG).show()
             return
