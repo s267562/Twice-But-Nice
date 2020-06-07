@@ -194,8 +194,8 @@
             app:popEnterAnim="@anim/fragment_close_enter"
             app:popExitAnim="@anim/fragment_close_exit" />
         <action
-            android:id="@+id/action_usersInterestedFragment_to_showItemFragment"
-            app:destination="@id/showItemFragment" />
+            android:id="@+id/action_usersInterestedFragment_to_itemListFragment"
+            app:destination="@id/itemListFragment" />
     </fragment>
     <fragment
         android:id="@+id/itemsOfInterestListFragment"

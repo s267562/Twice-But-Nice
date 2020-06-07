@@ -54,7 +54,7 @@ class InterestedUserAdapter(private var users: MutableList<User>): RecyclerView.
                         notificator.sendNotification(updateItem.id!!, updateItem.title, "The item was sold", body)
                         //holder.itemView.findNavController().popBackStack()
                         val bundle = bundleOf("ItemId" to updateItem.id, "IsSoldItem" to true)
-                        holder.itemView.findNavController().navigate(R.id.action_usersInterestedFragment_to_showItemFragment, bundle)
+                        holder.itemView.findNavController().navigate(R.id.action_usersInterestedFragment_to_itemListFragment, bundle)
                     } else {
                         Toast.makeText((holder.itemView.context as AppCompatActivity).applicationContext, "Error on saving the buyer", Toast.LENGTH_SHORT).show()
                     }
