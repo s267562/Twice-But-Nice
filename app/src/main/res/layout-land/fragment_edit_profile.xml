@@ -52,7 +52,7 @@
         android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/user_info_container"
+        app:layout_constraintRight_toLeftOf="@+id/scroll_view_container"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -114,91 +114,96 @@
 
     </LinearLayout>
 
-
-    <LinearLayout
-        android:id="@id/user_info_container"
+    <ScrollView
+        android:id="@id/scroll_view_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         app:layout_constraintLeft_toRightOf="@+id/header_container"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:orientation="vertical"
-        android:layout_marginLeft="16dp"
-        android:paddingLeft="32dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:paddingRight="16dp"
-        android:gravity="center_vertical" >
+        app:layout_constraintRight_toRightOf="parent">
 
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
+            android:id="@id/user_info_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="1dp"
-            android:textColorHint="@android:color/tertiary_text_dark"
-            android:hint="Full Name" >
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingLeft="32dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:paddingRight="32dp"
+            android:gravity="center_vertical" >
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/full_name"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:inputType="textCapWords"
-                android:imeOptions="actionNext" />
-        </com.google.android.material.textfield.TextInputLayout>
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="1dp"
+                android:textColorHint="@android:color/tertiary_text_dark"
+                android:hint="Full Name" >
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="1dp"
-            android:textColorHint="@android:color/tertiary_text_dark"
-            android:hint="Nickname"
-            android:layout_marginTop="16dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/full_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:inputType="textCapWords"
+                    android:imeOptions="actionNext" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/nickname"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:inputType="textWebEditText"
-                android:imeOptions="actionNext" />
-        </com.google.android.material.textfield.TextInputLayout>
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="1dp"
+                android:textColorHint="@android:color/tertiary_text_dark"
+                android:hint="Nickname"
+                android:layout_marginTop="16dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="1dp"
-            android:textColorHint="@android:color/tertiary_text_dark"
-            android:hint="E-mail"
-            android:layout_marginTop="16dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/nickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:inputType="textWebEditText"
+                    android:imeOptions="actionNext" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/email"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="1dp"
+                android:textColorHint="@android:color/tertiary_text_dark"
+                android:hint="E-mail"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:inputType="textEmailAddress"
+                    android:imeOptions="actionNext" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginVertical="20dp"
+                android:textColor="@android:color/primary_text_light"
+                android:hint="Location"
                 android:maxLines="1"
-                android:inputType="textEmailAddress"
-                android:imeOptions="actionNext" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:drawableRight="@drawable/ic_location_24dp"
+                android:drawableTint="@color/colorAccent" />
 
-        <TextView
-            android:id="@+id/location"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginVertical="20dp"
-            android:textColor="@android:color/primary_text_light"
-            android:hint="Location"
-            android:maxLines="1"
-            android:drawableRight="@drawable/ic_location_24dp"
-            android:drawableTint="@color/colorAccent" />
+        </LinearLayout>
 
-    </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
