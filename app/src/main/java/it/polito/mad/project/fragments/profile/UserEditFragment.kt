@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -76,8 +75,10 @@ class UserEditFragment : Fragment() {
         })
         mapViewModel.updateLocation.observe(viewLifecycleOwner, Observer {
             if(it) {
+                userViewModel.user.localData?.location = mapViewModel.location?:location.text.toString()
                 location.text = mapViewModel.location?:location.text
                 mapViewModel.updateLocation.value = false
+                mapViewModel.location = null
             }
         })
     }
