@@ -80,10 +80,10 @@ class ItemViewModel : LoadingViewModel() {
             .addOnSuccessListener { it1 ->
                 myItems.items.clear()
                 myItems.items.addAll(it1.toObjects(Item::class.java))
-                loadItemsOnSale()
+//                loadItemsOnSale()
                 itemsExpiredUpdate(myItems.items)
-                loadItemsBought()
-                loadInterestedItems()
+//                loadItemsBought()
+//                loadInterestedItems()
                 popLoader()
                 error = false
             }.addOnFailureListener {
@@ -97,7 +97,7 @@ class ItemViewModel : LoadingViewModel() {
         items.forEach{
             if(it.status == ItemStatus.Available.toString() && it.expiryDate.isNotBlank() && today>SimpleDateFormat("dd/MM/yyyy").parse(it.expiryDate))
             it.status= ItemStatus.Blocked.toString()
-            saveItem(it)
+//            saveItem(it)
         }
     }
 
@@ -109,10 +109,12 @@ class ItemViewModel : LoadingViewModel() {
             .addOnSuccessListener {
                 // Items on sale are all items sub user items
                 val today = Date()
+                val userId = itemRepository.getAuthUserId()
                 onSaleItems.items.clear()
-                onSaleItems.items.addAll(it.toObjects(Item::class.java).filter {
-                        item -> item.expiryDate.isNullOrBlank() || ( item.expiryDate.isNotBlank() &&  today <= SimpleDateFormat("dd/MM/yyyy").parse(item.expiryDate))
-                }.subtract(myItems.items.toList()))
+                onSaleItems.items.addAll(it.toObjects(Item::class.java).filter { item ->
+                    item.expiryDate.isNullOrBlank() ||
+                        ( item.expiryDate.isNotBlank() &&  today <= SimpleDateFormat("dd/MM/yyyy").parse(item.expiryDate) && item.ownerId != userId)
+                })
                 popLoader()
                 error = false
             }.addOnFailureListener {
@@ -206,8 +208,6 @@ class ItemViewModel : LoadingViewModel() {
             .addOnSuccessListener { it ->
                 val localItem = it.toObject(Item::class.java) as Item
                 item.data.value = localItem
-                loadItemInterest(localItem.id!!)
-                loadInterestedUsers()
                 popLoader()
                 loadItemImage(localItem.id!!, localItem.imagePath)
                 error = false
@@ -217,7 +217,7 @@ class ItemViewModel : LoadingViewModel() {
             }
     }
 
-    private fun loadItemInterest(itemId: String) {
+    fun loadItemInterest(itemId: String) {
         pushLoader()
         itemRepository.getItemInterest(itemRepository.getAuthUserId(), itemId)
             .addOnCompleteListener {
