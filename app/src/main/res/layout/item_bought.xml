@@ -19,39 +19,46 @@
         android:paddingRight="16dp"
         android:paddingBottom="8dp">
 
-        <RatingBar
-            android:id="@+id/item_rating"
+        <FrameLayout
+            android:id="@+id/rating_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            style="?android:attr/ratingBarStyleSmall"
-            android:numStars="5"
-            android:stepSize="0.5"
-            android:layout_marginEnd="16dp"
-            android:visibility="gone"
-            android:progressTint="@color/colorPrimary"/>
+            app:layout_constraintRight_toRightOf="parent">
 
-        <Button
-            android:id="@+id/item_review_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="WRITE A REVIEW"
-            android:backgroundTint="@android:color/transparent"
-            android:textColor="@color/colorPrimary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            style="?android:attr/borderlessButtonStyle"
-            android:visibility="gone"/>
+            <RatingBar
+                android:id="@+id/item_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/ratingBarStyleSmall"
+                android:numStars="5"
+                android:stepSize="0.5"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:visibility="gone"
+                android:progressTint="@color/colorPrimary"/>
+
+            <Button
+                android:id="@+id/item_review_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WRITE A REVIEW"
+                android:backgroundTint="@android:color/transparent"
+                android:textColor="@color/colorPrimary"
+                style="?android:attr/borderlessButtonStyle"
+                android:visibility="gone"/>
+        </FrameLayout>
+
+
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/rating_container">
 
             <TextView
                 android:id="@+id/item_category"
