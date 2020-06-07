@@ -537,7 +537,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
             item_descr.error = "Insert Description"
             dataInserted = false
         }
-        if(item_exp.text.isNullOrBlank()){
+        if(item_exp.text.isNullOrBlank()  ||   Date()>SimpleDateFormat("dd/MM/yyyy").parse(item_exp.text.toString())){
             item_exp.error = "Insert Expiring Date"
             dataInserted = false
         }
