@@ -105,7 +105,7 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:id="@id/user_info_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -113,85 +113,177 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:orientation="vertical"
         android:layout_marginLeft="16dp"
         android:paddingLeft="32dp"
-        android:paddingTop="16dp"
         android:paddingBottom="16dp"
-        android:paddingRight="16dp"
-        android:gravity="center_vertical" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="BASIC INFORMATION"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+        android:paddingRight="16dp">
 
         <LinearLayout
+            android:id="@id/user_info_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_vertical" >
 
-            <LinearLayout
+            <!-- BASIC INFO -->
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_gravity="start"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="16dp"
+                android:text="BASIC INFORMATION"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp">
 
-                <TextView
-                    android:id="@+id/name_container"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Name:"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginRight="16dp"
+                    android:orientation="vertical">
 
-                <TextView
+                    <TextView
+                        android:id="@+id/name_container"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:text="Name:"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:text="Email:"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Email:"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_marginLeft="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/full_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:maxLines="1"
+                        android:text="@string/full_name"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                    <TextView
+                        android:id="@+id/email"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:maxLines="1"
+                        android:text="Email"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
+            <it.polito.mad.project.customViews.CustomMapView
+                android:id="@+id/mapViewProfile"
+                android:layout_width="340dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="16dp"
+                android:layout_gravity="center"/>
+
+            <!-- REVIEWS -->
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#A0A0A0" />
+
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/reviewContainer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginLeft="16dp">
+                android:layout_margin="16dp">
 
-                <TextView
-                    android:id="@+id/full_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/full_name"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_marginBottom="8dp"
-                    android:maxLines="1"/>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/email"
-                    android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/reviewsTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:text="Reviews"
+                        android:textStyle="bold"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+                    <RatingBar
+                        android:id="@+id/userRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/reviewsTitle"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginTop="8dp"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:numStars="5"
+                        android:stepSize="0.5"
+                        android:progressTint="@color/colorPrimary"/>
+
+                    <TextView
+                        android:id="@+id/userRatingTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toEndOf="@id/userRating"
+                        app:layout_constraintTop_toBottomOf="@id/reviewsTitle"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/nReviewsTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/userRating"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginTop="8dp"
+                        android:text="0 reviews"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="#A0A0A0"
+                    android:layout_marginTop="16dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/reviewRecyclerView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Email"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_marginBottom="8dp"
-                    android:maxLines="1" />
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:overScrollMode="never"/>
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <it.polito.mad.project.customViews.CustomMapView
-            android:layout_width="380dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="16dp"
-            android:id="@+id/mapViewProfile"/>
-
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

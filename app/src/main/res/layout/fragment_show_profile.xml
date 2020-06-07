@@ -59,7 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-            android:layout_marginBottom="4dp"
+                android:layout_marginBottom="4dp"
                 android:text="@string/Nickname"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
@@ -152,7 +152,7 @@
 
         <it.polito.mad.project.customViews.CustomMapView
             android:id="@+id/mapViewProfile"
-            android:layout_width="340dp"
+            android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_marginTop="25dp"
             android:layout_marginBottom="16dp"/>
