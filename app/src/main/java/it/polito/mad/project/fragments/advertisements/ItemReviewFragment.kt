@@ -32,13 +32,10 @@ class ItemReviewFragment : Fragment() {
 
         itemViewModel.loader.observe(viewLifecycleOwner, Observer {
             if (itemViewModel.isNotLoading()) {
-                loadingLayout.visibility = View.GONE
                 if (itemViewModel.error) {
                     Toast.makeText(context, "Error on item loading", Toast.LENGTH_SHORT).show()
                     findNavController().popBackStack()
                 }
-            } else {
-                loadingLayout.visibility = View.VISIBLE
             }
         })
 
