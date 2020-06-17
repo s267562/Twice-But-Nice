@@ -41,8 +41,7 @@ class SignUpFragment: Fragment() {
     private val FULL_NAME = 0
     private val NICKNAME = 1
     private val EMAIL = 2
-    private val LOCATION = 3
-    private val PASSWORD = 4
+    private val PASSWORD = 3
 
     private var imagePath: String? = null
     private var savedImagePath: String? =null
@@ -84,7 +83,6 @@ class SignUpFragment: Fragment() {
                 if(!registerEnable[FULL_NAME]) registerEnable[FULL_NAME] = true
                 if(registerEnable[NICKNAME] &&
                     registerEnable[EMAIL] &&
-                    registerEnable[LOCATION] &&
                     registerEnable[PASSWORD] &&
                     !regBtn.isEnabled) {
                     /* other field not blank and button not enabled */
@@ -104,7 +102,6 @@ class SignUpFragment: Fragment() {
                 if(!registerEnable[NICKNAME]) registerEnable[NICKNAME] = true
                 if(registerEnable[FULL_NAME] &&
                     registerEnable[EMAIL] &&
-                    registerEnable[LOCATION] &&
                     registerEnable[PASSWORD] &&
                     !regBtn.isEnabled) {
                     /* other field not blank and button not enabled */
@@ -124,7 +121,6 @@ class SignUpFragment: Fragment() {
                 if(!registerEnable[EMAIL]) registerEnable[EMAIL] = true
                 if(registerEnable[NICKNAME] &&
                     registerEnable[FULL_NAME] &&
-                    registerEnable[LOCATION] &&
                     registerEnable[PASSWORD] &&
                     !regBtn.isEnabled) {
                     /* other field not blank and button not enabled */
@@ -138,33 +134,12 @@ class SignUpFragment: Fragment() {
             }
         }
 
-        au_location.doOnTextChanged { text,  _, _, _ ->
-            if(!text.isNullOrBlank()) {
-                /* location not blank */
-                if(!registerEnable[LOCATION]) registerEnable[LOCATION] = true
-                if(registerEnable[NICKNAME] &&
-                    registerEnable[EMAIL] &&
-                    registerEnable[FULL_NAME] &&
-                    registerEnable[PASSWORD] &&
-                    !regBtn.isEnabled) {
-                    /* other field not blank and button not enabled */
-                    enableButton(regBtn)
-                }
-            } else {
-                if(registerEnable[LOCATION]) {
-                    registerEnable[LOCATION] = false
-                    disableButton(regBtn)
-                }
-            }
-        }
-
         au_password.doOnTextChanged { text, _, _, _ ->
             if(!text.isNullOrBlank()) {
                 /* full name not blank */
                 if(!registerEnable[PASSWORD]) registerEnable[PASSWORD] = true
                 if(registerEnable[NICKNAME] &&
                     registerEnable[EMAIL] &&
-                    registerEnable[LOCATION] &&
                     registerEnable[FULL_NAME] &&
                     !regBtn.isEnabled) {
                     /* other field not blank and button not enabled */
@@ -222,10 +197,6 @@ class SignUpFragment: Fragment() {
                 dataInserted = false
 
             }
-            if (au_location.text.isNullOrBlank()){
-                au_location.error = "Insert full name"
-                dataInserted = false
-            }
             if (au_password.text.isNullOrBlank()){
                 au_password.error = "Insert password"
                 dataInserted = false
@@ -235,7 +206,6 @@ class SignUpFragment: Fragment() {
                 val user = User(au_fullname.text.toString())
                 user.email = au_email.text.toString()
                 user.nickname = au_nickname.text.toString()
-                user.location = au_location.text.toString()
                 user.password = au_password.text.toString()
                 user.photoProfilePath = savedImagePath.toString()
                 authViewModel.registerUser(user)

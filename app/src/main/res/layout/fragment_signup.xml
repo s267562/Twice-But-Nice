@@ -159,25 +159,6 @@
                 app:boxStrokeWidth="1dp"
                 app:boxStrokeWidthFocused="1dp"
                 android:textColorHint="@android:color/tertiary_text_dark"
-                android:hint="Location"
-                android:layout_marginTop="16dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/au_location"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:inputType="textAutoCorrect"
-                    android:imeOptions="actionDone" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxStrokeWidth="1dp"
-                app:boxStrokeWidthFocused="1dp"
-                android:textColorHint="@android:color/tertiary_text_dark"
                 android:hint="Password"
                 android:layout_marginTop="16dp" >
 
