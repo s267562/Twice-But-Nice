@@ -51,24 +51,21 @@ class UserViewModel : LoadingViewModel() {
 
     fun loadUser(id: String? = null) {
         val verifiedId = id ?: userRepository.getFirebaseUser()!!.uid
-        if (verifiedId != user.data.value?.id) {
-            pushLoader()
-            user.image.value = null
-            userRepository.getUserById(verifiedId)
-                ?.addOnSuccessListener {
-                    user.data.value = it.toObject(User::class.java)
-                    if (id == null)
-                        authUser = user.data.value!!
-                    popLoader()
-                    loadUserPhotoProfile(user.data.value!!.id, user.data.value!!.photoProfilePath)
-                    error = false
-                }
-                ?.addOnFailureListener {
-                    error = true
-                    popLoader()
-                }
-
-        }
+        pushLoader()
+        user.image.value = null
+        userRepository.getUserById(verifiedId)
+            ?.addOnSuccessListener {
+                user.data.value = it.toObject(User::class.java)
+                if (id == null)
+                    authUser = user.data.value!!
+                popLoader()
+                loadUserPhotoProfile(user.data.value!!.id, user.data.value!!.photoProfilePath)
+                error = false
+            }
+            ?.addOnFailureListener {
+                error = true
+                popLoader()
+            }
     }
 
     private fun loadUserPhotoProfile(id: String, photoProfilePath: String) {
