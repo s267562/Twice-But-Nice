@@ -85,8 +85,8 @@ class ItemRepository {
     }
 
     // get the authenticated user id
-    fun getAuthUserId(): String {
-        return auth.currentUser?.uid!!
+    fun getAuthUserId(): String? {
+        return auth.currentUser?.uid
     }
 
     fun getBoughtItems(userId: String): Task<QuerySnapshot> {

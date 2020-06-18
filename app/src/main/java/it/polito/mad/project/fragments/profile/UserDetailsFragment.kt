@@ -125,7 +125,7 @@ class UserDetailsFragment : Fragment(), OnMapReadyCallback {
         reviewRecyclerView.adapter = userViewModel.reviews.adapter
     }
 
-    private suspend fun setMap(){
+    private fun setMap(){
         val mapView = activity?.findViewById<CustomMapView>(R.id.mapViewProfile)
 
         if(mapView != null) {

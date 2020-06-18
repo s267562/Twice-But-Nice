@@ -74,22 +74,24 @@ class ItemViewModel : LoadingViewModel() {
     }
 
     private fun loadItems() {
-        pushLoader()
         val userId = itemRepository.getAuthUserId()
-        itemRepository.getItemsByUserId(userId)
-            .addOnSuccessListener { it1 ->
-                myItems.items.clear()
-                myItems.items.addAll(it1.toObjects(Item::class.java))
+        if (userId != null) {
+            pushLoader()
+            itemRepository.getItemsByUserId(userId)
+                .addOnSuccessListener { it1 ->
+                    myItems.items.clear()
+                    myItems.items.addAll(it1.toObjects(Item::class.java))
 //                loadItemsOnSale()
-                itemsExpiredUpdate(myItems.items)
+                    itemsExpiredUpdate(myItems.items)
 //                loadItemsBought()
 //                loadInterestedItems()
-                popLoader()
-                error = false
-            }.addOnFailureListener {
-                popLoader()
-                error = true
-            }
+                    popLoader()
+                    error = false
+                }.addOnFailureListener {
+                    popLoader()
+                    error = true
+                }
+        }
     }
 
     private fun itemsExpiredUpdate(items: MutableList<Item>) {
@@ -124,19 +126,21 @@ class ItemViewModel : LoadingViewModel() {
     }
 
     fun loadItemsBought(){
-        pushLoader()
         val userId = itemRepository.getAuthUserId()
-        itemRepository.getBoughtItems(userId)
-            .addOnSuccessListener {
-                // Items on sale are all items sub user items
-                boughtItems.items.clear()
-                boughtItems.items.addAll(it.toObjects(Item::class.java))
-                popLoader()
-                error = false
-            }.addOnFailureListener {
-                popLoader()
-                error = true
-            }
+        if (userId != null) {
+            pushLoader()
+            itemRepository.getBoughtItems(userId)
+                .addOnSuccessListener {
+                    // Items on sale are all items sub user items
+                    boughtItems.items.clear()
+                    boughtItems.items.addAll(it.toObjects(Item::class.java))
+                    popLoader()
+                    error = false
+                }.addOnFailureListener {
+                    popLoader()
+                    error = true
+                }
+        }
     }
 
     fun loadInterestedItems() {
@@ -176,7 +180,7 @@ class ItemViewModel : LoadingViewModel() {
     fun saveItem(item: Item): Task<Void> {
         val isNewItem = item.id == null
         if (isNewItem) {
-            item.ownerId = itemRepository.getAuthUserId()
+            item.ownerId = itemRepository.getAuthUserId()!!
             item.id = "${item.ownerId}-${myItems.items.size}"
         }
         pushLoader()
@@ -219,7 +223,7 @@ class ItemViewModel : LoadingViewModel() {
 
     fun loadItemInterest(itemId: String) {
         pushLoader()
-        itemRepository.getItemInterest(itemRepository.getAuthUserId(), itemId)
+        itemRepository.getItemInterest(itemRepository.getAuthUserId()!!, itemId)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     val interest = it.result?.toObject(ItemInterest::class.java)
@@ -258,7 +262,7 @@ class ItemViewModel : LoadingViewModel() {
         pushLoader()
         val interest =  item.interest
         interest.interested = !interest.interested
-        interest.userId = itemRepository.getAuthUserId()
+        interest.userId = itemRepository.getAuthUserId()!!
         interest.itemId = item.data.value!!.id!!
         return itemRepository.saveItemInterest(interest.userId, item.data.value!!.id!!, interest)
             .addOnSuccessListener {
