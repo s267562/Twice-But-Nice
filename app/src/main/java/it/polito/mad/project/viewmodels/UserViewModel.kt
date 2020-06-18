@@ -11,6 +11,7 @@ import it.polito.mad.project.models.user.User
 import it.polito.mad.project.models.user.UserDetail
 import it.polito.mad.project.repositories.ItemRepository
 import it.polito.mad.project.repositories.UserRepository
+import it.polito.mad.project.utils.Util
 import java.io.File
 
 class UserViewModel : LoadingViewModel() {
@@ -70,7 +71,7 @@ class UserViewModel : LoadingViewModel() {
 
     private fun loadUserPhotoProfile(id: String, photoProfilePath: String) {
         if (photoProfilePath.isNotBlank()) {
-            val image = BitmapFactory.decodeFile(photoProfilePath)
+            val image = Util.decodeSampledBitmapFromFile(photoProfilePath)
             if (image != null) {
                 user.image.value = image
                 if (id == authUser.id) {
@@ -79,7 +80,7 @@ class UserViewModel : LoadingViewModel() {
             } else {
                 val localFile = File.createTempFile(id,".jpg")
                 userRepository.getUserPhoto(id, localFile).addOnSuccessListener {
-                    user.image.value =  BitmapFactory.decodeFile(localFile.path)
+                    user.image.value =  Util.decodeSampledBitmapFromFile(localFile.path)
                     user.data.value!!.photoProfilePath = localFile.path
                     if (id == authUser.id) {
                         authPhotoProfile = user.image.value!!

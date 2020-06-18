@@ -21,6 +21,7 @@ import it.polito.mad.project.models.review.Review
 import it.polito.mad.project.models.user.User
 import it.polito.mad.project.models.user.UserList
 import it.polito.mad.project.repositories.ItemRepository
+import it.polito.mad.project.utils.Util
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -240,13 +241,13 @@ class ItemViewModel : LoadingViewModel() {
 
     private fun loadItemImage(id: String, imagePath: String) {
         if (imagePath.isNotBlank()) {
-            val image = BitmapFactory.decodeFile(imagePath)
+            val image = Util.decodeSampledBitmapFromFile(imagePath)
             if (image != null) {
                 item.image.value = image
             } else {
                 val localFile = File.createTempFile(id,".jpg")
                 itemRepository.getItemImage(id, localFile).addOnSuccessListener {
-                    item.image.value =  BitmapFactory.decodeFile(localFile.path)
+                    item.image.value =  Util.decodeSampledBitmapFromFile(localFile.path)
                     item.data.value!!.imagePath = localFile.path
                 }
             }
