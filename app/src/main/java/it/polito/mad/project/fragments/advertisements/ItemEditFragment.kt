@@ -547,6 +547,7 @@ class ItemEditFragment : NotificationFragment(), AdapterView.OnItemSelectedListe
     }
 
     private fun openGallery(){
+        updateLocalData()
         val galleryIntent = Intent()
         galleryIntent.type = "image/*"
         galleryIntent.action = Intent.ACTION_GET_CONTENT
