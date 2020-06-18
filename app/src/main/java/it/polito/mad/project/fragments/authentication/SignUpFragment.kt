@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
@@ -56,8 +57,10 @@ class SignUpFragment: Fragment() {
     override fun onStart() {
         super.onStart()
         authViewModel.registeredIn.observe(viewLifecycleOwner, Observer {
-            if (authViewModel.error)
+            if (authViewModel.error) {
                 Toast.makeText(context, authViewModel.errorMessage, Toast.LENGTH_LONG).show()
+                authViewModel.error = false
+            }
             else {
                 if (it) {
                     findNavController().popBackStack()
@@ -76,7 +79,14 @@ class SignUpFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         var image: Bitmap?
+        if (savedInstanceState != null) {
+            imagePath = savedInstanceState.getString("ImagePath")
+        }
 
+        if (imagePath != null){
+            image = BitmapFactory.decodeFile(imagePath)
+            signup_photo.setImageBitmap(image)
+        }
         au_fullname.doOnTextChanged { text, _, _, _ ->
             if(!text.isNullOrBlank()) {
                 /* full name not blank */
@@ -248,6 +258,13 @@ class SignUpFragment: Fragment() {
                 true
             }
             else -> super.onContextItemSelected(item)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (this.imagePath != null) {
+            outState.putString("ImagePath", this.imagePath)
         }
     }
 
