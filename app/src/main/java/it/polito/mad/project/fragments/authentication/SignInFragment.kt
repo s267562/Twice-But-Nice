@@ -52,8 +52,10 @@ class SignInFragment : Fragment() {
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
 
         authViewModel.loggedIn.observe(viewLifecycleOwner, Observer {
-            if (authViewModel.error)
+            if (authViewModel.error) {
                 Toast.makeText(context, authViewModel.errorMessage, Toast.LENGTH_LONG).show()
+                authViewModel.error = false
+            }
             else {
                 if (it) {
                     findNavController().navigate(R.id.onSaleListFragment)
